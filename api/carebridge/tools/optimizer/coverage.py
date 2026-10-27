@@ -190,9 +190,9 @@ def select_four_distinct_stops(
             f"Selected Stop #{k + 1} at {venue_name} serves census tract {best_candidate}. "
             f"This tract demonstrates high structural need with {unins:.1f}% adult uninsured rate "
             f"(CDC PLACES estimate), a preventive checkup gap of {chk_gap:.1f}%, and {no_veh:.1f}% "
-            f"zero-vehicle households facing a {km_sn:.1f} km straight-line transit barrier to the "
-            f"nearest safety-net clinic. 5+ km travel without personal vehicle represents a significant "
-            f"full-day obstacle requiring multiple transfers. Catchment serves an estimated {total_catchment_pop} residents."
+            f"zero-vehicle households, {km_sn:.1f} km straight-line (an upper bound, not a travel time) from the "
+            f"nearest safety-net clinic. Bus travel time is not measured: no transit feed is loaded. "
+            f"Catchment serves an estimated {total_catchment_pop} residents."
         )
 
         stop = ProposedClinicStop(

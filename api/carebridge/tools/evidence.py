@@ -1,10 +1,13 @@
 """Evidence gathering and validation: the deterministic core of plans 02-04.
 
 Until the Health & Access, Transit & Community and Evidence Validator agents
-exist, the graph's stand-ins call these directly. The agents will wrap the same
-functions (and move the queries behind the BigQuery MCP server), so the output
-contracts don't change. No race, ethnicity or personal columns are selected.
+exist, the graph's stand-ins call these directly. The Health & Access agent runs
+`health_evidence_queries` through the BigQuery MCP server and maps the rows with
+`build_health_evidence`, so the output contract is the same over either
+transport. No race, ethnicity or personal columns are selected.
 """
+from collections.abc import Callable
+
 from ..contracts.evidence_models import (
     EvidenceReport,
     HealthEvidence,
@@ -21,18 +24,45 @@ def _f(v):
     return None if v is None else float(v)
 
 
-def fetch_health_evidence(repo: BigQueryRepo, county_fips: str, county_name: str) -> HealthEvidence:
-    rows = repo.query(f"""
+def health_evidence_queries(table: Callable[[str], str]) -> dict[str, str]:
+    """The Health & Access named queries. `@fips` is the county FIPS parameter; `table` qualifies a table name."""
+    return {
+        "tracts": f"""
         SELECT b.geo_id, b.total_pop, b.latitude, b.longitude,
                b.pct_uninsured, b.pct_uninsured_all_ages, b.pct_asthma, b.pct_copd, b.pct_diabetes,
                b.pct_high_bp, b.pct_checkup, b.pct_no_vehicle, b.pct_age_65_plus,
                b.pct_mobility_difficulty, b.pct_lack_transport,
                a.km_to_any_care, a.km_to_safety_net, a.extra_km_if_uninsured,
                e.days_over_20, e.mean_pm
-        FROM {repo.table('burden_tracts')} b
-        LEFT JOIN {repo.table('tract_access')} a USING (geo_id)
-        LEFT JOIN {repo.table('exposure_tracts')} e USING (geo_id)
-        WHERE STARTS_WITH(b.geo_id, @fips)""", {"fips": county_fips})
+        FROM {table('burden_tracts')} b
+        LEFT JOIN {table('tract_access')} a USING (geo_id)
+        LEFT JOIN {table('exposure_tracts')} e USING (geo_id)
+        WHERE STARTS_WITH(b.geo_id, @fips)""",
+        "counts": f"""
+        SELECT (SELECT COUNT(*) FROM {table('care_sites')}) AS care_sites,
+               (SELECT COUNTIF(site_kind != 'Hospital') FROM {table('care_sites')}) AS safety_net,
+               (SELECT COUNT(*) FROM {table('shortage_areas')}) AS shortage_areas,
+               (SELECT COUNT(*) FROM {table('shortage_facilities')}) AS shortage_facilities,
+               (SELECT MAX(HPSA_SCORE) FROM {table('shortage_facilities')}) AS max_hpsa""",
+        "disease": f"""
+        SELECT ANY_VALUE(hsa) AS hsa, ANY_VALUE(hsa_counties) AS hsa_counties,
+               CAST(MAX(IF(percent_visits_smoothed_combined IS NOT NULL, week_end, NULL)) AS STRING) AS last_week,
+               ARRAY_AGG(STRUCT(percent_visits_covid AS covid, percent_visits_influenza AS flu,
+                                percent_visits_rsv AS rsv)
+                         IGNORE NULLS ORDER BY IF(percent_visits_covid IS NULL, 1, 0), week_end DESC LIMIT 1)[SAFE_OFFSET(0)] AS latest
+        FROM {table('disease_weekly')}""",
+    }
+
+
+def fetch_health_evidence(repo: BigQueryRepo, county_fips: str, county_name: str) -> HealthEvidence:
+    q = health_evidence_queries(repo.table)
+    return build_health_evidence(county_fips, county_name, repo.query(q["tracts"], {"fips": county_fips}),
+                                 repo.query(q["counts"])[0], repo.query(q["disease"])[0])
+
+
+def build_health_evidence(county_fips: str, county_name: str, rows: list[dict], counts: dict,
+                          d: dict) -> HealthEvidence:
+    """Rows of the three named queries -> HealthEvidence, whichever transport ran them."""
     tracts = []
     for r in rows:
         checkup = _f(r["pct_checkup"])
@@ -51,19 +81,6 @@ def fetch_health_evidence(repo: BigQueryRepo, county_fips: str, county_name: str
             mean_pm25_12km_caveat=_f(r["mean_pm"]),
         ))
 
-    counts = repo.query(f"""
-        SELECT (SELECT COUNT(*) FROM {repo.table('care_sites')}) AS care_sites,
-               (SELECT COUNTIF(site_kind != 'Hospital') FROM {repo.table('care_sites')}) AS safety_net,
-               (SELECT COUNT(*) FROM {repo.table('shortage_areas')}) AS shortage_areas,
-               (SELECT COUNT(*) FROM {repo.table('shortage_facilities')}) AS shortage_facilities,
-               (SELECT MAX(HPSA_SCORE) FROM {repo.table('shortage_facilities')}) AS max_hpsa""")[0]
-    d = repo.query(f"""
-        SELECT ANY_VALUE(hsa) AS hsa, ANY_VALUE(hsa_counties) AS hsa_counties,
-               CAST(MAX(IF(percent_visits_smoothed_combined IS NOT NULL, week_end, NULL)) AS STRING) AS last_week,
-               ARRAY_AGG(STRUCT(percent_visits_covid AS covid, percent_visits_influenza AS flu,
-                                percent_visits_rsv AS rsv)
-                         IGNORE NULLS ORDER BY IF(percent_visits_covid IS NULL, 1, 0), week_end DESC LIMIT 1)[SAFE_OFFSET(0)] AS latest
-        FROM {repo.table('disease_weekly')}""")[0]
     latest = d.get("latest") or {}
     evidence = HealthEvidence(
         county_fips=county_fips, county_name=county_name, tracts=tracts,

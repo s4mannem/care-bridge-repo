@@ -20,6 +20,8 @@ components:
       - roles/bigquery.dataViewer
       - roles/datastore.user
       - roles/aiplatform.user
+      # Health & Access agent calls BigQuery's Google-managed MCP server.
+      - roles/mcp.toolUser
   ui:
     dir: ui
     enabled: true

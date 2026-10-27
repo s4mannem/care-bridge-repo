@@ -18,6 +18,8 @@ spec:
     metadata:
       annotations:
         autoscaling.knative.dev/maxScale: "5"
+        # ADK + MCP imports take ~20 s on a cold Cloud Run CPU; boost helps.
+        run.googleapis.com/startup-cpu-boost: "true"
     spec:
       serviceAccountName: ${SERVICE_ACCOUNT}
       timeoutSeconds: 300
@@ -34,6 +36,9 @@ spec:
               value: ${ENV}
             - name: CAREBRIDGE_AGENT_ENGINE
               value: adk
+            # Four Gemini agents take ~95 s; the UI only times out on gaps between streamed events.
+            - name: CAREBRIDGE_PLAN_TIMEOUT_S
+              value: "240"
             - name: GOOGLE_GENAI_USE_VERTEXAI
               value: "TRUE"
             - name: CAREBRIDGE_REVIEW_STORE
@@ -50,6 +55,8 @@ spec:
           startupProbe:
             httpGet:
               path: /healthz
+            periodSeconds: 10
+            failureThreshold: 12   # up to 2 minutes to start
           livenessProbe:
             httpGet:
               path: /healthz

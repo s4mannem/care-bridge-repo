@@ -1,4 +1,4 @@
-# `carebridge.agents.validator_agent` — Evidence Validator Agent (Plan 04)
+# `carebridge.agents.validator_agent` — Evidence Validator Agent
 
 The [`carebridge/agents/validator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/__init__.py) package implements the **Evidence Validator Agent (`evidence_validator_agent`)**, the sequential data-quality gate that runs immediately after `ParallelEvidenceGatherer` (`health_access_agent` + `transit_community_agent`) and before `PlanAndAuditLoop`.
 
@@ -62,5 +62,5 @@ Defined in [`MANDATORY_EVIDENCE_CAVEATS`](file:///Users/dvt112/Downloads/A4I/car
 
 Tested in [`tests/test_04_validator_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_04_validator_agent.py):
 ```bash
-pytest tests/test_04_validator_agent.py -v
+python3 -m unittest tests/test_04_validator_agent.py -v
 ```

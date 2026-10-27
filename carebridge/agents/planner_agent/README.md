@@ -1,4 +1,4 @@
-# `carebridge.agents.planner_agent` — Siting Planner Agent (Plan 06)
+# `carebridge.agents.planner_agent` — Siting Planner Agent
 
 The [`carebridge/agents/planner_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/__init__.py) package implements **Track 1: The Siting Planner Agent (`siting_planner_agent`)**, which acts as the race-blind public health siting advisor inside `PlanAndAuditLoop`.
 
@@ -49,5 +49,5 @@ Defines [`PLANNER_AGENT_INSTRUCTION`](file:///Users/dvt112/Downloads/A4I/carebri
 
 Tested in [`tests/test_06_planner_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_06_planner_agent.py):
 ```bash
-pytest tests/test_06_planner_agent.py -v
+python3 -m unittest tests/test_06_planner_agent.py -v
 ```

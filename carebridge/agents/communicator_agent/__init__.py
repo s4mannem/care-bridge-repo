@@ -5,6 +5,7 @@ from carebridge.agents.communicator_agent.agent import (
     communicator_after_model_guardrail,
     draft_bilingual_outreach_messages,
     format_outreach_messages_from_plan,
+    root_agent,
 )
 from carebridge.agents.communicator_agent.prompts import COMMUNICATOR_AGENT_INSTRUCTION
 
@@ -14,4 +15,5 @@ __all__ = [
     "communicator_after_model_guardrail",
     "draft_bilingual_outreach_messages",
     "format_outreach_messages_from_plan",
+    "root_agent",
 ]

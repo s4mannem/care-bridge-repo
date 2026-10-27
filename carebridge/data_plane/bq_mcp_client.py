@@ -457,6 +457,14 @@ class BigQueryMCPBridge:
                 merged["mean_pm25_12km_caveat"] = air["mean_pm25_12km_caveat"]
             tracts.append(TractHealthRecord.model_validate(merged))
 
+        default_lineage = [
+            "a4i_health.v_burden_tracts (CDC PLACES 2025 + CDC/ATSDR SVI 2022, race-blind columns only)",
+            "a4i_health.v_tract_access (straight-line upper-bound distances to federal sites)",
+            "a4i_health.v_care_sites & v_care_sites_state (HRSA Health Centers + CMS POS, TOT_OPER_HR_PER_WEEK)",
+            "a4i_health.v_shortage_areas (0 active in Fulton; 99 Proposed For Withdrawal) & v_shortage_facilities (6)",
+            "a4i_health.v_exposure_tracts (EPA 12km grid tail days > 20 ug/m3)",
+            "a4i_health.v_disease_weekly (CDC NSSP 4-county HSA respiratory ED trends)",
+        ]
         evidence = HealthEvidence(
             county_fips=validated_fips,
             county_name=str(sites_summary.get("county_name", "Fulton")),
@@ -467,7 +475,7 @@ class BigQueryMCPBridge:
             shortage_facilities_count=int(sites_summary.get("shortage_facilities_count", 6)),
             max_hpsa_score=sites_summary.get("max_hpsa_score", 19.0),
             regional_disease=RegionalDiseaseSignal.model_validate(disease_row),
-            source_lineage=list(sites_summary.get("source_lineage", [])),
+            source_lineage=list(sites_summary.get("source_lineage", default_lineage)),
             missingness_flags=list(sites_summary.get("missingness_flags", [])),
         )
         validate_evidence_payload(evidence.model_dump())

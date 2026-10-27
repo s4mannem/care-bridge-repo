@@ -72,26 +72,27 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
                     return _MockBQJob([
                         {
                             "county_fips": "13121",
-                            "care_sites_count": 85,
-                            "safety_net_sites_count": 41,
+                            "county_name": "Fulton",
+                            "care_sites_count": 69,
+                            "safety_net_sites_count": 55,
                             "shortage_areas_count": 0,
                             "shortage_facilities_count": 6,
-                            "max_hpsa_score": 19.0,
+                            "max_hpsa_score": 24.0,
                         }
                     ])
                 elif "v_disease_weekly" in sql:
                     return _MockBQJob([
                         {
-                            "hsa_name": "Atlanta-Sandy Springs-Alpharetta, GA",
-                            "hsa_counties": ["Fulton", "DeKalb", "Clayton", "Gwinnett"],
-                            "spatial_grain": "multi_county_hsa",
-                            "latest_week_end": "2026-10-17",
-                            "percent_visits_covid": 2.4,
-                            "percent_visits_influenza": 1.1,
-                            "percent_visits_rsv": 0.8,
-                            "ed_trends_covid": "stable",
-                            "ed_trends_influenza": "stable",
-                            "ed_trends_rsv": "stable",
+                            "hsa_name": "Fulton (Atlanta), GA - DeKalb, GA",
+                            "hsa_counties": "Clayton, DeKalb, Fulton, Gwinnett",
+                            "spatial_grain": "multi_county_health_service_area",
+                            "latest_week_end": "2026-10-17 00:00:00",
+                            "percent_visits_covid": None,
+                            "percent_visits_influenza": None,
+                            "percent_visits_rsv": None,
+                            "ed_trends_covid": "Data Unavailable",
+                            "ed_trends_influenza": "Data Unavailable",
+                            "ed_trends_rsv": "Data Unavailable",
                         }
                     ])
                 elif "v_burden_tracts" in sql:
@@ -110,7 +111,7 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
                             "pct_bphigh": 42.0,
                             "pct_checkup": 68.5,
                             "pct_checkup_gap": 31.5,
-                            "pct_uninsured_18_64_ci_width": 4.2,
+                            "pct_uninsured_18_64_ci_width": None,
                             "pct_no_vehicle": 43.0,
                             "pct_age_65_plus": 12.0,
                             "pct_mobility_difficulty": 18.5,
@@ -118,7 +119,7 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
                             "km_to_any_care": 0.8,
                             "km_to_safety_net": 8.1,
                             "extra_km_if_uninsured": 7.3,
-                            "cross_border_state_care_km": 15.2,
+                            "cross_border_state_care_km": None,
                         }
                     ])
                 elif "v_exposure_tracts" in sql:
@@ -135,7 +136,7 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
                             "geo_id": "13121010214",
                             "saturday_active_stops_count": 8,
                             "saturday_mean_headway_min": 24.5,
-                            "usda_low_income_low_access": 1,
+                            "usda_low_income_low_access": True,
                             "candidate_venues": [],
                         }
                     ])
@@ -159,13 +160,13 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
         # 3. Verify returned data
         self.assertEqual(len(tracts), 1)
         self.assertEqual(tracts[0]["geo_id"], "13121010214")
-        self.assertEqual(sites["care_sites_count"], 85)
-        self.assertEqual(disease["spatial_grain"], "multi_county_hsa")
+        self.assertEqual(sites["care_sites_count"], 69)
+        self.assertEqual(disease["spatial_grain"], "multi_county_health_service_area")
         self.assertTrue(mobility.marta_gtfs_available)
 
     def test_03_live_cloud_bigquery_when_credentials_present(self) -> None:
         """Executes against live GCP BigQuery if google-cloud-bigquery & credentials exist."""
-        project = os.environ.get("GOOGLE_CLOUD_PROJECT")
+        project = os.environ.get("GOOGLE_CLOUD_PROJECT") or "qwiklabs-gcp-04-e4394201f6b9"
         try:
             from google.cloud import bigquery  # type: ignore
         except ImportError:
@@ -185,13 +186,40 @@ class TestCloudBigQueryIntegration(unittest.TestCase):
         except Exception as exc:
             self.skipTest(f"Skipping live BigQuery test: credentials unavailable: {exc}")
 
-        # Live query against the view
+        # Live query against the views via BigQueryMCPBridge and Agent tools
         bridge = BigQueryMCPBridge(bq_client=client, use_mock_data=False)
         bridge.project_id = project
+
+        tracts = bridge.mcp_query_tract_burden_and_access("13121")
+        self.assertEqual(len(tracts), 326)
+        assert_race_blind_planner_input(tracts)
+        assert_no_pii_in_payload(tracts)
+
         sites = bridge.mcp_query_care_sites_and_shortages("13121")
-        self.assertIn("care_sites_count", sites)
+        self.assertEqual(sites["care_sites_count"], 69)
+        self.assertEqual(sites["shortage_areas_count"], 0)
+        self.assertEqual(sites["shortage_facilities_count"], 6)
         assert_race_blind_planner_input(sites)
         assert_no_pii_in_payload(sites)
+
+        disease = bridge.mcp_query_regional_disease_weekly("13121")
+        self.assertEqual(disease["spatial_grain"], "multi_county_health_service_area")
+        assert_race_blind_planner_input(disease)
+
+        air = bridge.mcp_query_air_exposure_tail("13121")
+        self.assertEqual(len(air), 327)
+        assert_race_blind_planner_input(air)
+
+        health_ev = bridge.fetch_health_evidence("13121")
+        self.assertIsInstance(health_ev, HealthEvidence)
+        self.assertEqual(len(health_ev.tracts), 326)
+
+        mobility_ev = bridge.mcp_query_saturday_transit_and_venues("13121")
+        self.assertIsInstance(mobility_ev, MobilityEvidence)
+        self.assertTrue(mobility_ev.marta_gtfs_available)
+        self.assertEqual(len(mobility_ev.tract_mobility), 204)
+        assert_race_blind_planner_input(mobility_ev.model_dump())
+        assert_no_pii_in_payload(mobility_ev.model_dump())
 
 
 if __name__ == "__main__":

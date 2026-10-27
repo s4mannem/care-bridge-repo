@@ -1,4 +1,4 @@
-# `carebridge.data_plane` — BigQuery MCP Bridge, Toolset Boundary & Validators (Plan 01)
+# `carebridge.data_plane` — BigQuery MCP Bridge, Toolset Boundary & Validators
 
 The [`carebridge/data_plane/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/__init__.py) package implements the read-only BigQuery data plane, MCP Toolbox configuration, physical toolset isolation between Evidence Agents and the Equity Auditor, cost-control query caps, and deterministic data validators.
 
@@ -71,5 +71,5 @@ BigQuery SQL view DDL scripts (`01_marta_gtfs_views.sql`, `02_optional_enrichmen
 
 Tested in [`tests/test_01_bigquery_mcp.py`](file:///Users/dvt112/Downloads/A4I/tests/test_01_bigquery_mcp.py):
 ```bash
-pytest tests/test_01_bigquery_mcp.py -v
+python3 -m unittest tests/test_01_bigquery_mcp.py -v
 ```

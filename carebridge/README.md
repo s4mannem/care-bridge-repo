@@ -1,6 +1,6 @@
 # `carebridge` — Core Package Overview
 
-The [`carebridge`](file:///Users/dvt112/Downloads/A4I/carebridge/__init__.py) package implements the CareBridge Fulton multi-agent mobile health siting co-pilot across **Plans 00 through 08**. It is designed with strict separation between data contracts, security guardrails, BigQuery MCP data plane access, deterministic spatial optimization tools, and Google ADK agent workflows.
+The [`carebridge`](file:///Users/dvt112/Downloads/A4I/carebridge/__init__.py) package implements the CareBridge Fulton multi-agent mobile health siting co-pilot. It is designed with strict separation between data contracts, security guardrails, BigQuery MCP data plane access, deterministic spatial optimization tools, and Google ADK agent workflows.
 
 ---
 
@@ -8,13 +8,13 @@ The [`carebridge`](file:///Users/dvt112/Downloads/A4I/carebridge/__init__.py) pa
 
 ```mermaid
 graph LR
-    Config["carebridge.config<br/>(Settings)"] --> Contracts["carebridge.contracts<br/>(Plan 00 Schemas & State Keys)"]
-    Contracts --> Security["carebridge.security<br/>(Plan 00 Race-Blind & OWASP Guards)"]
-    Contracts --> Telemetry["carebridge.telemetry<br/>(Plan 00 OTel Spans & ADK Plugin)"]
-    Contracts --> Mocks["carebridge.mocks<br/>(Plan 00 Fulton 13121 Fixtures)"]
-    Security --> DataPlane["carebridge.data_plane<br/>(Plan 01 BigQuery MCP Bridge)"]
-    DataPlane --> Agents["carebridge.agents<br/>(Plans 02, 03, 04, 06, 07, 08)"]
-    Contracts --> Optimizer["carebridge.tools.optimizer<br/>(Plan 05 4-Stop Coverage Optimizer)"]
+    Config["carebridge.config<br/>(Settings)"] --> Contracts["carebridge.contracts<br/>(Schemas & State Keys)"]
+    Contracts --> Security["carebridge.security<br/>(Race-Blind & OWASP Guards)"]
+    Contracts --> Telemetry["carebridge.telemetry<br/>(OTel Spans & ADK Plugin)"]
+    Contracts --> Mocks["carebridge.mocks<br/>(Fulton 13121 Fixtures)"]
+    Security --> DataPlane["carebridge.data_plane<br/>(BigQuery MCP Bridge)"]
+    DataPlane --> Agents["carebridge.agents<br/>(ADK Multi-Agent System)"]
+    Contracts --> Optimizer["carebridge.tools.optimizer<br/>(4-Stop Coverage Optimizer)"]
     Optimizer --> Agents
 ```
 
@@ -49,16 +49,20 @@ Provides a resilient compatibility layer so all CareBridge contracts, tools, and
 
 ## Subpackages Index
 
-- **[`carebridge/contracts/`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/README.md)** *(Plan 00)*: Typed Pydantic models (`HealthEvidence`, `MobilityEvidence`, `EvidenceReport`, `DraftPlan`, `AuditReport`, `OutreachMessages`, `PlanRequest`, `PlanResponse`) and ADK `session.state` key constants.
-- **[`carebridge/security/`](file:///Users/dvt112/Downloads/A4I/carebridge/security/README.md)** *(Plan 00)*: Structural race-blind Planner guards (`assert_race_blind_planner_input`), PII guards (`assert_no_pii_in_payload`), Model Armor screening, and OWASP LLM Top 10 ADK callbacks.
-- **[`carebridge/telemetry/`](file:///Users/dvt112/Downloads/A4I/carebridge/telemetry/README.md)** *(Plan 00)*: OpenTelemetry span context manager (`trace_span`), structured Cloud Logging helper (`record_structured_log`), and `CareBridgeTelemetryPlugin`.
-- **[`carebridge/mocks/`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/README.md)** *(Plan 00)*: Realistic 12-tract Fulton County (`13121`) fixtures across South Fulton, Tri-Cities, Westside, Midtown, and North Fulton.
-- **[`carebridge/data_plane/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/README.md)** *(Plan 01)*: `BigQueryMCPBridge`, 100 MB per-query billing cap, toolset permission isolation, data validators, and BigQuery SQL setup scripts ([`carebridge/data_plane/sql/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql/README.md)).
-- **[`carebridge/tools/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/README.md)** & **[`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md)** *(Plan 05)*: Deterministic 4-stop maximum coverage optimizer, Haversine distance & separation enforcement, runner-up counterfactual explanations, and $\pm 15\%$ weight perturbation sensitivity analysis.
-- **[`carebridge/agents/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/README.md)** *(Plans 02–04, 06–08)*:
-  - [`health_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/README.md) *(Plan 02)*
-  - [`mobility_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/README.md) *(Plan 03)*
-  - [`validator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/README.md) *(Plan 04)*
-  - [`planner_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md) *(Plan 06)*
-  - [`auditor_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/README.md) *(Plan 07)*
-  - [`communicator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/README.md) *(Plan 08)*
+- **[`carebridge/contracts/`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/README.md)**: Typed Pydantic models (`HealthEvidence`, `MobilityEvidence`, `EvidenceReport`, `DraftPlan`, `AuditReport`, `OutreachMessages`, `PlanRequest`, `PlanResponse`) and ADK `session.state` key constants.
+- **[`carebridge/security/`](file:///Users/dvt112/Downloads/A4I/carebridge/security/README.md)**: Structural race-blind Planner guards (`assert_race_blind_planner_input`), PII guards (`assert_no_pii_in_payload`), Model Armor screening, and OWASP LLM Top 10 ADK callbacks.
+- **[`carebridge/telemetry/`](file:///Users/dvt112/Downloads/A4I/carebridge/telemetry/README.md)**: OpenTelemetry span context manager (`trace_span`), structured Cloud Logging helper (`record_structured_log`), and `CareBridgeTelemetryPlugin`.
+- **[`carebridge/mocks/`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/README.md)**: Realistic 12-tract Fulton County (`13121`) fixtures across South Fulton, Tri-Cities, Westside, Midtown, and North Fulton.
+- **[`carebridge/data_plane/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/README.md)**: `BigQueryMCPBridge`, 100 MB per-query billing cap, toolset permission isolation, data validators, and BigQuery SQL setup scripts ([`carebridge/data_plane/sql/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql/README.md)).
+- **[`carebridge/tools/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/README.md)** & **[`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md)**: Deterministic 4-stop maximum coverage optimizer, Haversine distance & separation enforcement, runner-up counterfactual explanations, and $\pm 15\%$ weight perturbation sensitivity analysis.
+- **[`carebridge/agents/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/README.md)**:
+  - [`health_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/README.md)
+  - [`mobility_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/README.md)
+  - [`validator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/README.md)
+  - [`planner_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md)
+  - [`auditor_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/README.md)
+  - [`communicator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/README.md)
+- **[`carebridge/docs/`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/README.md)**: Challenge 5 Public Health specification traceability, multi-agent architecture guarantees, and E2E test verification reports:
+  - [`challenge_5_test_cases.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/challenge_5_test_cases.md)
+  - [`e2e_verification_report.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/e2e_verification_report.md)
+  - [`multi_agent_architecture_guarantees.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/multi_agent_architecture_guarantees.md)

@@ -1,6 +1,6 @@
-# `carebridge.mocks` — Fulton County (`13121`) Realistic Fixtures (Plan 00)
+# `carebridge.mocks` — Fulton County (`13121`) Realistic Fixtures
 
-The [`carebridge/mocks/`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/__init__.py) package provides deterministic, domain-grounded fixtures for **Fulton County, Georgia (`county_fips = "13121"`)** in [`fulton_fixtures.py`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/fulton_fixtures.py). These fixtures power offline unit/certification tests (`test_00` through `test_08`) and local demo mode when live BigQuery credentials are not configured.
+The [`carebridge/mocks/`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/__init__.py) package provides deterministic, domain-grounded fixtures for **Fulton County, Georgia (`county_fips = "13121"`)** in [`fulton_fixtures.py`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/fulton_fixtures.py). These fixtures power offline unit/certification tests and local demo mode when live BigQuery credentials are not configured.
 
 ---
 

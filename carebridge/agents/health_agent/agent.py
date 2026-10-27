@@ -306,3 +306,7 @@ def build_health_access_agent() -> LlmAgent:
         before_tool_callback=before_tool_guardrail_callback,
         after_tool_callback=after_tool_race_and_pii_callback,
     )
+
+
+root_agent = build_health_access_agent()
+

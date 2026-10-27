@@ -1,4 +1,4 @@
-# `carebridge/data_plane/sql` — BigQuery SQL Views & Isolation Scripts (Plan 01)
+# `carebridge/data_plane/sql` — BigQuery SQL Views & Isolation Scripts
 
 The [`carebridge/data_plane/sql/`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql) directory contains the read-only BigQuery DDL scripts that construct the optional transit/community enrichment views and the physically isolated post-hoc demographic audit view.
 
@@ -10,7 +10,7 @@ The [`carebridge/data_plane/sql/`](file:///Users/dvt112/Downloads/A4I/carebridge
 Creates `a4i-fulton-2026.marta_gtfs.v_tract_saturday_transit_access`:
 - Filters `marta_gtfs.calendar` for active Saturday service (`WHERE saturday = 1`).
 - Filters `marta_gtfs.stop_times` to Saturday clinic operating hours (`08:00:00` to `18:00:00`).
-- Uses `ST_DWITHIN(t.tract_geom, ST_GEOGPOINT(s.stop_lon, s.stop_lat), 400)` to count Saturday transit stops within a 400 m walk buffer of each census tract (`saturday_Active_stops_count`, `saturday_trip_events_count`).
+- Uses `ST_DWITHIN(t.tract_geom, ST_GEOGPOINT(s.stop_lon, s.stop_lat), 400)` to count Saturday transit stops within a 400 m walk buffer of each census tract (`saturday_active_stops_count`, `saturday_trip_events_count`).
 - Attaches the mandatory analytical caveat column `transit_metric_caveat = 'GTFS_SATURDAY_STOP_PROXIMITY_NOT_JOURNEY_TIME'` so downstream agents never claim end-to-end travel times.
 
 ### 2. [`02_optional_enrichments.sql`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql/02_optional_enrichments.sql)

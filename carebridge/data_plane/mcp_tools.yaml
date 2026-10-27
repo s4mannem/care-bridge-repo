@@ -29,16 +29,16 @@ tools:
         b.total_pop,
         b.latitude,
         b.longitude,
-        b.pct_uninsured_18_64,
+        b.pct_uninsured AS pct_uninsured_18_64,
         b.pct_uninsured_all_ages,
-        ROUND(b.pct_uninsured_18_64 - b.pct_uninsured_all_ages, 2) AS uninsured_age_structure_gap,
+        ROUND(b.pct_uninsured - b.pct_uninsured_all_ages, 2) AS uninsured_age_structure_gap,
         b.pct_asthma,
         b.pct_copd,
         b.pct_diabetes,
-        b.pct_bphigh,
+        b.pct_high_bp AS pct_bphigh,
         b.pct_checkup,
         ROUND(100.0 - b.pct_checkup, 2) AS pct_checkup_gap,
-        b.pct_uninsured_18_64_ci_width,
+        CAST(NULL AS FLOAT64) AS pct_uninsured_18_64_ci_width,
         b.pct_no_vehicle,
         b.pct_age_65_plus,
         b.pct_mobility_difficulty,
@@ -46,7 +46,7 @@ tools:
         a.km_to_any_care,
         a.km_to_safety_net,
         ROUND(a.km_to_safety_net - a.km_to_any_care, 2) AS extra_km_if_uninsured,
-        a.cross_border_state_care_km
+        CAST(NULL AS FLOAT64) AS cross_border_state_care_km
       FROM `a4i_health.v_burden_tracts` b
       INNER JOIN `a4i_health.v_tract_access` a USING (geo_id)
       WHERE STARTS_WITH(b.geo_id, @county_fips)
@@ -66,11 +66,12 @@ tools:
     statement: |
       SELECT
         @county_fips AS county_fips,
-        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_fips = @county_fips) AS care_sites_count,
-        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_fips = @county_fips AND is_safety_net = TRUE) AS safety_net_sites_count,
-        (SELECT COUNT(*) FROM `a4i_health.v_shortage_areas` WHERE county_fips = @county_fips AND status = 'Designated') AS shortage_areas_count,
-        (SELECT COUNT(*) FROM `a4i_health.v_shortage_facilities` WHERE county_fips = @county_fips) AS shortage_facilities_count,
-        (SELECT MAX(hpsa_score) FROM `a4i_health.v_shortage_facilities` WHERE county_fips = @county_fips) AS max_hpsa_score
+        COALESCE((SELECT MAX(county_name) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips), 'Fulton') AS county_name,
+        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips) AS care_sites_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips AND site_kind IN ('FQHC', 'Health Center site')) AS safety_net_sites_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_shortage_areas` WHERE STATE_COUNTY_FIPS_CD = @county_fips AND HPSA_STATUS_DESC = 'Designated') AS shortage_areas_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_shortage_facilities` WHERE CMN_STATE_COUNTY_FIPS_CD = @county_fips) AS shortage_facilities_count,
+        (SELECT CAST(MAX(HPSA_SCORE) AS FLOAT64) FROM `a4i_health.v_shortage_facilities` WHERE CMN_STATE_COUNTY_FIPS_CD = @county_fips) AS max_hpsa_score
 
   mcp_query_regional_disease_weekly:
     kind: bigquery-sql
@@ -84,9 +85,9 @@ tools:
         description: 5-digit county FIPS code (e.g. '13121').
     statement: |
       SELECT
-        hsa_name,
+        hsa AS hsa_name,
         hsa_counties,
-        'multi_county_hsa' AS spatial_grain,
+        'multi_county_health_service_area' AS spatial_grain,
         CAST(week_end AS STRING) AS latest_week_end,
         percent_visits_covid,
         percent_visits_influenza,
@@ -95,7 +96,7 @@ tools:
         ed_trends_influenza,
         ed_trends_rsv
       FROM `a4i_health.v_disease_weekly`
-      WHERE county_fips = @county_fips
+      WHERE fips = @county_fips
       ORDER BY week_end DESC
       LIMIT 1
 
@@ -112,8 +113,8 @@ tools:
     statement: |
       SELECT
         geo_id,
-        pm25_days_over_20,
-        mean_pm25 AS mean_pm25_12km_caveat
+        days_over_20 AS pm25_days_over_20,
+        mean_pm AS mean_pm25_12km_caveat
       FROM `a4i_health.v_exposure_tracts`
       WHERE STARTS_WITH(geo_id, @county_fips)
       ORDER BY geo_id

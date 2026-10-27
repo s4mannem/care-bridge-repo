@@ -1,4 +1,4 @@
-# `carebridge.agents.communicator_agent` — Community Communications Agent (Plan 08)
+# `carebridge.agents.communicator_agent` — Community Communications Agent
 
 The [`carebridge/agents/communicator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/__init__.py) package implements **Track 3: The Community Communications Agent (`community_communications_agent`)**, which translates the audited final 4-stop Saturday clinic plan into respectful, plain-language **English and Spanish (`OutreachMessages`)** community notices and transparent runner-up neighborhood explanations (Question 7).
 
@@ -46,5 +46,5 @@ Defines [`COMMUNICATOR_AGENT_INSTRUCTION`](file:///Users/dvt112/Downloads/A4I/ca
 
 Tested in [`tests/test_08_communicator_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_08_communicator_agent.py):
 ```bash
-pytest tests/test_08_communicator_agent.py -v
+python3 -m unittest tests/test_08_communicator_agent.py -v
 ```

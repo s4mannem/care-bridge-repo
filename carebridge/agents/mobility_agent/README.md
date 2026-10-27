@@ -1,4 +1,4 @@
-# `carebridge.agents.mobility_agent` — Transit & Community Evidence Agent (Plan 03)
+# `carebridge.agents.mobility_agent` — Transit & Community Evidence Agent
 
 The [`carebridge/agents/mobility_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/__init__.py) package implements **Evidence Agent B (`transit_community_agent`)**, which runs in parallel with `health_access_agent` to gather Saturday MARTA GTFS stop proximity (`08:00–18:00`), USDA Food Access Research Atlas indicators, and IMLS public library / community center candidate host venues.
 
@@ -44,5 +44,5 @@ Defines [`MOBILITY_AGENT_INSTRUCTION`](file:///Users/dvt112/Downloads/A4I/carebr
 
 Tested in [`tests/test_03_mobility_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_03_mobility_agent.py):
 ```bash
-pytest tests/test_03_mobility_agent.py -v
+python3 -m unittest tests/test_03_mobility_agent.py -v
 ```

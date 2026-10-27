@@ -1,4 +1,4 @@
-# `carebridge.security` — Race-Blind Guards, Model Armor & OWASP Callbacks (Plan 00)
+# `carebridge.security` — Race-Blind Guards, Model Armor & OWASP Callbacks
 
 The [`carebridge/security/`](file:///Users/dvt112/Downloads/A4I/carebridge/security/__init__.py) package enforces CareBridge Fulton's structural policy boundaries, PII redaction rules, prompt/SQL injection defenses, and OWASP LLM Top 10 callbacks across all agents and tools.
 
@@ -57,5 +57,5 @@ Implements OWASP LLM Top 10 callbacks for Google ADK agents:
 
 Tested in [`tests/test_00_contracts_and_security.py`](file:///Users/dvt112/Downloads/A4I/tests/test_00_contracts_and_security.py):
 ```bash
-pytest tests/test_00_contracts_and_security.py -k "race_blind or pii or model_armor" -v
+python3 -m unittest tests/test_00_contracts_and_security.py -v
 ```

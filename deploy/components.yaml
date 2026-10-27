@@ -26,14 +26,15 @@ components:
     dir: ui
     enabled: true
     roles: []
-  # Turn on once agents/ has a Dockerfile (ADK api_server or a custom app).
+  # The team's agents (carebridge/, synced by agents/sync.sh) on `adk web`.
   agents:
     dir: agents
-    enabled: false
+    enabled: true
     roles:
       - roles/aiplatform.user
       - roles/bigquery.jobUser
       - roles/bigquery.dataViewer
+      - roles/mcp.toolUser
   # Only needed if you self-host MCP Toolbox for Databases. BigQuery's managed
   # MCP server needs no deployment.
   mcp:

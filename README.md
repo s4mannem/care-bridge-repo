@@ -7,8 +7,9 @@ who it lands on, and explains it to the neighborhood. Built for Agents for Impac
 |---|---|---|
 | [`ui/`](ui/README.md) | `ui` | Mobile Care Planner, a Flutter app (web, iOS, Android) |
 | [`api/`](api/README.md) | `api` | FastAPI gateway between the UI and the agents |
-| `agents/` | `agents` | ADK multi-agent graph (coming) |
+| [`agents/`](agents/README.md) | `agents` | The team's ADK agents (`carebridge/agents`) on `adk web` |
 | `mcp/` | `mcp` | Self-hosted MCP Toolbox, only if needed (coming) |
+| [`docs/`](docs/DEVELOPER_GUIDE.md) | | **Developer guide**: run each component locally and deploy UI, API and agents to dev |
 | [`deploy/`](deploy/README.md) | | Component registry and Cloud Run templates; **start here for CI/CD** |
 | `ci/` | | Generic Cloud Build configs and scripts |
 | `infra/` | | Terraform for the Google Cloud setup |

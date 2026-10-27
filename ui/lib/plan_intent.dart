@@ -60,10 +60,10 @@ PlanIntent parsePlanIntent(String text, PlanRequest current) {
 
   if (_any(text, [r'\bclean\b', r'\bno (demo )?defect', r'without (the )?(demo )?defect', r'\bnormal run'])) {
     r = r.copyWith(simulateFirstDraftDefect: false);
-    understood.add('Demo defect: off');
+    understood.add('Overlap demo: off');
   } else if (_any(text, [r'\bdefect', r'\boverlap', r'auditor (catch|reject)'])) {
     r = r.copyWith(simulateFirstDraftDefect: true);
-    understood.add('Demo defect: on (the auditor rejects draft 0)');
+    understood.add('Overlap demo: on (the auditor rejects draft 0)');
   }
 
   if (_any(text, [r'without (the )?optional', r'core (data|tables) only', r'no optional'])) {

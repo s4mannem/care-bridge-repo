@@ -44,6 +44,12 @@ spec:
               value: "TRUE"
             - name: CAREBRIDGE_REVIEW_STORE
               value: firestore
+            # Finished plans, so Ask answers without running the agents again.
+            - name: CAREBRIDGE_PLAN_STORE
+              value: firestore
+            # Ask is a Gemini conversation; it falls back to rule-based answers on any model error.
+            - name: CAREBRIDGE_ASK_ENGINE
+              value: gemini
             - name: BQ_PROJECT
               value: ${PROJECT_ID}
             - name: BQ_DATASET

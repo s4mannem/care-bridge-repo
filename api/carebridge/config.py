@@ -44,7 +44,13 @@ class Settings(BaseSettings):
 
     # Where human review state lives: "memory" (tests, local) or "firestore" (Cloud Run).
     review_store: Literal["memory", "firestore"] = "memory"
+    # Where finished plans are kept for Ask, so a question never re-runs the agents.
+    plan_store: Literal["memory", "firestore"] = "memory"
     firestore_database: str = "(default)"
+    # How Ask answers: "rules" (ask_stub, no model) or "gemini" (a conversation
+    # grounded in the plan, falling back to rules if the model call fails).
+    ask_engine: Literal["rules", "gemini"] = "rules"
+    ask_timeout_s: float = 30.0
 
     # From the plan 00 foundation. Fulton is the county the demo is built on.
     default_county_fips: str = "13121"

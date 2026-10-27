@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models.dart';
 import 'common.dart';
+import 'side_panels.dart';
 
 /// How to use the Mobile Care Planner, written for a county outreach lead rather
 /// than a developer. Badges, agent icons and map marks reuse the real widgets
@@ -31,6 +32,7 @@ class HelpPage extends StatelessWidget {
               _ReadingTheMap(),
               _PlanTabsHelp(),
               _AgentsHelp(),
+              _StateHelp(),
               _RunHelp(),
               _AskHelp(),
               _ReviewHelp(),
@@ -148,21 +150,122 @@ class _PlanTabsHelp extends StatelessWidget {
         icon: Icons.view_agenda_outlined,
         title: 'The four plan tabs',
         children: [
-          _Term('1 · Four Saturdays',
-              'One card per stop: the date, the tract, its need score, the pieces of that score, a short reason '
-              'and roughly how many residents live within reach. "PROVISIONAL · host unconfirmed" means no '
-              'venue has been booked yet. Open "Sources and grain" to see where each number came from.'),
-          _Term('2 · Why not here?',
-              'The highest-need tracts that none of the four stops reach, with the reason and a ready-to-copy '
-              'note (English or Spanish) for residents who ask why their neighborhood wasn\'t picked.'),
-          _Term('3 · Equity & rigor audit',
-              'The auditor\'s findings: first draft versus final, any open problems, how stable the choice is if '
-              'the weights shift a little, and a check of who the plan reaches compared with the county.'),
-          _Term('4 · Flyers & data limits',
-              'Bus-stop flyers in English and Spanish, written from the final plan only, plus the plan\'s data '
-              'limits, the validator\'s checks and which datasets were available.'),
+          _P('Each tab unlocks when the run reaches the agent that writes it. Until then it shows a lock and '
+              'says what it is waiting for.'),
+          _Sub('1 · Four Saturdays'),
+          _P('One card per stop, numbered 1 to 4. While a run plays, you see the draft on screen. When the run '
+              'ends, the cards are the final plan.'),
+          _Term('Need score',
+              'The big number at the top right, from 0 to 1. Higher means more need. The strategy you picked '
+              'decides how much each part counts.'),
+          _Term('Score parts',
+              'The bars show the parts behind the score: uninsured adults, distance to a safety-net clinic, no '
+              'vehicle, chronic and respiratory illness, and no routine checkup. Each is scaled from 0 to 1.'),
+          _Row(badge: SourceBadge(measured: true),
+              text: 'Only safety-net distance is measured. It is a straight-line distance from the tract to the '
+                  'nearest clinic.'),
+          _Row(badge: SourceBadge(measured: false),
+              text: 'The other parts are modeled estimates, mostly from CDC PLACES. Use them to rank tracts, not '
+                  'to count people.'),
+          _Term('Reach',
+              'The line under the reason gives the residents and tracts inside the stop\'s catchment circle.'),
+          _Term('Sources and grain',
+              'Tap to open. Each line has a scale badge and says what that number describes, followed by the '
+              'datasets it came from.'),
+          _Term('PROVISIONAL · host unconfirmed',
+              'No one has confirmed a venue for this stop yet. Hover or long-press the tag for the warning. '
+              'Treat the stop as a proposal until a host agrees.'),
+          _Term('Planner note',
+              'A blue box above the cards. The planner uses it to explain a choice, such as how it fixed a '
+              'rejected draft.'),
+          _Term('Review card',
+              'Appears above the cards only when the finished plan needs a person to sign off. See "Human '
+              'review" below.'),
+          _P('A red banner means the auditor rejected the draft on screen. An orange banner means the equity '
+              'check flagged groups for review in tab 3.'),
+          _Sub('2 · Why not here?'),
+          _P('The high-need tracts the four stops don\'t reach. The orange number is the tract\'s need rank in '
+              'the county.'),
+          _Term('Reason',
+              'Why the planner left it out: already inside a stop\'s catchment, too close to another stop, no '
+              'Saturday transit or venue, or less need reached than the chosen stops.'),
+          _Term('Distance', 'Straight-line kilometers to the nearest chosen stop.'),
+          _Term('Technical note',
+              'The planner\'s reason, with its sources. It is written for you, not for residents.'),
+          _Term('Resident note',
+              'The shaded box below. Communications wrote it in plain words for people who ask why their '
+              'neighborhood wasn\'t picked.'),
+          _Term('English / Español',
+              'Switches every resident note on this tab. The copy button copies the note in the language shown.'),
+          _P('Use these notes when a resident, partner or council office asks. Check the nearest stop\'s date '
+              'is right before you send one.'),
+          _Sub('3 · Equity & rigor audit'),
+          _Term('Verdict',
+              'The auditor\'s decision on the last draft it checked: APPROVED, REJECTED REVISION REQUIRED, or '
+              'NEEDS HUMAN REVIEW.'),
+          _Term('Draft 0 vs final',
+              'Shown only when the auditor rejected the first draft. Changed stops are red in draft 0 and green '
+              'in the final plan. The reason for the rejection is listed underneath.'),
+          _Term('Open defects', 'Problems the auditor found and the revision did not fix, with a suggested fix.'),
+          _Term('Sensitivity',
+              'The optimizer reruns the plan with each weight moved 15% up or down, one at a time. Jaccard '
+              'measures how many of the four tracts stay the same.'),
+          _P('A Jaccard of 1.00 means the same four tracts every time. Green means 0.80 or higher. Orange means '
+              'small weight changes swap stops. Borderline tracts are the ones that move in or out.'),
+          _Row(
+            badge: Icon(Icons.shield_outlined, color: Color(0xFFAD1457), size: 20),
+            text: 'The demographic comparison is auditor-only. It runs after the plan is drafted, using census '
+                'race, ethnicity and language data the planner never receives.',
+          ),
+          _P('It compares each group\'s share inside the catchments with its share county-wide. Parity is the '
+              'ratio of the two. 1.00 means the plan reaches the group in proportion.'),
+          _P('A group below parity 0.80 is flagged and referred to a person for review. These findings are never '
+              'sent back to the planner, so the planner never sees race or ethnicity.'),
+          _Sub('4 · Flyers & data limits'),
+          _Term('Flyers',
+              'One bus-stop flyer per stop, in English or Spanish. Communications writes them from the final plan '
+              'only. Use the copy button to paste one into your own template.'),
+          _Term('Draft banner',
+              'The orange line at the top. Flyers are drafts for internal review. Don\'t publish them until the '
+              'plan is approved and venues are confirmed.'),
+          _Term('Regional note',
+              'The line under the flyers describes illness trends for a multi-county region, not any one '
+              'neighborhood.'),
+          _Term('What this plan cannot tell you',
+              'The limits attached to this plan. Read them before you share the plan with partners.'),
+          _Term('Evidence validator',
+              'The checks run on the data before planning. PASS means the check held. WARN means it held with a '
+              'caveat. "(note)" marks a check that informs but doesn\'t gate the run.'),
+          _Term('Data availability',
+              'One chip per dataset. A green tick means it was used. A grey cross means it was missing, and the '
+              'plan says so instead of guessing.'),
+          _Term('Provenance', 'The line at the bottom lists the data sources behind this plan.'),
         ],
       );
+}
+
+class _StateHelp extends StatelessWidget {
+  const _StateHelp();
+
+  @override
+  Widget build(BuildContext context) => _Section(
+        icon: Icons.data_object,
+        title: 'The session.state drawer',
+        children: [
+          const _P('Press session.state (State on a phone) at the top right to open it. It shows how the agents '
+              'hand work to each other.'),
+          const _P('Each box is one key in the shared state. Each key has exactly one agent that writes it. The '
+              'arrow points to the agents that read it.'),
+          const _P('A key says "written" and turns teal once its writer has saved it during the run. Until then '
+              'it says "empty". Replay fills the keys in the same order.'),
+          for (final (key, writer, readers) in StateInspector.keys)
+            _Term(key, 'Written by ${_name(writer)}. Read by ${readers.map(_name).join(', ')}.'),
+          const _P('audit_report is never read by the planner. The only thing that goes back to the planner is '
+              'non_demographic_feedback, such as two stops overlapping.'),
+        ],
+      );
+
+  static String _name(String id) => agentInfo(id).name.replaceAll(' (tool)', '');
 }
 
 class _AgentsHelp extends StatelessWidget {
@@ -243,14 +346,26 @@ class _ReviewHelp extends StatelessWidget {
         icon: Icons.how_to_reg_outlined,
         title: 'Human review',
         children: [
-          _P('When a plan needs a person to sign off, a review card appears at the top of tab 1.'),
-          _Term('Confirm venue', 'Enter the place that agreed to host the van, such as a library or church lot.'),
-          _Term('Reject stop (×)', 'Drop a stop you can\'t use. It is crossed out.'),
-          _Term('Approve plan', 'Sign off on the plan. Request changes sends it back; Reopen undoes a decision.'),
+          _P('The review card appears at the top of tab 1 only when the finished plan is marked as needing human '
+              'review. Not every plan gets one.'),
+          _P('The card lists each stop with its date, tract and venue status. Its title shows where the review '
+              'stands, starting at "Awaiting human review".'),
+          _Term('Confirm venue',
+              'Type the place that agreed to host the van, such as a library or church lot. The stop turns '
+              'green. Change venue lets you edit it later.'),
+          _Term('Reject stop (×)',
+              'Drop a stop you can\'t use. It is crossed out and no longer needs a venue. The plan is not '
+              'redrawn.'),
+          _Term('Approve plan',
+              'Sign off on the plan as a whole. If some kept stops still lack a venue, the card says so.'),
+          _Term('Request changes', 'Send the plan back instead of approving it.'),
+          _Term('Reopen', 'Undo an approval or a request for changes, so you can decide again.'),
+          _P('Every action is saved in the Review log at the bottom of the card, with the reviewer\'s role and '
+              'the time.'),
           _Row(
             badge: Icon(Icons.campaign, color: Palette.pass, size: 20),
-            text: '"Approved: ready to announce" shows only once the plan is approved and every stop you kept '
-                'has a confirmed venue. Until then, don\'t publish the flyers.',
+            text: '"Approved: ready to announce" needs an approved plan and a confirmed venue for every stop you '
+                'kept. Until then, don\'t publish the flyers.',
           ),
         ],
       );
@@ -360,6 +475,18 @@ class _Bullets extends StatelessWidget {
               ]),
             ),
         ]),
+      );
+}
+
+/// A small heading inside a section.
+class _Sub extends StatelessWidget {
+  const _Sub(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 6),
+        child: Text(text, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Palette.ink)),
       );
 }
 

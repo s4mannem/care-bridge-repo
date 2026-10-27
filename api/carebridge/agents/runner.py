@@ -64,8 +64,27 @@ class StubRunner:
         return answer(request.question, await self.plan(request.plan, request_id), request_id)
 
 
+# Team agent names (ADK event authors) → the names the UI's graph and timeline use.
+UI_AGENT = {
+    "health_access_agent": "health_access",
+    "transit_community_agent": "transit_community",
+    "evidence_validator_agent": "evidence_validator",
+    "siting_planner_agent": "siting_planner",
+    "equity_rigor_auditor": "equity_auditor",
+    "audit_loop_exit_gate": "coordinator",
+    "community_communications_agent": "communications",
+}
+START_MESSAGE = {
+    "health_access": "Querying v_burden_tracts, v_tract_access, care sites and disease via the data plane",
+    "transit_community": "Querying MARTA Saturday transit, USDA food access and IMLS venue views",
+    "evidence_validator": "Running the evidence validator's check() and note() rules",
+    "equity_auditor": "Auditing the draft (no access to the planner's reasoning) + post-hoc demographics",
+    "communications": "Drafting EN/ES notices from final_plan only",
+}
+
+
 class AdkRunner:
-    """Runs the ADK graph in-process: one in-memory session per request."""
+    """Runs the team's coordinator workflow (`agents/coordinator`) on ADK, one in-memory session per request."""
 
     name = "adk"
 
@@ -75,15 +94,12 @@ class AdkRunner:
             from google.adk.sessions import InMemorySessionService
         except ImportError as exc:
             raise RuntimeError("CAREBRIDGE_AGENT_ENGINE=adk needs `pip install -e '.[agents]'`") from exc
-        from ..data.bigquery import BigQueryRepo
-        from .graph import build_graph
+        from .coordinator.adk_adapter import build_adk_coordinator_workflow
 
         self.settings = settings
         self.sessions = InMemorySessionService()
-        self.runner = Runner(app_name="carebridge", agent=build_graph(settings, BigQueryRepo(settings)),
+        self.runner = Runner(app_name="carebridge", agent=build_adk_coordinator_workflow(),
                              session_service=self.sessions)
-        # Finished plans by request id, for Ask. Per instance; Ask falls back to
-        # answering from a fresh run's recorded twin if the plan isn't here.
         self._plans: dict[str, PlanResponse] = {}
 
     async def stream(self, request: PlanRequest, request_id: str) -> AsyncIterator[AgentEvent | PlanResponse]:
@@ -91,17 +107,11 @@ class AdkRunner:
 
         from google.genai import types
 
-        from ..contracts.state_keys import (
-            STATE_DRAFT_PLAN,
-            STATE_FINAL_PLAN,
-            STATE_PLAN_REQUEST,
-            STATE_REQUEST_ID,
-            STATE_REVISION_HISTORY,
-        )
+        from ..contracts.audit_models import AuditReport
+        from ..contracts.evidence_models import EvidenceReport, HealthEvidence, MobilityEvidence
         from ..contracts.plan_models import DraftPlan
-        from .graph import UI_EVENT
-        from .response import build_plan_response
-        from .trace import STRATEGY_LABELS, tract_label
+        from .coordinator.runner import assemble_plan_response_from_state
+        from .trace import STRATEGY_LABELS, overlap_pair, tract_label
 
         if request.county_fips != self.settings.default_county_fips:
             raise GatewayError(404, "county_not_available",
@@ -109,42 +119,99 @@ class AdkRunner:
         t0 = time.monotonic()
 
         def ev(agent: str, kind: str, message: str, **kw) -> AgentEvent:
-            return AgentEvent(t_ms=int((time.monotonic() - t0) * 1000), agent=agent, kind=kind, message=message, **kw)
+            return AgentEvent(t_ms=int((time.monotonic() - t0) * 1000), agent=agent, kind=kind,
+                              message=message[:400], **kw)
 
         session = await self.sessions.create_session(
             app_name="carebridge", user_id="outreach_lead",
-            state={STATE_PLAN_REQUEST: request.model_dump(mode="json"), STATE_REQUEST_ID: request_id})
+            state={"plan_request": request.model_dump(mode="json"), "request_id": request_id,
+                   "revision_history": []})
         yield ev("coordinator", "start",
                  f"POST /v1/plan · {request.county_name} · {STRATEGY_LABELS.get(request.strategy, request.strategy)}"
                  + (" · simulate draft-0 defect" if request.simulate_first_draft_defect else ""),
                  state_key="plan_request")
+        started: set[str] = set()
         drafts = 0
-        message = types.Content(role="user", parts=[types.Part(text="Plan the four Saturday stops.")])
+        prompt = (f"Generate a 4-stop Saturday mobile health clinic plan for {request.county_name} County "
+                  f"(FIPS {request.county_fips}, strategy={request.strategy}).")
+        message = types.Content(role="user", parts=[types.Part(text=prompt)])
         async for e in self.runner.run_async(user_id="outreach_lead", session_id=session.id, new_message=message):
-            ui = (e.custom_metadata or {}).get(UI_EVENT)
-            if ui:
-                yield AgentEvent(t_ms=int((time.monotonic() - t0) * 1000), **ui)
-            delta = e.actions.state_delta if e.actions else {}
-            if e.author != "siting_planner" and STATE_DRAFT_PLAN not in delta:
+            agent = UI_AGENT.get(e.author)
+            if agent is None:
                 continue
+            parallel = agent in ("health_access", "transit_community")
             for call in e.get_function_calls():
-                yield ev("siting_planner", "start",
-                         "Race-blind planning" if drafts == 0 else "Revising with non_demographic_feedback only")
-                yield ev("optimizer", "tool", f"{call.name} → optimize_four_clinic_stops(revision={drafts})")
-            if STATE_DRAFT_PLAN in delta:
-                d = DraftPlan.model_validate(delta[STATE_DRAFT_PLAN])
+                if agent == "siting_planner":
+                    yield ev(agent, "start", "Race-blind planning" if drafts == 0
+                             else "Revising with non_demographic_feedback only")
+                    yield ev("optimizer", "tool", f"{call.name}(revision={drafts})")
+                elif agent not in started or agent == "equity_auditor":
+                    yield ev(agent, "start", START_MESSAGE.get(agent, call.name), parallel=parallel)
+                started.add(agent)
+            delta = e.actions.state_delta if e.actions else {}
+            if "health_evidence" in delta:
+                h = HealthEvidence.model_validate(delta["health_evidence"])
+                yield ev(agent, "state_write", f"{len(h.tracts)} tracts with burden and two distances",
+                         parallel=True, state_key="health_evidence")
+            if "mobility_evidence" in delta:
+                m = MobilityEvidence.model_validate(delta["mobility_evidence"])
+                venues = sum(len(t.candidate_venues) for t in m.tract_mobility)
+                yield ev(agent, "state_write" if m.marta_gtfs_available else "skip",
+                         f"{len(m.tract_mobility)} tracts with Saturday MARTA service · {venues} candidate venues"
+                         if m.marta_gtfs_available else "MARTA / USDA / IMLS views unavailable",
+                         parallel=True, state_key="mobility_evidence")
+            if "evidence_report" in delta:
+                r = EvidenceReport.model_validate(delta["evidence_report"])
+                for c in r.checks:
+                    if c.verdict != "PASS":
+                        yield ev(agent, "finding", f"{c.verdict} {c.check_name}: {c.detail}")
+                yield ev(agent, "state_write",
+                         f"{sum(c.verdict == 'PASS' for c in r.checks)} checks passed · core tables "
+                         f"{'ready' if r.core_tables_ready else 'NOT ready'}", state_key="evidence_report")
+            if "draft_plan" in delta:
+                d = DraftPlan.model_validate(delta["draft_plan"])
                 yield ev("siting_planner", "state_write",
                          f"Draft {d.revision_number}: " + ", ".join(tract_label(x.primary_tract_geoid) for x in d.stops),
                          state_key="draft_plan", draft_index=drafts, draft=d)
                 drafts += 1
-            if e.is_final_response() and e.content and e.content.parts and e.content.parts[0].text:
-                yield ev("siting_planner", "finding", e.content.parts[0].text.strip())
+            if "audit_report" in delta:
+                a = AuditReport.model_validate(delta["audit_report"])
+                v = a.verdict.value if hasattr(a.verdict, "value") else str(a.verdict)
+                rejected = v == "rejected_revision_required"
+                ranks = sorted({n for d in a.non_demographic_defects for n in d.affected_stop_ranks})[:2]
+                if rejected and len(ranks) < 2:
+                    draft = DraftPlan.model_validate(delta.get("draft_plan") or
+                                                     (await self._state(session.id)).get("draft_plan"))
+                    pair = overlap_pair(draft)
+                    ranks = [pair[0].stop_rank, pair[1].stop_rank] if pair else ranks
+                if not rejected:
+                    for f in a.demographic_impact.disparity_findings:
+                        yield ev(agent, "finding", f"PARITY {f}")
+                label = "REJECT" if rejected else v.upper().replace("_", " ")
+                yield ev(agent, "verdict", f"{label}: {a.auditor_summary.split('. ')[0]}.",
+                         verdict="reject" if rejected else v,
+                         state_key="revision_required" if rejected else "audit_report",
+                         draft_index=drafts - 1, conflict_ranks=ranks if rejected and len(ranks) == 2 else None)
+                if rejected:
+                    yield ev(agent, "state_write",
+                             f"{len(a.non_demographic_defects)} non-demographic defect(s) sent back",
+                             state_key="non_demographic_feedback")
+            if "outreach_messages" in delta:
+                o = delta["outreach_messages"]
+                yield ev(agent, "state_write",
+                         f"{len(o.get('stop_notices', []))} stop notices · "
+                         f"{len(o.get('unpicked_neighborhood_explanations', []))} \"why not here\" notes",
+                         state_key="outreach_messages")
+            if agent == "siting_planner" and e.is_final_response() and e.content and e.content.parts \
+                    and e.content.parts[0].text:
+                yield ev(agent, "finding", e.content.parts[0].text.strip())
 
-        state = (await self.sessions.get_session(app_name="carebridge", user_id="outreach_lead",
-                                                 session_id=session.id)).state
-        response = build_plan_response(request_id, request, state, (time.monotonic() - t0) * 1000,
-                                       self.settings.gemini_model_reasoning)
-        if state.get(STATE_FINAL_PLAN):
+        state = await self._state(session.id)
+        response = assemble_plan_response_from_state(request, state, request_id)
+        response.telemetry_summary.update({"source": "adk", "model": self.settings.gemini_model_reasoning,
+                                           "iterations": len(response.revision_history),
+                                           "elapsed_ms": int((time.monotonic() - t0) * 1000)})
+        if state.get("final_plan"):
             yield ev("coordinator", "state_write",
                      f"final_plan · status={response.status} · needs_human_review="
                      f"{str(response.needs_human_review).lower()}", state_key="final_plan")
@@ -152,6 +219,10 @@ class AdkRunner:
                  "Plan ready, pending human review" if response.needs_human_review else "Plan ready")
         self._plans[request_id] = response
         yield response
+
+    async def _state(self, session_id: str) -> dict:
+        s = await self.sessions.get_session(app_name="carebridge", user_id="outreach_lead", session_id=session_id)
+        return s.state
 
     async def plan(self, request: PlanRequest, request_id: str) -> PlanResponse:
         result = None
@@ -162,7 +233,6 @@ class AdkRunner:
     async def ask(self, request: AskRequest, request_id: str) -> AskResponse:
         plan = self._plans.get(request.plan_request_id or "")
         if plan is None:
-            # Not on this instance: answer from a fresh deterministic run of the same request.
             plan = await self.plan(request.plan, request_id)
         return answer(request.question, plan, request_id)
 

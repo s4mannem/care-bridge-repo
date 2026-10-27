@@ -1,5 +1,11 @@
-"""Health & Access evidence agent (plan 02): Gemini over BigQuery's managed MCP server."""
-from .agent import build_health_access_llm
-from .tools import collect_health_evidence, make_fetch_county_health_evidence
+"""CareBridge AI Health & Access Evidence Agent (Evidence Agent A · MCP)."""
 
-__all__ = ["build_health_access_llm", "collect_health_evidence", "make_fetch_county_health_evidence"]
+from carebridge.agents.health_agent.agent import build_health_access_agent
+from carebridge.agents.health_agent.prompts import HEALTH_AGENT_INSTRUCTION
+from carebridge.agents.health_agent.tools import fetch_county_health_evidence
+
+__all__ = [
+    "HEALTH_AGENT_INSTRUCTION",
+    "build_health_access_agent",
+    "fetch_county_health_evidence",
+]

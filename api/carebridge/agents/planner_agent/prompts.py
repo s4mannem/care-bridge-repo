@@ -1,4 +1,4 @@
-"""System prompt and instructions for the Siting Planner Agent."""
+"""System prompt for the CareBridge AI Siting Planner Agent."""
 
 from __future__ import annotations
 

@@ -38,6 +38,7 @@ dependencies:
   latlong2: ^0.10.1
   http: ^1.6.0
   fetch_client: ^1.2.1
+  google_maps_flutter: ^2.14.2
 
 dev_dependencies:
   flutter_test:

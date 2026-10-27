@@ -18,6 +18,19 @@ server {
         proxy_read_timeout 140s;
     }
 
+    # Loads the Maps JavaScript API with the key from GOOGLE_MAPS_KEY (Secret
+    # Manager on Cloud Run), so the key is never compiled into the app. With no
+    # key this is an empty script and the app falls back to OpenStreetMap tiles.
+    location = /gmaps.js {
+        default_type application/javascript;
+        add_header Cache-Control "no-cache";
+        set $maps_key "${GOOGLE_MAPS_KEY}";
+        if ($maps_key = "") {
+            return 200 "// No GOOGLE_MAPS_KEY: the planner map uses OpenStreetMap.\n";
+        }
+        return 200 "document.write('<script src=\"https://maps.googleapis.com/maps/api/js?key=$maps_key&v=weekly\"><\\/script>');\n";
+    }
+
     location = /healthz {
         access_log off;
         return 200 "ok\n";

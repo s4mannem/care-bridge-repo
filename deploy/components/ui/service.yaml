@@ -31,3 +31,9 @@ spec:
           env:
             - name: API_URL
               value: https://${PREFIX}-api-${ENV}-${PROJECT_NUMBER}.${REGION}.run.app
+            # Browser key for the planner map, served to the page by nginx (/gmaps.js).
+            - name: GOOGLE_MAPS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ${PREFIX}-google-maps-key
+                  key: latest

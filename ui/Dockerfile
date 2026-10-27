@@ -22,6 +22,7 @@ RUN flutter build web --release --dart-define=CAREBRIDGE_API=same-origin
 FROM nginx:1.27-alpine AS runtime
 # Lets the template use ${NGINX_LOCAL_RESOLVERS} (from /etc/resolv.conf), so the
 # API hostname resolves per request and the UI can start before the API exists.
-ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1 PORT=8080 API_URL=http://host.docker.internal:8000
+# GOOGLE_MAPS_KEY must be defined (even empty) or envsubst leaves ${GOOGLE_MAPS_KEY} in the config.
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1 PORT=8080 API_URL=http://host.docker.internal:8000 GOOGLE_MAPS_KEY=""
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/build/web /usr/share/nginx/html

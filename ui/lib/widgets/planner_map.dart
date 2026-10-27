@@ -4,13 +4,19 @@ import 'package:flutter_map/flutter_map.dart';
 import '../geo.dart';
 import '../models.dart';
 import '../replay.dart';
+import '../src/google_maps.dart';
 import 'common.dart';
+import 'google_planner_map.dart';
 
 /// Fulton County shaded by need under the requested strategy, with care sites
 /// and the stops of whichever draft the run has reached. A rejected draft's
 /// overlapping pair is linked in red; after revision the dropped stop stays as
 /// a ghost with a dashed line to its replacement. Runner-up tracts the van
 /// won't reach are ringed in orange.
+///
+/// On the web with a Maps key deployed it draws on Google Maps
+/// ([GooglePlannerMap]), where tracts can be tapped; otherwise on
+/// OpenStreetMap tiles.
 class PlannerMap extends StatelessWidget {
   const PlannerMap({
     super.key,
@@ -58,7 +64,27 @@ class PlannerMap extends StatelessWidget {
             ? Palette.accent
             : const Color(0xFF1565C0);
 
+    final google = googleMapsLoaded;
     return Stack(children: [
+      if (google)
+        GooglePlannerMap(
+          tracts: tracts,
+          bounds: bounds,
+          quantile: quantile,
+          strategy: strategy,
+          sites: sites,
+          stops: stops,
+          tone: tone,
+          conflict: conflict,
+          ghosts: ghosts,
+          added: added.cast<ProposedClinicStop>(),
+          runnerUps: runnerUps.cast<RunnerUpTract>(),
+          approved: approved,
+          rejected: rejected,
+          selectedStop: selectedStop,
+          onSelectStop: onSelectStop,
+        )
+      else
       FlutterMap(
         options: MapOptions(
           initialCameraFit: CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(24)),
@@ -189,7 +215,8 @@ class PlannerMap extends StatelessWidget {
           ),
         ],
       ),
-      Positioned(left: 12, bottom: 12, child: _Legend(strategy: strategy)),
+      // Clear of Google's logo and terms along the bottom edge.
+      Positioned(left: 12, bottom: google ? 30 : 12, child: _Legend(strategy: strategy)),
       if (draft != null)
         Positioned(
           top: 12,

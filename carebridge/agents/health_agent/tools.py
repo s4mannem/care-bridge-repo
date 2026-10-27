@@ -117,6 +117,26 @@ def _normalize_health_evidence(evidence: HealthEvidence) -> HealthEvidence:
             "NSSP regional_disease values are NULL -> data_unavailable=True ('we cannot tell', never 'no increase')."
         )
 
+    # Check for historical or stale disease trend (>90 days old)
+    if (
+        normalized_reg.latest_week_end
+        and not normalized_reg.data_unavailable
+        and not any("respiratory_trend_freshness" in f for f in missingness_flags)
+    ):
+        try:
+            from datetime import datetime, timezone
+            parsed_dt = datetime.fromisoformat(str(normalized_reg.latest_week_end).split()[0].split("T")[0])
+            now_dt = datetime.now(timezone.utc).replace(tzinfo=None)
+            age_days = (now_dt - parsed_dt).days
+            if age_days > 90:
+                missingness_flags.append(
+                    f"respiratory_trend_freshness: Last non-empty week {normalized_reg.latest_week_end} is {age_days} days old (>90 days stale); "
+                    "recent weeks blank in CDC NSSP feed; assigned zero weight in planning."
+                )
+        except Exception:
+            pass
+
+
     updated = evidence.model_copy(
         update={
             "tracts": normalized_tracts,

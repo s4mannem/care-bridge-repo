@@ -234,6 +234,22 @@ class TestPlan02HealthAccessEvidenceAgent(unittest.TestCase):
         with self.assertRaises(PolicyViolationError):
             fetch_county_health_evidence(county_fips="13121", mcp_client=stub_leaking)
 
+    def test_06_stale_disease_data_triggers_freshness_warning(self) -> None:
+        """Verifies that regional disease weekly data older than 90 days triggers a freshness warning flag."""
+        class _HistoricalDiseaseMCPBridge(_StubMCPBridge):
+            def mcp_query_regional_disease_weekly(self, county_fips: str) -> Dict[str, Any]:
+                base = super().mcp_query_regional_disease_weekly(county_fips)
+                base["latest_week_end"] = "2024-09-28"
+                return base
+
+        payload = fetch_county_health_evidence(county_fips="13121", mcp_client=_HistoricalDiseaseMCPBridge())
+        evidence = HealthEvidence.model_validate(payload)
+        self.assertTrue(
+            any("respiratory_trend_freshness" in flag for flag in evidence.missingness_flags),
+            f"Expected respiratory_trend_freshness warning in missingness_flags: {evidence.missingness_flags}",
+        )
+
+
 
 if __name__ == "__main__":
     unittest.main()

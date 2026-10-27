@@ -516,6 +516,41 @@ def evaluate_evidence_quality(
                 "NSSP DISEASE SURVEILLANCE MISSINGNESS: Weekly HSA respiratory ED percentages are unavailable for the latest window; CareBridge reports 'we cannot tell' rather than claiming 'no increase'."
             )
 
+        # 2f-bis. Regional disease freshness check (warn if latest_week_end is >90 days old or historical)
+        latest_week_end_val = str(_get(regional_disease, "latest_week_end", "") or "")
+        is_stale_disease = False
+        stale_detail = f"Latest non-empty week {latest_week_end_val or 'none'}; regional only."
+        if latest_week_end_val and not disease_unavail:
+            try:
+                from datetime import datetime, timezone
+                # Parse YYYY-MM-DD or ISO timestamp
+                parsed_date = datetime.fromisoformat(latest_week_end_val.split()[0].split("T")[0])
+                # If timestamp is more than 90 days prior to current date
+                current_now = datetime.now(timezone.utc).replace(tzinfo=None)
+                age_days = (current_now - parsed_date).days
+                if age_days > 90:
+                    is_stale_disease = True
+                    stale_detail = (
+                        f"Last non-empty week {latest_week_end_val} is {age_days} days old (>90 days stale); "
+                        "recent weeks blank in CDC NSSP feed; excluded from tract ranking."
+                    )
+            except Exception:
+                pass
+
+        note(
+            checks,
+            "respiratory_trend_freshness",
+            bad=1 if is_stale_disease else 0,
+            total=0,
+            detail=stale_detail,
+            limit=0.0,
+        )
+        if is_stale_disease:
+            caveats.append(
+                f"NSSP DISEASE FRESHNESS CAVEAT: {stale_detail} CareBridge siting planner assigns zero weight to stale syndromic signals."
+            )
+
+
         # 2g. Optional datasets availability (missing optional datasets WARN, never block)
         marta_ok = bool(_get(mobility_evidence, "marta_gtfs_available", False))
         usda_ok = bool(_get(mobility_evidence, "usda_food_access_available", False))

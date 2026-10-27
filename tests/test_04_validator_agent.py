@@ -247,6 +247,22 @@ class TestPlan04EvidenceValidatorAgent(unittest.TestCase):
         self.assertGreater(latest_span.attributes["pass_count"], 0)
         self.assertGreaterEqual(latest_span.attributes["warn_count"], 1)
 
+    def test_07_respiratory_trend_freshness_warns_on_stale_disease_data(self) -> None:
+        """Verifies that regional disease surveillance older than 90 days triggers a WARN finding and caveat."""
+        health = build_mock_health_evidence("13121").model_copy(deep=True)
+        health.regional_disease.latest_week_end = "2024-09-28"
+        mobility = build_mock_mobility_evidence("13121", include_optional=True)
+
+        report = evaluate_evidence_quality(health, mobility)
+        self.assertTrue(report.core_tables_ready)
+        checks_by_name = {c.check_name: c for c in report.checks}
+        self.assertIn("respiratory_trend_freshness", checks_by_name)
+        freshness_check = checks_by_name["respiratory_trend_freshness"]
+        self.assertEqual(freshness_check.verdict, "WARN")
+        self.assertIn("2024-09-28", freshness_check.detail)
+        self.assertTrue(any("NSSP DISEASE FRESHNESS CAVEAT" in c for c in report.caveats))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

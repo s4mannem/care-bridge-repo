@@ -7,12 +7,13 @@
      └─ communications
 
 The siting planner is the team's Gemini LlmAgent (plan 06) with the coverage
-optimizer as its tool. The equity auditor (plan 07) is a second Gemini LlmAgent
-whose instructions oppose the planner's: it runs the deterministic audit tools,
-cross-examines the planner's claims and alone sees race and ethnicity. The
-other agents are deterministic stand-ins over
-`carebridge/tools` until their LLM versions land; each emits the same state
-keys the real agent will, so swapping one in changes nothing downstream.
+optimizer as its tool. Health & Access (plan 02) is a Gemini LlmAgent whose
+tool runs named queries over the Google-managed BigQuery MCP server. The equity
+auditor (plan 07) is a second Gemini LlmAgent whose instructions oppose the
+planner's: it runs the deterministic audit tools, cross-examines the planner's
+claims and alone sees race and ethnicity. The other agents are deterministic
+stand-ins over `carebridge/tools` until their LLM versions land; each emits the
+same state keys the real agent will, so swapping one in changes nothing downstream.
 Every node attaches a UI-facing `AgentEvent` to its ADK event so the API can
 stream the run as it happens.
 """
@@ -22,6 +23,7 @@ from typing import Any
 
 from google.adk.agents import BaseAgent, LlmAgent, LoopAgent, ParallelAgent, SequentialAgent
 from google.adk.agents.invocation_context import InvocationContext
+from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.events import Event, EventActions
 from google.adk.tools import FunctionTool, ToolContext
 from google.genai import types
@@ -54,12 +56,14 @@ from ..contracts.state_keys import (
     STATE_REVISION_REQUIRED,
 )
 from ..data.bigquery import BigQueryRepo
+from ..data.bq_mcp import BigQueryMcp
 from ..security.model_armor import default_vertex_safety_settings
 from ..security.owasp_guardrails import before_model_guardrail_callback
 from ..security.race_blind_guard import PolicyViolationError, assert_race_blind_planner_input
 from ..tools.audit import PARITY_FLOOR, audit_draft, demographic_impact, draft_outreach
-from ..tools.evidence import fetch_health_evidence, unavailable_mobility_evidence, validate_evidence
+from ..tools.evidence import unavailable_mobility_evidence, validate_evidence
 from ..tools.optimizer.tool import optimize_four_clinic_stops
+from .health_agent import build_health_access_llm, collect_health_evidence
 from .trace import overlap_pair, tract_label
 
 UI_EVENT = "carebridge_event"  # Event.custom_metadata key the API streams to the UI
@@ -85,16 +89,39 @@ class _StandIn(BaseAgent):
 
 # ── 01 · Evidence (plans 02, 03) ───────────────────────────────────────────
 
-class HealthAccessStandIn(_StandIn):
+class HealthAccessAgent(BaseAgent):
+    """Plan 02: Gemini evidence agent whose one tool runs the named queries over BigQuery's managed MCP server.
+
+    Wraps the LlmAgent so the UI keeps its start / state_write events. If the model answers without
+    calling the tool, the queries run anyway, so `health_evidence` is always written.
+    """
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    mcp: Any = None
+
     async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
         req = PlanRequest.model_validate(ctx.session.state[STATE_PLAN_REQUEST])
         yield _event(self, ctx, ui_event("health_access", "start",
-                                         "Querying burden_tracts + tract_access in BigQuery", parallel=True))
-        health = fetch_health_evidence(self.repo, req.county_fips, req.county_name)
+                                         "Querying burden_tracts + tract_access via BigQuery MCP", parallel=True))
+        health = None
+        async for e in self.sub_agents[0].run_async(ctx):
+            for call in e.get_function_calls():
+                yield _event(self, ctx, ui_event("health_access", "tool",
+                                                 f"{call.name} → bigquery.googleapis.com/mcp execute_sql_readonly",
+                                                 parallel=True))
+            delta = e.actions.state_delta if e.actions else {}
+            if STATE_HEALTH_EVIDENCE in delta:
+                health = HealthEvidence.model_validate(delta[STATE_HEALTH_EVIDENCE])
+            yield e
+            if e.is_final_response() and e.content and e.content.parts and e.content.parts[0].text:
+                yield _event(self, ctx, ui_event("health_access", "finding", e.content.parts[0].text.strip(),
+                                                 parallel=True))
+        state = None
+        if health is None:
+            health = await collect_health_evidence(self.mcp, req.county_fips, req.county_name, ReadonlyContext(ctx))
+            state = {STATE_HEALTH_EVIDENCE: health.model_dump(mode="json")}
         yield _event(self, ctx, ui_event("health_access", "state_write",
-                                         f"{len(health.tracts)} tracts with burden and two distances",
-                                         parallel=True, state_key=STATE_HEALTH_EVIDENCE),
-                     state={STATE_HEALTH_EVIDENCE: health.model_dump(mode="json")})
+                                         f"{len(health.tracts)} tracts with burden and two distances (MCP)",
+                                         parallel=True, state_key=STATE_HEALTH_EVIDENCE), state=state)
 
 
 class TransitCommunityStandIn(_StandIn):
@@ -471,10 +498,11 @@ class CommunicationsStandIn(_StandIn):
                             STATE_OUTREACH_MESSAGES: outreach.model_dump(mode="json")})
 
 
-def build_graph(settings: Settings, repo: BigQueryRepo) -> SequentialAgent:
+def build_graph(settings: Settings, repo: BigQueryRepo, mcp: BigQueryMcp | None = None) -> SequentialAgent:
+    mcp = mcp or BigQueryMcp(settings)
     return SequentialAgent(name="carebridge", sub_agents=[
         ParallelAgent(name="evidence", sub_agents=[
-            HealthAccessStandIn(name="health_access", repo=repo),
+            HealthAccessAgent(name="health_access", mcp=mcp, sub_agents=[build_health_access_llm(settings, mcp)]),
             TransitCommunityStandIn(name="transit_community", repo=repo),
         ]),
         EvidenceValidatorStandIn(name="evidence_validator", repo=repo),

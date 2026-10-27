@@ -57,7 +57,8 @@ class Settings(BaseSettings):
     # Gemini 3.x is required by the challenge (plan 00 had 2.5).
     gemini_model_fast: str = "gemini-3.6-flash"
     gemini_model_reasoning: str = "gemini-3.6-flash"
-    mcp_bigquery_url: str = "http://127.0.0.1:5000/mcp"
+    # Google-managed BigQuery MCP server (Streamable HTTP); the Health & Access agent queries through it.
+    mcp_bigquery_url: str = "https://bigquery.googleapis.com/mcp"
     model_armor_enabled: bool = False
     model_armor_template_id: str = ""
     max_audit_revisions: int = 1

@@ -14,7 +14,7 @@ dependencies = [
 
 [project.optional-dependencies]
 # Pin the ADK version you verified; see agents/README.md once the agent lane adds it.
-agents = ["google-adk==2.11.0"]
+agents = ["google-adk[mcp]==2.11.0"]
 dev = ["pytest>=8", "httpx>=0.27"]
 
 [build-system]

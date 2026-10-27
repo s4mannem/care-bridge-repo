@@ -18,6 +18,8 @@ spec:
     metadata:
       annotations:
         autoscaling.knative.dev/maxScale: "5"
+        # ADK + MCP imports take ~20 s on a cold Cloud Run CPU; boost helps.
+        run.googleapis.com/startup-cpu-boost: "true"
     spec:
       serviceAccountName: ${SERVICE_ACCOUNT}
       timeoutSeconds: 300
@@ -53,6 +55,8 @@ spec:
           startupProbe:
             httpGet:
               path: /healthz
+            periodSeconds: 10
+            failureThreshold: 12   # up to 2 minutes to start
           livenessProbe:
             httpGet:
               path: /healthz

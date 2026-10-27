@@ -1,0 +1,35 @@
+# `tests` — Certification & Unit Test Suite (`Plan 00` – `Plan 08`)
+
+The [`tests/`](file:///Users/dvt112/Downloads/A4I/tests) directory contains the unit and end-to-end certification suites for all completed CareBridge Fulton implementation plans (`Plan 00` through `Plan 08`). Every test file is self-contained, deterministic, and runs offline using the Fulton County (`13121`) fixtures and stub/mock BigQuery MCP bridges.
+
+---
+
+## Running the Test Suite
+
+Run all certification tests via `pytest`:
+
+```bash
+pytest -v
+```
+
+Or via Python's built-in `unittest` discovery:
+
+```bash
+python3 -m unittest discover -s tests -p "test_*.py" -v
+```
+
+---
+
+## Test Suite Coverage Matrix
+
+| Test File | Plan Certified | Test Class | Key Assertions & Edge Cases Covered |
+| :--- | :--- | :--- | :--- |
+| **[`test_00_contracts_and_security.py`](file:///Users/dvt112/Downloads/A4I/tests/test_00_contracts_and_security.py)**<br/>*(aliased by [`test_00_foundation.py`](file:///Users/dvt112/Downloads/A4I/tests/test_00_foundation.py))* | **Plan 00**: Contracts, Security, Telemetry & Fixtures | `TestPlan00ContractsAndSecurity` | • Distinct `health_evidence` vs `mobility_evidence` state keys and Planner scope isolation<br/>• Full JSON roundtrip of all 8 Pydantic contracts on Fulton `13121` fixtures<br/>• `pct_checkup + pct_checkup_gap == 100.0` inversion<br/>• `assert_race_blind_planner_input()` blocks `rpl_theme3`, `pct_black`, and `DEMOGRAPHIC_AUDIT_FIXTURES`<br/>• `assert_no_pii_in_payload()` blocks `fqhc_admin_contact_nm`, emails, and phone numbers<br/>• `ModelArmorScreener` & `before_tool_guardrail_callback` block prompt injection, SQLi, and non-Auditor access to `mcp_query_posthoc_demographic_audit` |
+| **[`test_01_bigquery_mcp.py`](file:///Users/dvt112/Downloads/A4I/tests/test_01_bigquery_mcp.py)** | **Plan 01**: BigQuery Data Plane & MCP Toolsets | `TestPlan01BigQueryMCP` | • `validate_county_fips()` & named MCP queries reject SQLi and non-5-digit FIPS codes<br/>• Physical toolset disjointness (`get_evidence_toolset` excludes `mcp_query_posthoc_demographic_audit`)<br/>• Graceful degradation on BigQuery `NotFound` (`marta_gtfs_available=False`)<br/>• `MAX_BQ_BYTES_BILLED == 100_000_000` (100 MB cap), SQL view DDL verification, and `bq.mcp.*` OTel spans |
+| **[`test_02_health_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_02_health_agent.py)** | **Plan 02**: Health & Access Evidence Agent (Agent A) | `TestPlan02HealthAccessEvidenceAgent` | • `fetch_county_health_evidence()` computes `pct_checkup_gap = 100 - pct_checkup` when raw query omits it<br/>• Preserves Fulton HPSA nuance (`shortage_areas_count=0`, `shortage_facilities_count=6`) and 4-county HSA grain<br/>• Sets `regional_disease.data_unavailable=True` when NSSP weekly fields are `NULL` without fabricating `0.0`<br/>• Blocks injected `rpl_theme3` via `PolicyViolationError` and runs end-to-end via ADK `InMemoryRunner` |
+| **[`test_03_mobility_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_03_mobility_agent.py)** | **Plan 03**: Transit & Community Evidence Agent (Agent B) | `TestPlan03TransitCommunityAgent` | • Populates `state["mobility_evidence"]` with 12 tracts and 6 IMLS candidate venues without touching `state["health_evidence"]`<br/>• Graceful degradation when `include_optional_datasets=False` or BigQuery raises `NotFound`<br/>• Forces `host_permission_verified=False` even if upstream data has `True` |
+| **[`test_04_validator_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_04_validator_agent.py)** | **Plan 04**: Evidence Validator Agent | `TestPlan04EvidenceValidatorAgent` | • Valid Fulton fixtures pass all 8 fatal `check()` rules (`core_tables_ready=True`, `blocking_failures=[]`)<br/>• 10-char `geo_id`, out-of-county `13089` prefix, duplicate `geo_id`, or uninverted `pct_checkup_gap` triggers `core_tables_ready=False`<br/>• Fulton `shortage_areas_count=0` logs a `WARN` note (`is_pipeline_check=False`) rather than halting planning |
+| **[`test_05_optimizer_tool.py`](file:///Users/dvt112/Downloads/A4I/tests/test_05_optimizer_tool.py)** | **Plan 05**: Four-Stop Coverage Optimizer Tool | `TestPlan05OptimizerTool` | • Byte-identical deterministic `DraftPlan` output across repeated runs<br/>• All 4 selected stops have pairwise Haversine distance `>= 5.0 km` and `host_verified=False`<br/>• Populates Question 7 `runner_up_tracts` (`#5`–`#8`) and $\pm 15\%$ weight perturbation `SensitivitySummary`<br/>• Rejects demographic keys (`rpl_theme3`) in inputs |
+| **[`test_06_planner_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_06_planner_agent.py)** | **Plan 06**: Siting Planner Agent | `TestPlan06SitingPlannerAgent` | • `planner_race_blind_before_model_callback` blocks `rpl_theme3`, `demographic_impact`, and `audit_report` in prompts or state<br/>• Emits `DraftPlan(status="insufficient_candidates")` when `core_tables_ready == False`<br/>• Repairs simulated `Draft 0` overlap defect into a valid `>= 5.0 km` `Draft 1` plan when `non_demographic_feedback` is present |
+| **[`test_07_auditor_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_07_auditor_agent.py)** | **Plan 07**: Independent Equity & Rigor Auditor Agent | `TestPlan07EquityRigorAuditorAgent` | • Rejects defective `Draft 0` (`AuditVerdict.REJECTED_REVISION_REQUIRED`) on `< 5.0 km` overlap and spatial grain overclaims<br/>• Certifies the One-Way Demographic Diode: `state["non_demographic_feedback"]` passes `assert_race_blind_planner_input()` while `state["audit_report"]` holds post-hoc `demographic_impact`<br/>• Approves valid `Draft 1` (`AuditVerdict.APPROVED`) and escalates to `NEEDS_HUMAN_REVIEW` if defects persist at max revisions |
+| **[`test_08_communicator_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_08_communicator_agent.py)** | **Plan 08**: Community Communications Agent | `TestCommunicatorAgentPlan08` | • Produces 4 bilingual (EN/ES) stop notices with provisional disclaimers and 2 Question 7 runner-up explanations<br/>• Includes 4-county HSA surveillance notes in both English and Spanish<br/>• `communicator_after_model_guardrail` blocks `"confirmed and booked"` / `"confirmado y reservado"` claims |

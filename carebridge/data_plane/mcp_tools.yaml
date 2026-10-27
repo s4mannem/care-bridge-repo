@@ -1,0 +1,206 @@
+# carebridge/data_plane/mcp_tools.yaml
+# Google GenAI Toolbox for Databases / BigQuery MCP Server configuration.
+# All queries are read-only and parameterized with @county_fips (5-digit FIPS string).
+# Strict permission boundary separates `evidence_toolset` (race-blind structural inputs)
+# from `audit_only_toolset` (post-hoc demographic impact lookup for the Independent Auditor).
+
+sources:
+  carebridge_bq:
+    kind: bigquery
+    project: ${GOOGLE_CLOUD_PROJECT:-a4i-fulton-2026}
+    location: US
+
+tools:
+  mcp_query_tract_burden_and_access:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      Read-only race-blind query returning tract-level CDC PLACES health burden,
+      CDC/ATSDR SVI non-demographic vulnerability (zero-vehicle, mobility difficulty),
+      and straight-line upper-bound distances to any care site and federal safety-net clinics.
+      Explicitly excludes RPL_THEME3, RPL_THEMES, and all race/ethnicity or PII columns.
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121' for Fulton County, GA).
+    statement: |
+      SELECT
+        b.geo_id,
+        b.total_pop,
+        b.latitude,
+        b.longitude,
+        b.pct_uninsured_18_64,
+        b.pct_uninsured_all_ages,
+        ROUND(b.pct_uninsured_18_64 - b.pct_uninsured_all_ages, 2) AS uninsured_age_structure_gap,
+        b.pct_asthma,
+        b.pct_copd,
+        b.pct_diabetes,
+        b.pct_bphigh,
+        b.pct_checkup,
+        ROUND(100.0 - b.pct_checkup, 2) AS pct_checkup_gap,
+        b.pct_uninsured_18_64_ci_width,
+        b.pct_no_vehicle,
+        b.pct_age_65_plus,
+        b.pct_mobility_difficulty,
+        b.pct_lack_transport,
+        a.km_to_any_care,
+        a.km_to_safety_net,
+        ROUND(a.km_to_safety_net - a.km_to_any_care, 2) AS extra_km_if_uninsured,
+        a.cross_border_state_care_km
+      FROM `a4i_health.v_burden_tracts` b
+      INNER JOIN `a4i_health.v_tract_access` a USING (geo_id)
+      WHERE STARTS_WITH(b.geo_id, @county_fips)
+      ORDER BY b.geo_id
+
+  mcp_query_care_sites_and_shortages:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      Read-only summary of federal care sites (`v_care_sites`, `v_care_sites_state` including
+      TOT_OPER_HR_PER_WEEK and excluding FQHC_ADMIN_CONTACT_* PII columns) and HRSA
+      shortage designations (`v_shortage_areas` active vs `v_shortage_facilities`).
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121').
+    statement: |
+      SELECT
+        @county_fips AS county_fips,
+        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_fips = @county_fips) AS care_sites_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_fips = @county_fips AND is_safety_net = TRUE) AS safety_net_sites_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_shortage_areas` WHERE county_fips = @county_fips AND status = 'Designated') AS shortage_areas_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_shortage_facilities` WHERE county_fips = @county_fips) AS shortage_facilities_count,
+        (SELECT MAX(hpsa_score) FROM `a4i_health.v_shortage_facilities` WHERE county_fips = @county_fips) AS max_hpsa_score
+
+  mcp_query_regional_disease_weekly:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      Read-only query for the latest CDC NSSP respiratory ED visit trends (`v_disease_weekly`)
+      at the 4-county Health Service Area (HSA: Fulton, DeKalb, Clayton, Gwinnett) grain.
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121').
+    statement: |
+      SELECT
+        hsa_name,
+        hsa_counties,
+        'multi_county_hsa' AS spatial_grain,
+        CAST(week_end AS STRING) AS latest_week_end,
+        percent_visits_covid,
+        percent_visits_influenza,
+        percent_visits_rsv,
+        ed_trends_covid,
+        ed_trends_influenza,
+        ed_trends_rsv
+      FROM `a4i_health.v_disease_weekly`
+      WHERE county_fips = @county_fips
+      ORDER BY week_end DESC
+      LIMIT 1
+
+  mcp_query_air_exposure_tail:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      Read-only query for EPA 12km grid PM2.5 tail-day exposure (`pm25_days_over_20`)
+      with explicit coarse-grid caveat (`p90/p10=1.05x`).
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121').
+    statement: |
+      SELECT
+        geo_id,
+        pm25_days_over_20,
+        mean_pm25 AS mean_pm25_12km_caveat
+      FROM `a4i_health.v_exposure_tracts`
+      WHERE STARTS_WITH(geo_id, @county_fips)
+      ORDER BY geo_id
+
+  mcp_query_saturday_transit_and_venues:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      Read-only query joining MARTA Saturday GTFS stop proximity (`v_tract_saturday_transit_access`),
+      USDA Food Access Research Atlas (`external_food_access`), and IMLS candidate host venues
+      (`candidate_venues`, always with `host_permission_verified = FALSE`).
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121').
+    statement: |
+      SELECT
+        t.geo_id,
+        t.saturday_active_stops_count,
+        t.saturday_mean_headway_min,
+        f.usda_low_income_low_access,
+        ARRAY_AGG(
+          IF(
+            v.venue_id IS NOT NULL,
+            STRUCT(
+              v.venue_id,
+              v.venue_name,
+              v.venue_kind,
+              v.geo_id,
+              v.latitude,
+              v.longitude,
+              v.saturday_transit_stops_within_400m,
+              v.saturday_trips_per_hour,
+              FALSE AS host_permission_verified
+            ),
+            NULL
+          ) IGNORE NULLS
+        ) AS candidate_venues
+      FROM `marta_gtfs.v_tract_saturday_transit_access` t
+      LEFT JOIN `marta_gtfs.external_food_access` f USING (geo_id)
+      LEFT JOIN `marta_gtfs.candidate_venues` v USING (geo_id)
+      WHERE STARTS_WITH(t.geo_id, @county_fips)
+      GROUP BY t.geo_id, t.saturday_active_stops_count, t.saturday_mean_headway_min, f.usda_low_income_low_access
+      ORDER BY t.geo_id
+
+  mcp_query_posthoc_demographic_audit:
+    kind: bigquery-sql
+    source: carebridge_bq
+    description: >
+      PROTECTED AUDIT-ONLY QUERY: Reads `external_demographic_audit.tract_demographics_audit`
+      for post-hoc demographic parity evaluation by the Independent Equity & Rigor Auditor.
+      Physically excluded from Evidence and Planner toolsets.
+    parameters:
+      - name: county_fips
+        type: string
+        description: 5-digit county FIPS code (e.g. '13121').
+    statement: |
+      SELECT
+        geo_id,
+        county_fips,
+        total_pop,
+        pct_black,
+        pct_hispanic,
+        pct_white,
+        pct_asian,
+        pct_minority,
+        rpl_theme3_proxy
+      FROM `external_demographic_audit.tract_demographics_audit`
+      WHERE county_fips = @county_fips
+      ORDER BY geo_id
+
+toolsets:
+  health_evidence_toolset:
+    - mcp_query_tract_burden_and_access
+    - mcp_query_care_sites_and_shortages
+    - mcp_query_regional_disease_weekly
+    - mcp_query_air_exposure_tail
+
+  mobility_evidence_toolset:
+    - mcp_query_saturday_transit_and_venues
+
+  evidence_toolset:
+    - mcp_query_tract_burden_and_access
+    - mcp_query_care_sites_and_shortages
+    - mcp_query_regional_disease_weekly
+    - mcp_query_air_exposure_tail
+    - mcp_query_saturday_transit_and_venues
+
+  audit_only_toolset:
+    - mcp_query_posthoc_demographic_audit

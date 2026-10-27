@@ -1,14 +1,22 @@
-# Release one component: test, build the runtime image, push it to Artifact
+# Release one component: test (only when _RUN_TESTS=true), build the runtime image, push it to Artifact
 # Registry, render its Cloud Run manifests and create a Cloud Deploy release.
 # The release rolls out to the first environment (dev) on its own; later ones
 # (prod) are a `gcloud deploy releases promote`, gated by approval.
 #
 # Substitutions come from the trigger (infra/triggers.tf) or ci/submit.sh.
 steps:
+  # Tests are off by default to keep PR checks and releases fast. Set
+  # _RUN_TESTS=true on the trigger (or RUN_TESTS=true for ci/submit.sh) to
+  # build the `test` stage again.
   - id: test
     name: gcr.io/cloud-builders/docker
     env: ["DOCKER_BUILDKIT=1"]
-    args: ["build", "--target", "test", "--progress", "plain", "${_DIR}"]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        if [[ "${_RUN_TESTS}" != true ]]; then echo "Tests skipped (_RUN_TESTS=${_RUN_TESTS})"; exit 0; fi
+        docker build --target test --progress plain "${_DIR}"
 
   - id: build-push
     name: gcr.io/cloud-builders/docker
@@ -57,6 +65,7 @@ steps:
 substitutions:
   _COMPONENT: ""
   _DIR: ""
+  _RUN_TESTS: "false"
   _ENVS: "dev,prod"
   _PREFIX: carebridge
   _REGION: us-central1

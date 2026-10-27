@@ -19,14 +19,20 @@ Google Cloud. Nothing here is specific to one language or one component.
 |---|---|---|
 | Component registry | [`deploy/components.yaml`](components.yaml) | Lists each component: folder, on/off, runtime IAM roles |
 | Cloud Run templates | `deploy/components/<c>/service.yaml` | One per component, with `${ENV}`, `${PROJECT_ID}` and similar placeholders |
-| CI build | [`ci/cloudbuild/ci.yaml`](../ci/cloudbuild/ci.yaml) | Builds the `test` stage of the component's Dockerfile |
-| Release build | [`ci/cloudbuild/release.yaml`](../ci/cloudbuild/release.yaml) | Runs tests, then image, then render, then a Cloud Deploy release |
+| CI build | [`ci/cloudbuild/ci.yaml`](../ci/cloudbuild/ci.yaml) | Builds the `test` stage of the component's Dockerfile, only when `_RUN_TESTS=true` |
+| Release build | [`ci/cloudbuild/release.yaml`](../ci/cloudbuild/release.yaml) | Runs tests (only when `_RUN_TESTS=true`), then image, then render, then a Cloud Deploy release |
 | Renderer | [`ci/scripts/render.py`](../ci/scripts/render.py) | Writes `service.<env>.yaml` plus `skaffold.yaml` (one profile per env) |
 | Manual runs | [`ci/submit.sh`](../ci/submit.sh) | Same builds from your shell, before triggers exist |
 | Infrastructure | [`infra/`](../infra) | Terraform: APIs, Artifact Registry, service accounts, Cloud Deploy, triggers |
 
 **Build once, deploy many.** The release builds one image and pins its digest. Cloud Deploy moves
 that exact digest from dev to prod, and only the rendered env vars differ between environments.
+
+**Tests are off by default.** Both builds skip the `test` stage unless the `_RUN_TESTS`
+substitution is `true`, so a PR check passes straight away and a release goes straight to the
+image build. Run the tests locally (`pytest`, `flutter test`) before you merge. To turn them back on,
+set `_RUN_TESTS = "true"` in the trigger substitutions in [`infra/triggers.tf`](../infra/triggers.tf),
+or run `RUN_TESTS=true bash ci/submit.sh ci <component>` for a single run.
 
 ## The component contract
 

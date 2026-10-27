@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models.dart';
 import 'common.dart';
 
-/// How to use the Saturday Planner, written for a county outreach lead rather
+/// How to use the Mobile Care Planner, written for a county outreach lead rather
 /// than a developer. Badges, agent icons and map marks reuse the real widgets
 /// and colors so they look the same here as in the app.
 class HelpPage extends StatelessWidget {

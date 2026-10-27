@@ -1,6 +1,6 @@
 # api/: CareBridge gateway (FastAPI)
 
-The API the Saturday Planner UI (`ui/`) calls. It sits in front of the agents: routes hand
+The API the Mobile Care Planner UI (`ui/`) calls. It sits in front of the agents: routes hand
 requests to an `AgentRunner` and never call ADK or BigQuery for the UI directly.
 
 **Status: contracts and recorded plans.** `/v1/plan` takes and returns the plan 00 contracts, and the

@@ -28,15 +28,15 @@ def test_readyz_not_ready_without_bigquery():
     assert res.status_code == 503
 
 
-def test_plan_stub_returns_error_shape(client: TestClient):
-    res = client.post("/v1/plan", json={"county_fips": "13121"}, headers={"X-Request-Id": "r1"})
-    assert res.status_code == 501
-    assert res.json()["error"] == {"code": "not_implemented", "message": res.json()["error"]["message"],
+def test_plan_unknown_county_uses_error_shape(client: TestClient):
+    res = client.post("/v1/plan", json={"county_fips": "06085"}, headers={"X-Request-Id": "r1"})
+    assert res.status_code == 404
+    assert res.json()["error"] == {"code": "county_not_available", "message": res.json()["error"]["message"],
                                    "request_id": "r1"}
 
 
 def test_tracts_validates_fips(client: TestClient):
-    assert client.get("/v1/tracts/13121").status_code == 501
+    assert client.get("/v1/tracts/06085").status_code == 404
     assert client.get("/v1/tracts/abc").json()["error"]["code"] == "invalid_request"
 
 

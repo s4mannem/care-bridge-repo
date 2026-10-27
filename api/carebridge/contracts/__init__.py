@@ -1,4 +1,100 @@
-"""Pydantic API contracts (next step): api, plan, audit, evidence and outreach models.
+"""Shared ADK session.state keys and Pydantic schemas for CareBridge AI."""
 
-`ui/lib/models.dart` is the Dart mirror; keep field names identical to it.
-"""
+from __future__ import annotations
+
+from carebridge.contracts.api_models import PlanRequest, PlanResponse
+from carebridge.contracts.audit_models import (
+    AuditReport,
+    AuditVerdict,
+    DefectCategory,
+    DemographicImpactComparison,
+    NonDemographicAuditDefect,
+)
+from carebridge.contracts.evidence_models import (
+    CandidateHostVenue,
+    DataEstimateKind,
+    EvidenceReport,
+    HealthEvidence,
+    MobilityEvidence,
+    RegionalDiseaseSignal,
+    SpatialGrain,
+    TractHealthRecord,
+    TractMobilityRecord,
+    ValidationCheckItem,
+)
+from carebridge.contracts.outreach_models import (
+    OutreachMessages,
+    StopOutreachDraft,
+    UnpickedNeighborhoodExplanation,
+)
+from carebridge.contracts.plan_models import (
+    DraftPlan,
+    ProposedClinicStop,
+    RunnerUpTractExplanation,
+    ScoreBreakdown,
+    SensitivitySummary,
+)
+from carebridge.contracts.state_keys import (
+    ALL_STATE_KEYS,
+    AUDITOR_AND_POST_PLANNER_STATE_KEYS,
+    PLANNER_VISIBLE_STATE_KEYS,
+    SANITIZED_LOOPBACK_STATE_KEYS,
+    STATE_AUDIT_REPORT,
+    STATE_DRAFT_PLAN,
+    STATE_EVIDENCE_REPORT,
+    STATE_FINAL_PLAN,
+    STATE_HEALTH_EVIDENCE,
+    STATE_ITERATION_COUNT,
+    STATE_MOBILITY_EVIDENCE,
+    STATE_NON_DEMOGRAPHIC_FEEDBACK,
+    STATE_OUTREACH_MESSAGES,
+    STATE_PLAN_REQUEST,
+    STATE_REQUEST_ID,
+    STATE_REVISION_HISTORY,
+    STATE_REVISION_REQUIRED,
+)
+
+__all__ = [
+    "ALL_STATE_KEYS",
+    "AUDITOR_AND_POST_PLANNER_STATE_KEYS",
+    "AuditReport",
+    "AuditVerdict",
+    "CandidateHostVenue",
+    "DataEstimateKind",
+    "DefectCategory",
+    "DemographicImpactComparison",
+    "DraftPlan",
+    "EvidenceReport",
+    "HealthEvidence",
+    "MobilityEvidence",
+    "NonDemographicAuditDefect",
+    "OutreachMessages",
+    "PLANNER_VISIBLE_STATE_KEYS",
+    "PlanRequest",
+    "PlanResponse",
+    "ProposedClinicStop",
+    "RegionalDiseaseSignal",
+    "RunnerUpTractExplanation",
+    "SANITIZED_LOOPBACK_STATE_KEYS",
+    "STATE_AUDIT_REPORT",
+    "STATE_DRAFT_PLAN",
+    "STATE_EVIDENCE_REPORT",
+    "STATE_FINAL_PLAN",
+    "STATE_HEALTH_EVIDENCE",
+    "STATE_ITERATION_COUNT",
+    "STATE_MOBILITY_EVIDENCE",
+    "STATE_NON_DEMOGRAPHIC_FEEDBACK",
+    "STATE_OUTREACH_MESSAGES",
+    "STATE_PLAN_REQUEST",
+    "STATE_REQUEST_ID",
+    "STATE_REVISION_HISTORY",
+    "STATE_REVISION_REQUIRED",
+    "ScoreBreakdown",
+    "SensitivitySummary",
+    "SpatialGrain",
+    "StopOutreachDraft",
+    "TractHealthRecord",
+    "TractMobilityRecord",
+    "UnpickedNeighborhoodExplanation",
+    "ValidationCheckItem",
+]

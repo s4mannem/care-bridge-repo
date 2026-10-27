@@ -8,6 +8,7 @@ import 'replay.dart';
 import 'widgets/agent_graph.dart';
 import 'widgets/ask_panel.dart';
 import 'widgets/common.dart';
+import 'widgets/help_page.dart';
 import 'widgets/plan_tabs.dart';
 import 'widgets/planner_map.dart';
 import 'widgets/side_panels.dart';
@@ -190,6 +191,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
             ],
           ]),
           actions: [
+            IconButton(
+              tooltip: 'Help',
+              onPressed: () => HelpPage.open(context),
+              icon: const Icon(Icons.help_outline),
+            ),
             Builder(
               builder: (context) => TextButton.icon(
                 onPressed: () => Scaffold.of(context).openEndDrawer(),

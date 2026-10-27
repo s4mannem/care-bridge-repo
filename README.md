@@ -1,4 +1,23 @@
-# CareBridge Fulton — Mobile Preventive Health Siting & Equity Co-Pilot
+# CareBridge
+
+Plans four Saturday mobile clinic stops for a county from public federal data, audits the plan for
+who it lands on, and explains it to the neighborhood. Built for Agents for Impact 2026, Challenge 5.
+
+| Folder | Component | What it is |
+|---|---|---|
+| [`ui/`](ui/README.md) | `ui` | Saturday Planner, a Flutter app (web, iOS, Android) |
+| [`api/`](api/README.md) | `api` | FastAPI gateway between the UI and the agents |
+| `agents/` | `agents` | ADK multi-agent graph (coming) |
+| `mcp/` | `mcp` | Self-hosted MCP Toolbox, only if needed (coming) |
+| [`deploy/`](deploy/README.md) | | Component registry and Cloud Run templates; **start here for CI/CD** |
+| `ci/` | | Generic Cloud Build configs and scripts |
+| `infra/` | | Terraform for the Google Cloud setup |
+
+Shared settings (`BQ_PROJECT`, `GOOGLE_CLOUD_PROJECT`, ...) go in a gitignored `.env` at the repo root.
+
+---
+
+## CareBridge Fulton — Mobile Preventive Health Siting & Equity Co-Pilot
 
 CareBridge Fulton is a production-grade, multi-agent decision-support system built with the **Google Agent Development Kit (ADK)**, **Vertex AI Gemini 2.5**, and **BigQuery MCP**. It helps the **Fulton County (`13121`) Department of Public Health** site **four Saturday mobile preventive health clinic stops** while enforcing a structural **One-Way Demographic Diode** between race-blind clinical/access siting (Track 1), independent post-hoc equity auditing (Track 2), and bilingual community outreach (Track 3).
 

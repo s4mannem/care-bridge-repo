@@ -1,0 +1,62 @@
+# Cloud Run service for the API gateway. Rendered per env by ci/scripts/render.py:
+# ${SERVICE}, ${ENV}, ${PROJECT_ID}, ${PROJECT_NUMBER}, ${REGION}, ${SERVICE_ACCOUNT}, ${PREFIX}, ${COMPONENT}.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ${SERVICE}
+  labels:
+    app: ${PREFIX}
+    component: ${COMPONENT}
+    env: ${ENV}
+  annotations:
+    run.googleapis.com/ingress: all
+    # Public: the browser reaches it through the UI's /v1 proxy. Put IAP or a
+    # load balancer in front before real users; see deploy/README.md.
+    run.googleapis.com/invoker-iam-disabled: "true"
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "5"
+        # ADK + MCP imports take ~20 s on a cold Cloud Run CPU; boost helps.
+        run.googleapis.com/startup-cpu-boost: "true"
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT}
+      timeoutSeconds: 300
+      containers:
+        - image: app
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          env:
+            - name: CAREBRIDGE_ENV
+              value: ${ENV}
+            - name: CAREBRIDGE_AGENT_ENGINE
+              value: adk
+            # Four Gemini agents take ~95 s; the UI only times out on gaps between streamed events.
+            - name: CAREBRIDGE_PLAN_TIMEOUT_S
+              value: "240"
+            - name: GOOGLE_GENAI_USE_VERTEXAI
+              value: "TRUE"
+            - name: CAREBRIDGE_REVIEW_STORE
+              value: firestore
+            - name: BQ_PROJECT
+              value: ${PROJECT_ID}
+            - name: BQ_DATASET
+              value: a4i_health
+            - name: GOOGLE_CLOUD_PROJECT
+              value: ${PROJECT_ID}
+            # Gemini 3.x is served from the global endpoint.
+            - name: GOOGLE_CLOUD_LOCATION
+              value: global
+          startupProbe:
+            httpGet:
+              path: /healthz
+            periodSeconds: 10
+            failureThreshold: 12   # up to 2 minutes to start
+          livenessProbe:
+            httpGet:
+              path: /healthz

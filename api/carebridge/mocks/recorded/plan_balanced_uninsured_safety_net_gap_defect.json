@@ -1,0 +1,1052 @@
+{
+  "request_id": "recorded-balanced_uninsured_safety_net_gap-defect",
+  "status": "provisional_approved",
+  "needs_human_review": true,
+  "county_fips": "13121",
+  "county_name": "Fulton",
+  "final_plan": {
+    "county_fips": "13121",
+    "strategy_used": "balanced_uninsured_safety_net_gap",
+    "status": "ok",
+    "revision_number": 1,
+    "stops": [
+      {
+        "stop_rank": 1,
+        "assigned_saturday": "2026-11-07",
+        "primary_tract_geoid": "13121005503",
+        "covered_tract_geoids": [
+          "13121005300",
+          "13121006801",
+          "13121004900",
+          "13121006900",
+          "13121005800",
+          "13121006400",
+          "13121006500",
+          "13121007002",
+          "13121006200",
+          "13121006601",
+          "13121005501",
+          "13121006701",
+          "13121006300",
+          "13121006702",
+          "13121005504",
+          "13121005700",
+          "13121007001",
+          "13121007100",
+          "13121007400",
+          "13121004200",
+          "13121012000",
+          "13121007500",
+          "13121004800",
+          "13121006602",
+          "13121005503",
+          "13121004400",
+          "13121006802"
+        ],
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121005503) — Venue Unassigned",
+        "latitude": 33.7114788,
+        "longitude": -84.3908033,
+        "catchment_radius_km": 4.0,
+        "estimated_population_in_catchment": 63173,
+        "score_breakdown": {
+          "uninsured_norm": 0.5419,
+          "safety_net_distance_norm": 0.0252,
+          "no_vehicle_norm": 0.5353,
+          "chronic_respiratory_norm": 0.5625,
+          "checkup_preventive_gap_norm": 0.4753,
+          "saturday_transit_access_bonus": 0.0,
+          "overlap_penalty": 0.0,
+          "composite_need_score": 0.4078
+        },
+        "plain_language_rationale": "Tract 55.03 ranks #19 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 20.4% (CDC PLACES, tract, modeled). Nearest safety-net site: 1.6 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 34.3% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 21.4% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 10 of the county's 25 highest-need tracts (ranks #1, #2, #8, #9, #10…).",
+        "evidence_citations": [
+          "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+          "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+        ],
+        "spatial_grain_disclosures": [
+          "census_tract_11char: every ranking input is tract-level",
+          "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+        ],
+        "host_verified": false,
+        "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+      },
+      {
+        "stop_rank": 2,
+        "assigned_saturday": "2026-11-14",
+        "primary_tract_geoid": "13121008203",
+        "covered_tract_geoids": [
+          "13121008702",
+          "13121008500",
+          "13121008204",
+          "13121008203",
+          "13121008701",
+          "13121008103",
+          "13121008301",
+          "13121008302",
+          "13121008601",
+          "13121008202",
+          "13121008602",
+          "13121007807",
+          "13121007808"
+        ],
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121008203) — Venue Unassigned",
+        "latitude": 33.7754825,
+        "longitude": -84.4829836,
+        "catchment_radius_km": 4.0,
+        "estimated_population_in_catchment": 37565,
+        "score_breakdown": {
+          "uninsured_norm": 0.3742,
+          "safety_net_distance_norm": 0.0429,
+          "no_vehicle_norm": 0.5111,
+          "chronic_respiratory_norm": 0.5759,
+          "checkup_preventive_gap_norm": 0.2928,
+          "saturday_transit_access_bonus": 0.0,
+          "overlap_penalty": 0.0,
+          "composite_need_score": 0.3409
+        },
+        "plain_language_rationale": "Tract 82.03 ranks #50 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 15.2% (CDC PLACES, tract, modeled). Nearest safety-net site: 2.7 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 39.9% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 16.6% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 6 of the county's 25 highest-need tracts (ranks #4, #5, #11, #14, #21…).",
+        "evidence_citations": [
+          "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+          "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+        ],
+        "spatial_grain_disclosures": [
+          "census_tract_11char: every ranking input is tract-level",
+          "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+        ],
+        "host_verified": false,
+        "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+      },
+      {
+        "stop_rank": 3,
+        "assigned_saturday": "2026-11-21",
+        "primary_tract_geoid": "13121011634",
+        "covered_tract_geoids": [
+          "13121011652",
+          "13121011632",
+          "13121011636",
+          "13121011650",
+          "13121011443",
+          "13121011651",
+          "13121011659",
+          "13121011631",
+          "13121011630",
+          "13121011656",
+          "13121011624",
+          "13121011657",
+          "13121011618",
+          "13121011629",
+          "13121011653",
+          "13121011426",
+          "13121011638",
+          "13121011633",
+          "13121011634",
+          "13121011658"
+        ],
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121011634) — Venue Unassigned",
+        "latitude": 34.0567789,
+        "longitude": -84.2220053,
+        "catchment_radius_km": 4.0,
+        "estimated_population_in_catchment": 72694,
+        "score_breakdown": {
+          "uninsured_norm": 0.1677,
+          "safety_net_distance_norm": 0.7477,
+          "no_vehicle_norm": 0.0775,
+          "chronic_respiratory_norm": 0.2027,
+          "checkup_preventive_gap_norm": 0.5551,
+          "saturday_transit_access_bonus": 0.0,
+          "overlap_penalty": 0.0,
+          "composite_need_score": 0.3387
+        },
+        "plain_language_rationale": "Tract 116.34 ranks #52 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 8.8% (CDC PLACES, tract, modeled). Nearest safety-net site: 21.7 km, 17.4 km further than any care (straight-line upper bound). Households without a vehicle: 0.0% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 23.5% (100 − PLACES checkup, tract, modeled).",
+        "evidence_citations": [
+          "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+          "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+        ],
+        "spatial_grain_disclosures": [
+          "census_tract_11char: every ranking input is tract-level",
+          "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+        ],
+        "host_verified": false,
+        "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+      },
+      {
+        "stop_rank": 4,
+        "assigned_saturday": "2026-11-28",
+        "primary_tract_geoid": "13121011647",
+        "covered_tract_geoids": [
+          "13121011639",
+          "13121011416",
+          "13121011431",
+          "13121011655",
+          "13121011640",
+          "13121011646",
+          "13121011434",
+          "13121011647",
+          "13121011654",
+          "13121011430",
+          "13121011421"
+        ],
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121011647) — Venue Unassigned",
+        "latitude": 34.0601602,
+        "longitude": -84.3172449,
+        "catchment_radius_km": 4.0,
+        "estimated_population_in_catchment": 40193,
+        "score_breakdown": {
+          "uninsured_norm": 0.2484,
+          "safety_net_distance_norm": 0.6552,
+          "no_vehicle_norm": 0.1808,
+          "chronic_respiratory_norm": 0.263,
+          "checkup_preventive_gap_norm": 0.5247,
+          "saturday_transit_access_bonus": 0.0,
+          "overlap_penalty": 0.0,
+          "composite_need_score": 0.3664
+        },
+        "plain_language_rationale": "Tract 116.47 ranks #31 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 11.3% (CDC PLACES, tract, modeled). Nearest safety-net site: 17.2 km, 16.8 km further than any care (straight-line upper bound). Households without a vehicle: 13.2% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 22.7% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 3 of the county's 25 highest-need tracts (ranks #3, #6, #7).",
+        "evidence_citations": [
+          "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+          "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+        ],
+        "spatial_grain_disclosures": [
+          "census_tract_11char: every ranking input is tract-level",
+          "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+        ],
+        "host_verified": false,
+        "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+      }
+    ],
+    "runner_up_tracts": [
+      {
+        "tract_geoid": "13121007604",
+        "need_rank": 13,
+        "composite_need_score": 0.4223,
+        "deferral_reason_code": "lower_marginal_coverage",
+        "covered_by_stop_rank": null,
+        "distance_to_nearest_selected_stop_km": 7.0,
+        "technical_deferral_rationale": "Tract 76.04 (need rank #13): 7.0 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+      },
+      {
+        "tract_geoid": "13121007603",
+        "need_rank": 16,
+        "composite_need_score": 0.4176,
+        "deferral_reason_code": "inter_stop_separation_constraint",
+        "covered_by_stop_rank": 1,
+        "distance_to_nearest_selected_stop_km": 4.62,
+        "technical_deferral_rationale": "Tract 76.03 (need rank #16): 4.6 km from stop 1; stops must be at least 5 km apart so the four Saturdays reach four different neighborhoods."
+      },
+      {
+        "tract_geoid": "13121002500",
+        "need_rank": 20,
+        "composite_need_score": 0.4047,
+        "deferral_reason_code": "lower_marginal_coverage",
+        "covered_by_stop_rank": null,
+        "distance_to_nearest_selected_stop_km": 5.67,
+        "technical_deferral_rationale": "Tract 25 (need rank #20): 5.7 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+      },
+      {
+        "tract_geoid": "13121011310",
+        "need_rank": 22,
+        "composite_need_score": 0.3997,
+        "deferral_reason_code": "lower_marginal_coverage",
+        "covered_by_stop_rank": null,
+        "distance_to_nearest_selected_stop_km": 8.66,
+        "technical_deferral_rationale": "Tract 113.10 (need rank #22): 8.7 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+      }
+    ],
+    "sensitivity": {
+      "weight_perturbation_pct": 15.0,
+      "top_4_stability_jaccard": 0.834,
+      "borderline_tracts": [
+        "13121005503",
+        "13121008203",
+        "13121008204",
+        "13121011000",
+        "13121011634",
+        "13121012000"
+      ],
+      "notes": "Each of the 5 weights moved ±15% and renormalized (10 runs). Mean Jaccard overlap of the selected tracts with the base plan is 0.83; 6 tract(s) enter or leave under some perturbation."
+    },
+    "planner_notes": [
+      "Revision 1 resolves auditor defect D0-CATCHMENT_OVERLAP: draft 0 stops 1 and 2 were 4.5 km apart (minimum 5 km), so their 4 km catchments overlapped. Re-ran the optimizer with the separation enforced."
+    ]
+  },
+  "audit_report": {
+    "revision_audited": 1,
+    "verdict": "approved",
+    "non_demographic_defects": [],
+    "demographic_impact": {
+      "county_total_pop": 1051550,
+      "catchment_total_pop": 222681,
+      "county_svi_theme3_mean": 0.502,
+      "catchment_svi_theme3_mean": 0.576,
+      "group_comparisons": {
+        "Black": {
+          "county_pct": 43.1,
+          "catchment_pct": 45.1,
+          "parity_ratio": 1.05
+        },
+        "Hispanic or Latino": {
+          "county_pct": 7.2,
+          "catchment_pct": 9.3,
+          "parity_ratio": 1.3
+        },
+        "Asian": {
+          "county_pct": 7.3,
+          "catchment_pct": 11.4,
+          "parity_ratio": 1.57
+        },
+        "White": {
+          "county_pct": 39.3,
+          "catchment_pct": 31.0,
+          "parity_ratio": 0.79
+        },
+        "Uninsured 18–64": {
+          "county_pct": 10.7,
+          "catchment_pct": 13.2,
+          "parity_ratio": 1.23
+        },
+        "No vehicle": {
+          "county_pct": 10.2,
+          "catchment_pct": 14.8,
+          "parity_ratio": 1.45
+        },
+        "Age 65+": {
+          "county_pct": 12.4,
+          "catchment_pct": 12.1,
+          "parity_ratio": 0.98
+        },
+        "Limited English": {
+          "county_pct": 1.7,
+          "catchment_pct": 2.9,
+          "parity_ratio": 1.66
+        }
+      },
+      "disparity_findings": [],
+      "requires_human_equity_review": false
+    },
+    "auditor_summary": "Draft 1 resolves the catchment overlap found in draft 0. All four stops are at least 5 km apart and every claim is tract-level or labeled as an upper bound. No group falls below the parity floor.",
+    "limitations_attached": [
+      "Demographics are ACS 2020 5-year tract aggregates, used only after planning.",
+      "No host venue is confirmed; stops sit on tract centroids."
+    ]
+  },
+  "revision_history": [
+    {
+      "county_fips": "13121",
+      "strategy_used": "balanced_uninsured_safety_net_gap",
+      "status": "ok",
+      "revision_number": 0,
+      "stops": [
+        {
+          "stop_rank": 1,
+          "assigned_saturday": "2026-11-07",
+          "primary_tract_geoid": "13121005503",
+          "covered_tract_geoids": [
+            "13121005300",
+            "13121006801",
+            "13121004900",
+            "13121006900",
+            "13121005800",
+            "13121006400",
+            "13121006500",
+            "13121007002",
+            "13121006200",
+            "13121006601",
+            "13121005501",
+            "13121006701",
+            "13121006300",
+            "13121006702",
+            "13121005504",
+            "13121005700",
+            "13121007001",
+            "13121007100",
+            "13121007400",
+            "13121004200",
+            "13121012000",
+            "13121007500",
+            "13121004800",
+            "13121006602",
+            "13121005503",
+            "13121004400",
+            "13121006802"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121005503) — Venue Unassigned",
+          "latitude": 33.7114788,
+          "longitude": -84.3908033,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 63173,
+          "score_breakdown": {
+            "uninsured_norm": 0.5419,
+            "safety_net_distance_norm": 0.0252,
+            "no_vehicle_norm": 0.5353,
+            "chronic_respiratory_norm": 0.5625,
+            "checkup_preventive_gap_norm": 0.4753,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.4078
+          },
+          "plain_language_rationale": "Tract 55.03 ranks #19 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 20.4% (CDC PLACES, tract, modeled). Nearest safety-net site: 1.6 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 34.3% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 21.4% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 10 of the county's 25 highest-need tracts (ranks #1, #2, #8, #9, #10…).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 2,
+          "assigned_saturday": "2026-11-14",
+          "primary_tract_geoid": "13121003700",
+          "covered_tract_geoids": [
+            "13121001205",
+            "13121001203",
+            "13121000700",
+            "13121002900",
+            "13121003500",
+            "13121000601",
+            "13121004900",
+            "13121001902",
+            "13121011801",
+            "13121001802",
+            "13121001002",
+            "13121002100",
+            "13121003600",
+            "13121005800",
+            "13121001801",
+            "13121004100",
+            "13121003800",
+            "13121011902",
+            "13121011901",
+            "13121004000",
+            "13121002801",
+            "13121006500",
+            "13121006200",
+            "13121006000",
+            "13121006100",
+            "13121005501",
+            "13121008400",
+            "13121006300",
+            "13121011802",
+            "13121002300",
+            "13121001901",
+            "13121002400",
+            "13121005700",
+            "13121003700",
+            "13121002802",
+            "13121002500",
+            "13121003900",
+            "13121002600",
+            "13121004200",
+            "13121012000",
+            "13121004800",
+            "13121006602",
+            "13121004300",
+            "13121004400"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121003700) — Venue Unassigned",
+          "latitude": 33.7489883,
+          "longitude": -84.4101331,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 106912,
+          "score_breakdown": {
+            "uninsured_norm": 0.3355,
+            "safety_net_distance_norm": 0.0171,
+            "no_vehicle_norm": 0.6069,
+            "chronic_respiratory_norm": 0.9167,
+            "checkup_preventive_gap_norm": 0.0,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3638
+          },
+          "plain_language_rationale": "Tract 37 ranks #32 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 14.0% (CDC PLACES, tract, modeled). Nearest safety-net site: 1.2 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 31.1% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 8.9% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 7 of the county's 25 highest-need tracts (ranks #8, #9, #10, #17, #18…).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 3,
+          "assigned_saturday": "2026-11-21",
+          "primary_tract_geoid": "13121008203",
+          "covered_tract_geoids": [
+            "13121008702",
+            "13121008500",
+            "13121008204",
+            "13121008203",
+            "13121008701",
+            "13121008103",
+            "13121008301",
+            "13121008302",
+            "13121008601",
+            "13121008202",
+            "13121008602",
+            "13121007807",
+            "13121007808"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121008203) — Venue Unassigned",
+          "latitude": 33.7754825,
+          "longitude": -84.4829836,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 37565,
+          "score_breakdown": {
+            "uninsured_norm": 0.3742,
+            "safety_net_distance_norm": 0.0429,
+            "no_vehicle_norm": 0.5111,
+            "chronic_respiratory_norm": 0.5759,
+            "checkup_preventive_gap_norm": 0.2928,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3409
+          },
+          "plain_language_rationale": "Tract 82.03 ranks #50 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 15.2% (CDC PLACES, tract, modeled). Nearest safety-net site: 2.7 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 39.9% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 16.6% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 6 of the county's 25 highest-need tracts (ranks #4, #5, #11, #14, #21…).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 4,
+          "assigned_saturday": "2026-11-28",
+          "primary_tract_geoid": "13121011634",
+          "covered_tract_geoids": [
+            "13121011652",
+            "13121011632",
+            "13121011636",
+            "13121011650",
+            "13121011443",
+            "13121011651",
+            "13121011659",
+            "13121011631",
+            "13121011630",
+            "13121011656",
+            "13121011624",
+            "13121011657",
+            "13121011618",
+            "13121011629",
+            "13121011653",
+            "13121011426",
+            "13121011638",
+            "13121011633",
+            "13121011634",
+            "13121011658"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121011634) — Venue Unassigned",
+          "latitude": 34.0567789,
+          "longitude": -84.2220053,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 72694,
+          "score_breakdown": {
+            "uninsured_norm": 0.1677,
+            "safety_net_distance_norm": 0.7477,
+            "no_vehicle_norm": 0.0775,
+            "chronic_respiratory_norm": 0.2027,
+            "checkup_preventive_gap_norm": 0.5551,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3387
+          },
+          "plain_language_rationale": "Tract 116.34 ranks #52 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 8.8% (CDC PLACES, tract, modeled). Nearest safety-net site: 21.7 km, 17.4 km further than any care (straight-line upper bound). Households without a vehicle: 0.0% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 23.5% (100 − PLACES checkup, tract, modeled).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        }
+      ],
+      "runner_up_tracts": [
+        {
+          "tract_geoid": "13121011431",
+          "need_rank": 3,
+          "composite_need_score": 0.5743,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 9.96,
+          "technical_deferral_rationale": "Tract 114.31 (need rank #3): 10.0 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        },
+        {
+          "tract_geoid": "13121011421",
+          "need_rank": 6,
+          "composite_need_score": 0.4756,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 10.37,
+          "technical_deferral_rationale": "Tract 114.21 (need rank #6): 10.4 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        },
+        {
+          "tract_geoid": "13121011430",
+          "need_rank": 7,
+          "composite_need_score": 0.4739,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 10.1,
+          "technical_deferral_rationale": "Tract 114.30 (need rank #7): 10.1 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        },
+        {
+          "tract_geoid": "13121007604",
+          "need_rank": 13,
+          "composite_need_score": 0.4223,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 7.0,
+          "technical_deferral_rationale": "Tract 76.04 (need rank #13): 7.0 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        }
+      ],
+      "sensitivity": null,
+      "planner_notes": []
+    },
+    {
+      "county_fips": "13121",
+      "strategy_used": "balanced_uninsured_safety_net_gap",
+      "status": "ok",
+      "revision_number": 1,
+      "stops": [
+        {
+          "stop_rank": 1,
+          "assigned_saturday": "2026-11-07",
+          "primary_tract_geoid": "13121005503",
+          "covered_tract_geoids": [
+            "13121005300",
+            "13121006801",
+            "13121004900",
+            "13121006900",
+            "13121005800",
+            "13121006400",
+            "13121006500",
+            "13121007002",
+            "13121006200",
+            "13121006601",
+            "13121005501",
+            "13121006701",
+            "13121006300",
+            "13121006702",
+            "13121005504",
+            "13121005700",
+            "13121007001",
+            "13121007100",
+            "13121007400",
+            "13121004200",
+            "13121012000",
+            "13121007500",
+            "13121004800",
+            "13121006602",
+            "13121005503",
+            "13121004400",
+            "13121006802"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121005503) — Venue Unassigned",
+          "latitude": 33.7114788,
+          "longitude": -84.3908033,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 63173,
+          "score_breakdown": {
+            "uninsured_norm": 0.5419,
+            "safety_net_distance_norm": 0.0252,
+            "no_vehicle_norm": 0.5353,
+            "chronic_respiratory_norm": 0.5625,
+            "checkup_preventive_gap_norm": 0.4753,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.4078
+          },
+          "plain_language_rationale": "Tract 55.03 ranks #19 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 20.4% (CDC PLACES, tract, modeled). Nearest safety-net site: 1.6 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 34.3% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 21.4% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 10 of the county's 25 highest-need tracts (ranks #1, #2, #8, #9, #10…).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 2,
+          "assigned_saturday": "2026-11-14",
+          "primary_tract_geoid": "13121008203",
+          "covered_tract_geoids": [
+            "13121008702",
+            "13121008500",
+            "13121008204",
+            "13121008203",
+            "13121008701",
+            "13121008103",
+            "13121008301",
+            "13121008302",
+            "13121008601",
+            "13121008202",
+            "13121008602",
+            "13121007807",
+            "13121007808"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121008203) — Venue Unassigned",
+          "latitude": 33.7754825,
+          "longitude": -84.4829836,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 37565,
+          "score_breakdown": {
+            "uninsured_norm": 0.3742,
+            "safety_net_distance_norm": 0.0429,
+            "no_vehicle_norm": 0.5111,
+            "chronic_respiratory_norm": 0.5759,
+            "checkup_preventive_gap_norm": 0.2928,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3409
+          },
+          "plain_language_rationale": "Tract 82.03 ranks #50 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 15.2% (CDC PLACES, tract, modeled). Nearest safety-net site: 2.7 km, 0.0 km further than any care (straight-line upper bound). Households without a vehicle: 39.9% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 16.6% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 6 of the county's 25 highest-need tracts (ranks #4, #5, #11, #14, #21…).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 3,
+          "assigned_saturday": "2026-11-21",
+          "primary_tract_geoid": "13121011634",
+          "covered_tract_geoids": [
+            "13121011652",
+            "13121011632",
+            "13121011636",
+            "13121011650",
+            "13121011443",
+            "13121011651",
+            "13121011659",
+            "13121011631",
+            "13121011630",
+            "13121011656",
+            "13121011624",
+            "13121011657",
+            "13121011618",
+            "13121011629",
+            "13121011653",
+            "13121011426",
+            "13121011638",
+            "13121011633",
+            "13121011634",
+            "13121011658"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121011634) — Venue Unassigned",
+          "latitude": 34.0567789,
+          "longitude": -84.2220053,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 72694,
+          "score_breakdown": {
+            "uninsured_norm": 0.1677,
+            "safety_net_distance_norm": 0.7477,
+            "no_vehicle_norm": 0.0775,
+            "chronic_respiratory_norm": 0.2027,
+            "checkup_preventive_gap_norm": 0.5551,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3387
+          },
+          "plain_language_rationale": "Tract 116.34 ranks #52 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 8.8% (CDC PLACES, tract, modeled). Nearest safety-net site: 21.7 km, 17.4 km further than any care (straight-line upper bound). Households without a vehicle: 0.0% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 23.5% (100 − PLACES checkup, tract, modeled).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        },
+        {
+          "stop_rank": 4,
+          "assigned_saturday": "2026-11-28",
+          "primary_tract_geoid": "13121011647",
+          "covered_tract_geoids": [
+            "13121011639",
+            "13121011416",
+            "13121011431",
+            "13121011655",
+            "13121011640",
+            "13121011646",
+            "13121011434",
+            "13121011647",
+            "13121011654",
+            "13121011430",
+            "13121011421"
+          ],
+          "candidate_venue_name": "Provisional Tract Centroid Host (13121011647) — Venue Unassigned",
+          "latitude": 34.0601602,
+          "longitude": -84.3172449,
+          "catchment_radius_km": 4.0,
+          "estimated_population_in_catchment": 40193,
+          "score_breakdown": {
+            "uninsured_norm": 0.2484,
+            "safety_net_distance_norm": 0.6552,
+            "no_vehicle_norm": 0.1808,
+            "chronic_respiratory_norm": 0.263,
+            "checkup_preventive_gap_norm": 0.5247,
+            "saturday_transit_access_bonus": 0.0,
+            "overlap_penalty": 0.0,
+            "composite_need_score": 0.3664
+          },
+          "plain_language_rationale": "Tract 116.47 ranks #31 of 326 Fulton tracts on composite need. Uninsured adults 18–64: 11.3% (CDC PLACES, tract, modeled). Nearest safety-net site: 17.2 km, 16.8 km further than any care (straight-line upper bound). Households without a vehicle: 13.2% (ACS via SVI, tract, survey). Adults without a routine checkup in the past year: 22.7% (100 − PLACES checkup, tract, modeled). Its 4 km catchment reaches 3 of the county's 25 highest-need tracts (ranks #3, #6, #7).",
+          "evidence_citations": [
+            "a4i_health.burden_tracts: CDC PLACES (modeled, tract) and CDC SVI / ACS 5-yr (survey, tract)",
+            "a4i_health.tract_access: straight-line km to CMS/HRSA sites (facility point, upper bound)"
+          ],
+          "spatial_grain_disclosures": [
+            "census_tract_11char: every ranking input is tract-level",
+            "facility_lon_lat_point: distances are straight-line upper bounds to federal sites, not journey time"
+          ],
+          "host_verified": false,
+          "provisional_warning": "PROVISIONAL SITE: Host permission, parking pad clearance, and Saturday staffing must be confirmed by field operations before public announcement."
+        }
+      ],
+      "runner_up_tracts": [
+        {
+          "tract_geoid": "13121007604",
+          "need_rank": 13,
+          "composite_need_score": 0.4223,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 7.0,
+          "technical_deferral_rationale": "Tract 76.04 (need rank #13): 7.0 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        },
+        {
+          "tract_geoid": "13121007603",
+          "need_rank": 16,
+          "composite_need_score": 0.4176,
+          "deferral_reason_code": "inter_stop_separation_constraint",
+          "covered_by_stop_rank": 1,
+          "distance_to_nearest_selected_stop_km": 4.62,
+          "technical_deferral_rationale": "Tract 76.03 (need rank #16): 4.6 km from stop 1; stops must be at least 5 km apart so the four Saturdays reach four different neighborhoods."
+        },
+        {
+          "tract_geoid": "13121002500",
+          "need_rank": 20,
+          "composite_need_score": 0.4047,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 5.67,
+          "technical_deferral_rationale": "Tract 25 (need rank #20): 5.7 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        },
+        {
+          "tract_geoid": "13121011310",
+          "need_rank": 22,
+          "composite_need_score": 0.3997,
+          "deferral_reason_code": "lower_marginal_coverage",
+          "covered_by_stop_rank": null,
+          "distance_to_nearest_selected_stop_km": 8.66,
+          "technical_deferral_rationale": "Tract 113.10 (need rank #22): 8.7 km from the nearest stop. Its catchment adds less population-weighted need than the four selected catchments under this strategy."
+        }
+      ],
+      "sensitivity": {
+        "weight_perturbation_pct": 15.0,
+        "top_4_stability_jaccard": 0.834,
+        "borderline_tracts": [
+          "13121005503",
+          "13121008203",
+          "13121008204",
+          "13121011000",
+          "13121011634",
+          "13121012000"
+        ],
+        "notes": "Each of the 5 weights moved ±15% and renormalized (10 runs). Mean Jaccard overlap of the selected tracts with the base plan is 0.83; 6 tract(s) enter or leave under some perturbation."
+      },
+      "planner_notes": [
+        "Revision 1 resolves auditor defect D0-CATCHMENT_OVERLAP: draft 0 stops 1 and 2 were 4.5 km apart (minimum 5 km), so their 4 km catchments overlapped. Re-ran the optimizer with the separation enforced."
+      ]
+    }
+  ],
+  "evidence_report": {
+    "county_fips": "13121",
+    "core_tables_ready": true,
+    "blocking_failures": [],
+    "checks": [
+      {
+        "check_name": "tract_ids_11char_fulton",
+        "verdict": "PASS",
+        "detail": "326 tracts with population and coordinates; all IDs are 11 characters with prefix 13121."
+      },
+      {
+        "check_name": "checkup_inverted",
+        "verdict": "PASS",
+        "detail": "pct_checkup_gap = 100 − pct_checkup, so a low checkup rate raises need."
+      },
+      {
+        "check_name": "hsa_grain_respected",
+        "verdict": "PASS",
+        "detail": "disease_weekly is the Clayton, DeKalb, Fulton, Gwinnett Health Service Area; excluded from tract ranking."
+      },
+      {
+        "check_name": "respiratory_trend_freshness",
+        "verdict": "WARN",
+        "detail": "Last non-empty week 2024-09-28; 107 of 212 weeks are blank."
+      },
+      {
+        "check_name": "shortage_areas_present",
+        "verdict": "WARN",
+        "detail": "0 live HPSA areas (all 99 designations are Proposed For Withdrawal); HPSA_SCORE unavailable.",
+        "is_pipeline_check": false
+      },
+      {
+        "check_name": "pm25_grain",
+        "verdict": "PASS",
+        "detail": "exposure_tracts is a 12 km grid on tract IDs; given zero ranking weight.",
+        "is_pipeline_check": false
+      },
+      {
+        "check_name": "race_and_pii_columns_absent",
+        "verdict": "PASS",
+        "detail": "No race/ethnicity or personal columns reach the planner's evidence."
+      }
+    ],
+    "validated_tract_count": 326,
+    "prohibited_claims_blocked": [
+      "tract-level respiratory trend from an HSA figure",
+      "travel time inferred from straight-line distance",
+      "ranking neighborhoods on 12 km PM2.5"
+    ],
+    "optional_datasets_status": {
+      "marta_gtfs": "unavailable: license not yet verified",
+      "usda_food_access": "unavailable",
+      "imls_venues": "unavailable"
+    },
+    "caveats": [
+      "4 SPATIAL RESOLUTIONS (TRACT != 12KM GRID != FACILITY POINT != 4-COUNTY HSA): weekly respiratory ED trends describe the 4-county Health Service Area, never a census tract; PM2.5 is a 12 km grid and cannot rank neighborhoods.",
+      "DISTANCE != JOURNEY TIME: km_to_any_care and km_to_safety_net are straight-line upper bounds to federal facilities, not bus or road travel times.",
+      "PLACES MODELED ESTIMATES: tract prevalences are small-area model estimates, not counts; differences of 1–2 points fall within overlapping 95% confidence intervals.",
+      "UPPER-BOUND FEDERAL FACILITIES: free clinics, county clinics and pharmacies are not in any licensed national list, so every distance is an upper bound."
+    ]
+  },
+  "outreach": {
+    "county_name": "Fulton",
+    "provisional_banner": "DRAFT FOR INTERNAL REVIEW ONLY — DO NOT PUBLISH UNTIL VENUE PERMITS ARE CONFIRMED.",
+    "stop_notices": [
+      {
+        "stop_rank": 1,
+        "assigned_saturday": "2026-11-07",
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121005503) — Venue Unassigned",
+        "english_notice": "Free health check-ups near you!\n\nSaturday, November 7, near Tract 55.03. The exact spot will be posted soon.\n\nWe check blood pressure and blood sugar. You do not need insurance. You do not need an appointment. It is free.\n\nThis is a draft. The place is not confirmed yet.",
+        "spanish_notice": "¡Chequeos de salud gratis cerca de usted!\n\nsábado 7 de noviembre, cerca de Tract 55.03. Pronto diremos el lugar exacto.\n\nRevisamos la presión y el azúcar en la sangre. No necesita seguro. No necesita cita. Es gratis.\n\nEsto es un borrador. El lugar todavía no está confirmado.",
+        "why_chosen_explanation": "Many people near Tract 55.03 have no health insurance and live far from a clinic that sees people without insurance.",
+        "provisional_disclaimer_included": true
+      },
+      {
+        "stop_rank": 2,
+        "assigned_saturday": "2026-11-14",
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121008203) — Venue Unassigned",
+        "english_notice": "Free health check-ups near you!\n\nSaturday, November 14, near Tract 82.03. The exact spot will be posted soon.\n\nWe check blood pressure and blood sugar. You do not need insurance. You do not need an appointment. It is free.\n\nThis is a draft. The place is not confirmed yet.",
+        "spanish_notice": "¡Chequeos de salud gratis cerca de usted!\n\nsábado 14 de noviembre, cerca de Tract 82.03. Pronto diremos el lugar exacto.\n\nRevisamos la presión y el azúcar en la sangre. No necesita seguro. No necesita cita. Es gratis.\n\nEsto es un borrador. El lugar todavía no está confirmado.",
+        "why_chosen_explanation": "Many people near Tract 82.03 have no health insurance and live far from a clinic that sees people without insurance.",
+        "provisional_disclaimer_included": true
+      },
+      {
+        "stop_rank": 3,
+        "assigned_saturday": "2026-11-21",
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121011634) — Venue Unassigned",
+        "english_notice": "Free health check-ups near you!\n\nSaturday, November 21, near Tract 116.34. The exact spot will be posted soon.\n\nWe check blood pressure and blood sugar. You do not need insurance. You do not need an appointment. It is free.\n\nThis is a draft. The place is not confirmed yet.",
+        "spanish_notice": "¡Chequeos de salud gratis cerca de usted!\n\nsábado 21 de noviembre, cerca de Tract 116.34. Pronto diremos el lugar exacto.\n\nRevisamos la presión y el azúcar en la sangre. No necesita seguro. No necesita cita. Es gratis.\n\nEsto es un borrador. El lugar todavía no está confirmado.",
+        "why_chosen_explanation": "Many people near Tract 116.34 have no health insurance and live far from a clinic that sees people without insurance.",
+        "provisional_disclaimer_included": true
+      },
+      {
+        "stop_rank": 4,
+        "assigned_saturday": "2026-11-28",
+        "candidate_venue_name": "Provisional Tract Centroid Host (13121011647) — Venue Unassigned",
+        "english_notice": "Free health check-ups near you!\n\nSaturday, November 28, near Tract 116.47. The exact spot will be posted soon.\n\nWe check blood pressure and blood sugar. You do not need insurance. You do not need an appointment. It is free.\n\nThis is a draft. The place is not confirmed yet.",
+        "spanish_notice": "¡Chequeos de salud gratis cerca de usted!\n\nsábado 28 de noviembre, cerca de Tract 116.47. Pronto diremos el lugar exacto.\n\nRevisamos la presión y el azúcar en la sangre. No necesita seguro. No necesita cita. Es gratis.\n\nEsto es un borrador. El lugar todavía no está confirmado.",
+        "why_chosen_explanation": "Many people near Tract 116.47 have no health insurance and live far from a clinic that sees people without insurance.",
+        "provisional_disclaimer_included": true
+      }
+    ],
+    "unpicked_neighborhood_explanations": [
+      {
+        "tract_geoid": "13121007604",
+        "need_rank": 13,
+        "nearest_selected_stop_rank": null,
+        "distance_to_selected_stop_km": 7.0,
+        "english_explanation": "We know people near Tract 76.04 need care too. We only have four Saturdays this month, and other areas had more people who live far from a free or low-cost clinic. We will look again next month.",
+        "spanish_explanation": "Sabemos que la gente cerca de Tract 76.04 también necesita atención. Solo tenemos cuatro sábados este mes, y otras zonas tenían más personas lejos de una clínica gratis o de bajo costo. Lo revisaremos el próximo mes."
+      },
+      {
+        "tract_geoid": "13121007603",
+        "need_rank": 16,
+        "nearest_selected_stop_rank": 1,
+        "distance_to_selected_stop_km": 4.62,
+        "english_explanation": "We know people near Tract 76.03 need care too. The van will be close by on Saturday, November 7, about 5 km away. We picked one spot to reach as many neighbors as we can each Saturday.",
+        "spanish_explanation": "Sabemos que la gente cerca de Tract 76.03 también necesita atención. La van estará cerca el sábado 7 de noviembre, a unos 5 km. Elegimos un lugar para llegar a la mayor cantidad de vecinos cada sábado."
+      },
+      {
+        "tract_geoid": "13121002500",
+        "need_rank": 20,
+        "nearest_selected_stop_rank": null,
+        "distance_to_selected_stop_km": 5.67,
+        "english_explanation": "We know people near Tract 25 need care too. We only have four Saturdays this month, and other areas had more people who live far from a free or low-cost clinic. We will look again next month.",
+        "spanish_explanation": "Sabemos que la gente cerca de Tract 25 también necesita atención. Solo tenemos cuatro sábados este mes, y otras zonas tenían más personas lejos de una clínica gratis o de bajo costo. Lo revisaremos el próximo mes."
+      },
+      {
+        "tract_geoid": "13121011310",
+        "need_rank": 22,
+        "nearest_selected_stop_rank": null,
+        "distance_to_selected_stop_km": 8.66,
+        "english_explanation": "We know people near Tract 113.10 need care too. We only have four Saturdays this month, and other areas had more people who live far from a free or low-cost clinic. We will look again next month.",
+        "spanish_explanation": "Sabemos que la gente cerca de Tract 113.10 también necesita atención. Solo tenemos cuatro sábados este mes, y otras zonas tenían más personas lejos de una clínica gratis o de bajo costo. Lo revisaremos el próximo mes."
+      }
+    ],
+    "regional_surveillance_note_en": "Flu and COVID numbers are only reported for the whole Clayton, DeKalb, Fulton, Gwinnett area, not for your neighborhood. The latest numbers we have are from 2024-09-28.",
+    "regional_surveillance_note_es": "Los datos de gripe y COVID solo se reportan para toda el área de Clayton, DeKalb, Fulton, Gwinnett, no para su vecindario. Los datos más recientes son de 2024-09-28."
+  },
+  "provenance": [
+    "a4i_health.burden_tracts",
+    "a4i_health.tract_access",
+    "a4i_health.care_sites",
+    "a4i_health.disease_weekly",
+    "a4i_health.shortage_areas",
+    "bigquery-public-data.census_bureau_acs.censustract_2020_5yr (auditor only)"
+  ],
+  "limitations": [
+    "Bus travel time: no license-clean federal dataset exists; the best transit matrix is CC BY-NC. Distances are straight-line upper bounds.",
+    "Free and county clinics: no national list exists. Facility layers are federal only (CMS + HRSA).",
+    "Pharmacies: excluded. NPPES carries practitioner names and home addresses.",
+    "Other mobile clinics: the one national registry has no license or bulk download; not scraped.",
+    "How many people have asthma: unknown. CDC PLACES gives modeled prevalence, not counts.",
+    "Is COVID rising in this neighborhood: unanswerable. disease_weekly is a 4-county HSA figure.",
+    "Which specific people are unmanaged: none, by design. Individual-level data is prohibited."
+  ],
+  "data_availability": {
+    "a4i_health_core": true,
+    "marta_gtfs_saturday": false,
+    "usda_food_access": false,
+    "imls_candidate_venues": false,
+    "external_demographic_audit": true
+  },
+  "telemetry_summary": {
+    "source": "recorded_fixture",
+    "iterations": 2,
+    "strategy": "balanced_uninsured_safety_net_gap",
+    "simulate_first_draft_defect": true
+  }
+}

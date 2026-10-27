@@ -1,0 +1,36 @@
+# Rendered at container start by the nginx image's envsubst step.
+# Only env vars that are set get substituted, so nginx's own $vars are safe.
+server {
+    listen ${PORT};
+    root /usr/share/nginx/html;
+
+    resolver ${NGINX_LOCAL_RESOLVERS} valid=60s ipv6=off;
+
+    # Same-origin API: no CORS, no API URL compiled into the app.
+    # ^~ so the static-asset regex below never captures an API path.
+    location ^~ /v1/ {
+        set $api ${API_URL};
+        proxy_pass $api;
+        proxy_ssl_server_name on;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # The app waits 130 s for a plan; the API gives up at 120 s.
+        proxy_read_timeout 140s;
+    }
+
+    location = /healthz {
+        access_log off;
+        return 200 "ok\n";
+    }
+
+    # Hashed Flutter assets can be cached; index.html and the bootstrap must not be.
+    location ~* \.(?:js|css|wasm|png|jpg|svg|ttf|otf|woff2?|json)$ {
+        add_header Cache-Control "public, max-age=3600";
+        try_files $uri =404;
+    }
+
+    location / {
+        add_header Cache-Control "no-cache";
+        try_files $uri $uri/ /index.html;
+    }
+}

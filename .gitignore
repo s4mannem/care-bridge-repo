@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
 
 # Virtual environments
 .venv/
@@ -10,11 +11,21 @@ env/
 
 # Environment variables & secrets
 .env
+*.json.key
+service-account*.json
+credentials.json
 
 # Pytest & coverage
 .pytest_cache/
 .coverage
 htmlcov/
 
-# macOS
+# Terraform
+infra/.terraform/
+infra/terraform.tfvars
+*.tfstate
+*.tfstate.backup
+
+# OS & macOS
 .DS_Store
+Thumbs.db

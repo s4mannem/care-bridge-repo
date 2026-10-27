@@ -1,0 +1,485 @@
+[
+ {
+  "name": "CHILDREN'S HEALTHCARE OF ATLANTA AT SCOTTISH RITE",
+  "kind": "Hospital",
+  "lat": 33.90576159300008,
+  "lng": -84.35408702299998,
+  "hours": null
+ },
+ {
+  "name": "US ARMY HOSP",
+  "kind": "Hospital",
+  "lat": 33.70611102700008,
+  "lng": -84.43295603599995,
+  "hours": null
+ },
+ {
+  "name": "US PENITENTIARY HOSP",
+  "kind": "Hospital",
+  "lat": 33.712444144000074,
+  "lng": -84.36793535199996,
+  "hours": null
+ },
+ {
+  "name": "ST JOSEPH MERCY CARE SERVICES",
+  "kind": "FQHC",
+  "lat": 33.751071600000046,
+  "lng": -84.37448430099994,
+  "hours": null
+ },
+ {
+  "name": "SAINT JOSEPH MERCY CARE - CITY OF REFUGE",
+  "kind": "FQHC",
+  "lat": 33.76204598400005,
+  "lng": -84.43066836499997,
+  "hours": null
+ },
+ {
+  "name": "HEALING COMMUNITY CENTER",
+  "kind": "FQHC",
+  "lat": 33.75964427500003,
+  "lng": -84.41039748699995,
+  "hours": null
+ },
+ {
+  "name": "COMMUNITY MEDICAL CENTER",
+  "kind": "FQHC",
+  "lat": 33.52627939200005,
+  "lng": -84.66324748699998,
+  "hours": null
+ },
+ {
+  "name": "THE FAMILY HEALTH CENTERS OF GEORGIA, INC",
+  "kind": "FQHC",
+  "lat": 33.76929239100008,
+  "lng": -84.38554120499998,
+  "hours": null
+ },
+ {
+  "name": "SOUTHSIDE MEDICAL CENTER AT DOBBS ELEMENTARY",
+  "kind": "FQHC",
+  "lat": 33.69829008500005,
+  "lng": -84.37248588699998,
+  "hours": null
+ },
+ {
+  "name": "HEALING COMMUNITY CENTER",
+  "kind": "FQHC",
+  "lat": 33.755667440000025,
+  "lng": -84.52587077599998,
+  "hours": null
+ },
+ {
+  "name": "WEST END MEDICAL CENTERS",
+  "kind": "FQHC",
+  "lat": 33.736722704000044,
+  "lng": -84.41624730099994,
+  "hours": null
+ },
+ {
+  "name": "SOUTHSIDE MEDICAL CENTER, INC.",
+  "kind": "FQHC",
+  "lat": 33.68952110600003,
+  "lng": -84.36635427399995,
+  "hours": null
+ },
+ {
+  "name": "THE FAMILY HEALTH CENTERS OF GEORGIA, INC.",
+  "kind": "FQHC",
+  "lat": 33.61201683200005,
+  "lng": -84.47326670599995,
+  "hours": null
+ },
+ {
+  "name": "HEALING COMMUNITY CENTER",
+  "kind": "FQHC",
+  "lat": 33.75317692500005,
+  "lng": -84.47247101199997,
+  "hours": null
+ },
+ {
+  "name": "THE FAMILY HEALTH CENTERS OF GEORGIA, INC.",
+  "kind": "FQHC",
+  "lat": 33.72240427600008,
+  "lng": -84.50848369099998,
+  "hours": null
+ },
+ {
+  "name": "SAINT JOSEPH'S MERCY CARE - GATEWAY",
+  "kind": "FQHC",
+  "lat": 33.74763087100007,
+  "lng": -84.39451612699997,
+  "hours": null
+ },
+ {
+  "name": "KIPP WOODSON PARK ACADEMY",
+  "kind": "FQHC",
+  "lat": 33.77213515500006,
+  "lng": -84.43949476099993,
+  "hours": null
+ },
+ {
+  "name": "HEALING COMMUNITY CENTER",
+  "kind": "FQHC",
+  "lat": 33.760842007000065,
+  "lng": -84.41093904199994,
+  "hours": null
+ },
+ {
+  "name": "SAINT JOSEPH'S MERCY CARE-THE IMPERIAL",
+  "kind": "FQHC",
+  "lat": 33.76392060000006,
+  "lng": -84.38610484499998,
+  "hours": null
+ },
+ {
+  "name": "MERIDIAN EDUCATION RESOURCE GROUP, INC",
+  "kind": "FQHC",
+  "lat": 33.77213515500006,
+  "lng": -84.43949476099993,
+  "hours": null
+ },
+ {
+  "name": "SUBSTANCE ABUSE OFFICE-SOUTHSIDE MEDICAL CTR INC",
+  "kind": "FQHC",
+  "lat": 33.681096539000066,
+  "lng": -84.42486037699996,
+  "hours": null
+ },
+ {
+  "name": "THOMASVILLE OFFICE-SOUTH MEDICAL CENTER INC",
+  "kind": "FQHC",
+  "lat": 33.72573100100004,
+  "lng": -84.39663571799997,
+  "hours": null
+ },
+ {
+  "name": "YOURTOWN HEALTH QUICKCARE",
+  "kind": "FQHC",
+  "lat": 33.52538814500008,
+  "lng": -84.66578192299994,
+  "hours": null
+ },
+ {
+  "name": "OAKHURST MEDICAL CENTERS, INC.",
+  "kind": "FQHC",
+  "lat": 33.76929239100008,
+  "lng": -84.38554120499998,
+  "hours": null
+ },
+ {
+  "name": "OAKHURST MEDICAL CENTERS, INC.",
+  "kind": "FQHC",
+  "lat": 33.81301499600005,
+  "lng": -84.39380819199994,
+  "hours": null
+ },
+ {
+  "name": "MEDCURA HEALTH INC.",
+  "kind": "FQHC",
+  "lat": 33.75411398000006,
+  "lng": -84.38851703199998,
+  "hours": null
+ },
+ {
+  "name": "WEST END MEDICAL CENTER AT ADAMSVILLE",
+  "kind": "FQHC",
+  "lat": 33.763272173000075,
+  "lng": -84.50950033199996,
+  "hours": null
+ },
+ {
+  "name": "SELECT SPECIALTY HOSPITAL - MIDTOWN ATLANTA, LLC",
+  "kind": "Hospital",
+  "lat": 33.77385348700005,
+  "lng": -84.38313727499997,
+  "hours": null
+ },
+ {
+  "name": "SHEPHERD CENTER",
+  "kind": "Hospital",
+  "lat": 33.80991771500004,
+  "lng": -84.39361775499998,
+  "hours": null
+ },
+ {
+  "name": "REHABILITATION HOSPITAL OF ATLANTA",
+  "kind": "Hospital",
+  "lat": 33.808816249000074,
+  "lng": -84.39510604599997,
+  "hours": null
+ },
+ {
+  "name": "WELLSTAR NORTH FULTON MEDICAL CENTER",
+  "kind": "Hospital",
+  "lat": 34.062928354000064,
+  "lng": -84.31992791799996,
+  "hours": null
+ },
+ {
+  "name": "SAINT JOSEPH'S HOSPITAL OF ATLANTA, INC",
+  "kind": "Hospital",
+  "lat": 33.90893837600004,
+  "lng": -84.34975651299999,
+  "hours": null
+ },
+ {
+  "name": "EMORY JOHNS CREEK HOSPITAL",
+  "kind": "Hospital",
+  "lat": 34.06666110900005,
+  "lng": -84.17638648499997,
+  "hours": null
+ },
+ {
+  "name": "EMORY UNIVERSITY HOSPITAL MIDTOWN",
+  "kind": "Hospital",
+  "lat": 33.76929239100008,
+  "lng": -84.38554120499998,
+  "hours": null
+ },
+ {
+  "name": "NORTHSIDE HOSPITAL",
+  "kind": "Hospital",
+  "lat": 33.90846806800005,
+  "lng": -84.35398878699993,
+  "hours": null
+ },
+ {
+  "name": "GRADY MEMORIAL HOSPITAL",
+  "kind": "Hospital",
+  "lat": 33.751786870000046,
+  "lng": -84.38192851999997,
+  "hours": null
+ },
+ {
+  "name": "PIEDMONT HOSPITAL, INC",
+  "kind": "Hospital",
+  "lat": 33.808816249000074,
+  "lng": -84.39510604599997,
+  "hours": null
+ },
+ {
+  "name": "PIEDMONT HOSPITAL",
+  "kind": "Hospital",
+  "lat": 33.808816249000074,
+  "lng": -84.39510604599997,
+  "hours": null
+ },
+ {
+  "name": "Healing Community Center- Mobile Unit",
+  "kind": "Health Center site",
+  "lat": 33.72663198200007,
+  "lng": -84.51624600399998,
+  "hours": 4.0
+ },
+ {
+  "name": "YourTown - Health Medical, Dental, and Behavioral Health Clinic",
+  "kind": "Health Center site",
+  "lat": 33.52592995100002,
+  "lng": -84.66375132299999,
+  "hours": 5.0
+ },
+ {
+  "name": "Mercy Care at Salvation Army",
+  "kind": "Health Center site",
+  "lat": 33.77286681100003,
+  "lng": -84.40257021399998,
+  "hours": 7.5
+ },
+ {
+  "name": "HEAL @ Hollis Innovation Academy",
+  "kind": "Health Center site",
+  "lat": 33.760842007000065,
+  "lng": -84.41093904199994,
+  "hours": 8.0
+ },
+ {
+  "name": "MedCura Whitefoord (Kipp Woodson Park)",
+  "kind": "Health Center site",
+  "lat": 33.77213515500006,
+  "lng": -84.43949476099993,
+  "hours": 35.0
+ },
+ {
+  "name": "The Family Health Center at College Park School-Based",
+  "kind": "Health Center site",
+  "lat": 33.65659845700003,
+  "lng": -84.45639041499999,
+  "hours": 40.0
+ },
+ {
+  "name": "The Family Health Center of GA dba Georgia Center for Women at Peachtree",
+  "kind": "Health Center site",
+  "lat": 33.76929239100008,
+  "lng": -84.38554120499998,
+  "hours": 40.0
+ },
+ {
+  "name": "Mobile Sprinter Medical Unit",
+  "kind": "Health Center site",
+  "lat": 33.73667970500003,
+  "lng": -84.41638962599995,
+  "hours": 40.0
+ },
+ {
+  "name": "Mobile Medical and Dental Unit",
+  "kind": "Health Center site",
+  "lat": 33.73667970500003,
+  "lng": -84.41638962599995,
+  "hours": 40.0
+ },
+ {
+  "name": "The Family Health Centers at Love T. Nolan School Base",
+  "kind": "Health Center site",
+  "lat": 33.57237001100003,
+  "lng": -84.48061998199995,
+  "hours": 40.0
+ },
+ {
+  "name": "The Family Health Center at Banneker School-Based Health Center",
+  "kind": "Health Center site",
+  "lat": 33.592929981000054,
+  "lng": -84.51763999899998,
+  "hours": 40.0
+ },
+ {
+  "name": "The Family Health Center at Lake Forest",
+  "kind": "Health Center site",
+  "lat": 33.916716489000066,
+  "lng": -84.38584680899999,
+  "hours": 40.0
+ },
+ {
+  "name": "Southside Medical Center School Based Health Center at Kipp Vision",
+  "kind": "Health Center site",
+  "lat": 33.68952110600003,
+  "lng": -84.36635427399995,
+  "hours": 40.0
+ },
+ {
+  "name": "SOUTHSIDE MEDICAL CENTER - East Point Clinic",
+  "kind": "Health Center site",
+  "lat": 33.681096539000066,
+  "lng": -84.42486037699996,
+  "hours": 40.0
+ },
+ {
+  "name": "Mobile Sprinter Medical Unit II",
+  "kind": "Health Center site",
+  "lat": 33.73667970500003,
+  "lng": -84.41638962599995,
+  "hours": 40.0
+ },
+ {
+  "name": "MedCura Buckhead",
+  "kind": "Health Center site",
+  "lat": 33.81301499600005,
+  "lng": -84.39380819199994,
+  "hours": 40.0
+ },
+ {
+  "name": "SOUTHSIDE MEDICAL CENTER - Mobile Medical Clinic",
+  "kind": "Health Center site",
+  "lat": 33.72631942100003,
+  "lng": -84.39189770499996,
+  "hours": 40.0
+ },
+ {
+  "name": "HEALing Community Center",
+  "kind": "Health Center site",
+  "lat": 33.72663198200007,
+  "lng": -84.51624600399998,
+  "hours": 40.0
+ },
+ {
+  "name": "Care Center at Dobbs Elementary",
+  "kind": "Health Center site",
+  "lat": 33.69829008500005,
+  "lng": -84.37248588699998,
+  "hours": 40.0
+ },
+ {
+  "name": "MedCura Midtown",
+  "kind": "Health Center site",
+  "lat": 33.76929239100008,
+  "lng": -84.38554120499998,
+  "hours": 40.0
+ },
+ {
+  "name": "Mercy Care at Neighborhood Union",
+  "kind": "Health Center site",
+  "lat": 33.75964427500003,
+  "lng": -84.41039748699995,
+  "hours": 40.0
+ },
+ {
+  "name": "Healing Community Center - Abernathy",
+  "kind": "Health Center site",
+  "lat": 33.738513330000046,
+  "lng": -84.42691746399998,
+  "hours": 40.0
+ },
+ {
+  "name": "Mercy Care at Gateway Center",
+  "kind": "Health Center site",
+  "lat": 33.74763087100007,
+  "lng": -84.39451612699997,
+  "hours": 42.5
+ },
+ {
+  "name": "THE FAMILY HEALTH CENTER AT WEST END",
+  "kind": "Health Center site",
+  "lat": 33.73667970500003,
+  "lng": -84.41638962599995,
+  "hours": 44.0
+ },
+ {
+  "name": "Mercy Care at City of Refuge",
+  "kind": "Health Center site",
+  "lat": 33.76204598400005,
+  "lng": -84.43066836499997,
+  "hours": 45.0
+ },
+ {
+  "name": "YourTown Health",
+  "kind": "Health Center site",
+  "lat": 33.52627939200005,
+  "lng": -84.66324748699998,
+  "hours": 50.0
+ },
+ {
+  "name": "YourTown Health QuickCare",
+  "kind": "Health Center site",
+  "lat": 33.52538814500008,
+  "lng": -84.66578192299994,
+  "hours": 50.0
+ },
+ {
+  "name": "Mercy Care Decatur Street",
+  "kind": "Health Center site",
+  "lat": 33.751071600000046,
+  "lng": -84.37448430099994,
+  "hours": 50.0
+ },
+ {
+  "name": "Mercy Care Mobile 2",
+  "kind": "Health Center site",
+  "lat": 33.751071600000046,
+  "lng": -84.37448430099994,
+  "hours": 52.5
+ },
+ {
+  "name": "Mercy Care Mobile",
+  "kind": "Health Center site",
+  "lat": 33.751071600000046,
+  "lng": -84.37448430099994,
+  "hours": 52.5
+ },
+ {
+  "name": "SOUTHSIDE MEDICAL CENTER - Main Center / Corporate HQ",
+  "kind": "Health Center site",
+  "lat": 33.72631942100003,
+  "lng": -84.39189770499996,
+  "hours": 64.0
+ }
+]

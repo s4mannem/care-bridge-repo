@@ -33,6 +33,8 @@ Point the UI at it with `flutter run -d chrome --dart-define=CAREBRIDGE_API=http
 | `carebridge/api/deps.py` | Dependency providers (settings, BigQuery repo, agent runner) |
 | `carebridge/agents/runner.py` | The `AgentRunner` seam. `stub` serves recorded plans; `adk` will run the multi-agent graph |
 | `carebridge/data/bigquery.py` | `a4i_health` access via Application Default Credentials |
+| `carebridge/data/bq_mcp.py` | `a4i_health` via the Google-managed BigQuery MCP server (`execute_sql_readonly`); needs `roles/mcp.toolUser` |
+| `carebridge/agents/health_agent/` | Health & Access evidence agent (plan 02): Gemini, one named-query tool over the MCP client |
 | `carebridge/contracts/` | Plan 00 Pydantic models (`PlanRequest`, `PlanResponse`, plan/audit/evidence/outreach) and `session.state` keys; `ui/lib/models.dart` mirrors them |
 | `carebridge/security/` | Race-blind planner guard, PII guard, prompt-injection screening, OWASP callbacks for the agents |
 | `carebridge/telemetry/` | Request-id correlation and the ADK telemetry plugin |

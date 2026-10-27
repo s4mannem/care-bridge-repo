@@ -1,6 +1,6 @@
-# `carebridge.tools.optimizer` — Four-Stop Coverage Optimizer Tool (Plan 05)
+# `carebridge.tools.optimizer` — Four-Stop Coverage Optimizer Tool
 
-The [`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/__init__.py) package implements the deterministic, race-blind spatial optimization engine used by the Siting Planner Agent (Plan 06) to select **4 distinct Saturday mobile clinic stops**, explain **runner-up neighborhoods (`#5`–`#8`, Question 7)**, and evaluate **$\pm 15\%$ weight perturbation sensitivity**.
+The [`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/__init__.py) package implements the deterministic, race-blind spatial optimization engine used by the Siting Planner Agent to select **4 distinct Saturday mobile clinic stops**, explain **runner-up neighborhoods (`#5`–`#8`, Question 7)**, and evaluate **$\pm 15\%$ weight perturbation sensitivity**.
 
 ---
 
@@ -45,7 +45,7 @@ Implements greedy maximum-coverage stop selection and runner-up explanations:
   - Discounts already-covered tracts by `OVERLAP_DISCOUNT_FACTOR = 0.15` (an `85%` penalty on redundant coverage) so each new stop maximizes marginal newly covered need-weighted population.
   - Enforces a minimum inter-stop Haversine separation of `MIN_INTER_STOP_SEPARATION_KM = 5.0` km.
   - Assigns provisional candidate venues (`host_verified = False`, `provisional_warning` banner) and tailors `recommended_services` and `evidence_citations` to the tract's specific burden indicators.
-  - Supports controlled revision-loop testing (`simulate_first_draft_defect=True` when `revision_number == 0`), intentionally placing Stop `#2` within `< 5.0 km` of Stop `#1` and injecting a spatial grain overclaim so the Equity & Rigor Auditor (Plan 07) can demonstrate rejection and automated repair on `revision_number == 1`.
+  - Supports controlled revision-loop testing (`simulate_first_draft_defect=True` when `revision_number == 0`), intentionally placing Stop `#2` within `< 5.0 km` of Stop `#1` and injecting a spatial grain overclaim so the Equity & Rigor Auditor can demonstrate rejection and automated repair on `revision_number == 1`.
 - **[`build_runner_up_explanations()`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/coverage.py#L249-L315)**:
   - Inspects high-need tracts not selected as primary anchors (`need_rank` `#5`–`#8`, Question 7) and classifies each with a deterministic `deferral_reason_code` (`catchment_already_covered`, `inter_stop_separation_constraint`, `no_saturday_transit_or_venue`, or `lower_marginal_coverage`), recording `nearest_selected_stop_rank` and `distance_to_nearest_stop_km`.
 
@@ -64,5 +64,5 @@ Exposes [`optimize_four_clinic_stops()`](file:///Users/dvt112/Downloads/A4I/care
 
 Tested in [`tests/test_05_optimizer_tool.py`](file:///Users/dvt112/Downloads/A4I/tests/test_05_optimizer_tool.py):
 ```bash
-pytest tests/test_05_optimizer_tool.py -v
+python3 -m unittest tests/test_05_optimizer_tool.py -v
 ```

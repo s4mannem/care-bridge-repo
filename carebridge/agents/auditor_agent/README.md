@@ -1,4 +1,4 @@
-# `carebridge.agents.auditor_agent` — Independent Equity & Rigor Auditor Agent (Plan 07)
+# `carebridge.agents.auditor_agent` — Independent Equity & Rigor Auditor Agent
 
 The [`carebridge/agents/auditor_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/__init__.py) package implements **Track 2: The Independent Equity & Rigor Auditor Agent (`equity_rigor_auditor`)**, which enforces CareBridge Fulton's methodological quality gate, executes the post-hoc distributional equity audit, and maintains the **One-Way Demographic Diode**.
 
@@ -61,5 +61,5 @@ Implemented in [`_compute_posthoc_demographic_impact()`](file:///Users/dvt112/Do
 
 Tested in [`tests/test_07_auditor_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_07_auditor_agent.py):
 ```bash
-pytest tests/test_07_auditor_agent.py -v
+python3 -m unittest tests/test_07_auditor_agent.py -v
 ```

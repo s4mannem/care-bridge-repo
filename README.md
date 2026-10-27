@@ -30,15 +30,15 @@ flowchart TD
     Req["PlanRequest (county_fips='13121')"] --> Armor["Model Armor & OWASP Input Guardrail"]
     Armor --> ParallelEv["ParallelAgent: Evidence Gatherer"]
 
-    subgraph ParallelEv ["Phase 1: Parallel Evidence Gathering (Plans 02 & 03)"]
+    subgraph ParallelEv ["Phase 1: Parallel Evidence Gathering"]
         AgentA["Health & Access Agent (Agent A)<br/>output_key: health_evidence"]
         AgentB["Transit & Community Agent (Agent B)<br/>output_key: mobility_evidence"]
     end
 
-    ParallelEv --> Validator["Phase 2: Evidence Validator Agent (Plan 04)<br/>output_key: evidence_report"]
+    ParallelEv --> Validator["Phase 2: Evidence Validator Agent<br/>output_key: evidence_report"]
     Validator --> Loop["LoopAgent: Plan & Audit Loop (max_iterations=2)"]
 
-    subgraph Loop ["Phase 3: Race-Blind Siting & Protected Equity Audit (Plans 05, 06, 07)"]
+    subgraph Loop ["Phase 3: Race-Blind Siting & Protected Equity Audit"]
         Planner["Track 1: Siting Planner Agent (Race-Blind)<br/>Tool: optimize_four_clinic_stops<br/>output_key: draft_plan"]
         Auditor["Track 2: Equity & Rigor Auditor Agent<br/>Protected Tool: mcp_query_posthoc_demographic_audit<br/>output_key: audit_report"]
         Diode["One-Way Demographic Diode<br/>Sanitized State: non_demographic_feedback"]
@@ -46,7 +46,7 @@ flowchart TD
         Auditor -- "REJECTED (Non-Demographic Defects Only)" --> Diode --> Planner
     end
 
-    Loop -- "APPROVED / Final Plan" --> Comm["Phase 4: Track 3 Community Communications Agent (Plan 08)<br/>output_key: outreach_messages (EN / ES)"]
+    Loop -- "APPROVED / Final Plan" --> Comm["Phase 4: Track 3 Community Communications Agent<br/>output_key: outreach_messages (EN / ES)"]
 ```
 
 ### Core Engineering Guarantees
@@ -62,22 +62,25 @@ flowchart TD
 
 ---
 
-## Completed Implementation Plans (`Plan 00` – `Plan 08`)
+## Component & Module Documentation Index
 
-| Plan | Component / Module | Status | Documentation |
-| :--- | :--- | :--- | :--- |
-| **Plan 00** | Shared Contracts, Security Guardrails, Telemetry & Fulton Fixtures | Completed | [`carebridge/contracts/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/README.md), [`carebridge/security/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/security/README.md), [`carebridge/telemetry/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/telemetry/README.md), [`carebridge/mocks/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/README.md) |
-| **Plan 01** | BigQuery Data Plane, SQL Views & MCP Toolset Boundary | Completed | [`carebridge/data_plane/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/README.md), [`carebridge/data_plane/sql/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql/README.md) |
-| **Plan 02** | Health & Access Evidence Agent (Agent A · MCP) | Completed | [`carebridge/agents/health_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/README.md) |
-| **Plan 03** | Transit & Community Evidence Agent (Agent B · Optional Enrichments) | Completed | [`carebridge/agents/mobility_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/README.md) |
-| **Plan 04** | Evidence Validator Agent (Sequential Data-Quality Gate) | Completed | [`carebridge/agents/validator_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/README.md) |
-| **Plan 05** | Four-Stop Coverage Optimizer Tool (Deterministic Spatial Math) | Completed | [`carebridge/tools/optimizer/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md) |
-| **Plan 06** | Siting Planner Agent (Track 1 Race-Blind Inputs) | Completed | [`carebridge/agents/planner_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md) |
-| **Plan 07** | Independent Equity & Rigor Auditor Agent (Track 2 Protected Boundary) | Completed | [`carebridge/agents/auditor_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/README.md) |
-| **Plan 08** | Community Communications Agent (Track 3 Bilingual EN/ES) | Completed | [`carebridge/agents/communicator_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/README.md) |
-| *Plan 09* | *Root Orchestrator (`ParallelAgent` + `LoopAgent` + `SequentialAgent`)* | *Planned* | [`plans/plan_09_orchestrator_workflow.md`](file:///Users/dvt112/Downloads/A4I/plans/plan_09_orchestrator_workflow.md) |
-| *Plan 10* | *FastAPI Service & Interactive Equity Co-Pilot UI* | *Planned* | [`plans/plan_10_api_and_ui_dashboard.md`](file:///Users/dvt112/Downloads/A4I/plans/plan_10_api_and_ui_dashboard.md) |
-| *Plan 11* | *CI/CD, End-to-End Evaluation Suite & Cloud Run Deployment* | *Planned* | [`plans/plan_11_eval_cicd_and_cloud_run.md`](file:///Users/dvt112/Downloads/A4I/plans/plan_11_eval_cicd_and_cloud_run.md) |
+| Component / Module | Description | Documentation |
+| :--- | :--- | :--- |
+| **Core Package** | Configuration settings, environment bindings, and compatibility shims | [`carebridge/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/README.md) |
+| **Contracts & State Keys** | Typed Pydantic schemas and ADK `session.state` visibility boundaries | [`carebridge/contracts/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/README.md) |
+| **Security & Guardrails** | Race-blind Planner guards, PII checks, Model Armor, and OWASP callbacks | [`carebridge/security/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/security/README.md) |
+| **Telemetry & Logging** | OpenTelemetry span instrumentation, structured Cloud Logging, and ADK plugin | [`carebridge/telemetry/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/telemetry/README.md) |
+| **Fulton County Fixtures** | Realistic 12-tract Fulton County (`13121`) offline fixtures and builders | [`carebridge/mocks/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/mocks/README.md) |
+| **BigQuery MCP Data Plane** | Read-only MCP bridge, 100 MB billing cap, toolset isolation, and SQL views | [`carebridge/data_plane/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/README.md), [`carebridge/data_plane/sql/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/sql/README.md) |
+| **4-Stop Coverage Optimizer** | Deterministic Haversine spatial coverage, runner-up explanations, and sensitivity | [`carebridge/tools/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/README.md), [`carebridge/tools/optimizer/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md) |
+| **Multi-Agent System** | Overview of all ADK agents across Tracks 1, 2, and 3 | [`carebridge/agents/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/README.md) |
+| **Health & Access Agent** | Evidence Agent A (`health_access_agent`) — tract burden, care sites, HSA & AQ | [`carebridge/agents/health_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/README.md) |
+| **Transit & Community Agent** | Evidence Agent B (`transit_community_agent`) — MARTA GTFS, food access & venues | [`carebridge/agents/mobility_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/README.md) |
+| **Evidence Validator Agent** | Sequential Data-Quality Gate (`evidence_validator_agent`) — `check()` vs `note()` | [`carebridge/agents/validator_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/README.md) |
+| **Siting Planner Agent** | Track 1 Race-Blind Siting Advisor (`siting_planner_agent`) | [`carebridge/agents/planner_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md) |
+| **Equity & Rigor Auditor Agent** | Track 2 Protected Post-Hoc Auditor (`equity_rigor_auditor`) & Demographic Diode | [`carebridge/agents/auditor_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/README.md) |
+| **Community Communicator Agent** | Track 3 Bilingual (EN/ES) Outreach Agent (`community_communications_agent`) | [`carebridge/agents/communicator_agent/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/README.md) |
+| **Test Suite** | Unit and end-to-end certification tests | [`tests/README.md`](file:///Users/dvt112/Downloads/A4I/tests/README.md) |
 
 ---
 
@@ -86,28 +89,26 @@ flowchart TD
 ```text
 A4I/
 ├── README.md                          # Project overview & documentation index
-├── plans/                             # Architectural master index & 12 modular plans
-│   └── README.md
 ├── carebridge/                        # Core Python package
 │   ├── README.md                      # Package configuration & module overview
 │   ├── config.py                      # Environment-driven Settings (Pydantic)
 │   ├── _compat.py                     # Offline-resilient Pydantic & GenAI shims
-│   ├── contracts/                     # Plan 00: Strict Pydantic schemas & state keys
-│   ├── security/                      # Plan 00: Race-blind guard, Model Armor, OWASP callbacks
-│   ├── telemetry/                     # Plan 00: OpenTelemetry spans & ADK telemetry plugin
-│   ├── mocks/                         # Plan 00: Fulton County (13121) 12-tract fixtures
-│   ├── data_plane/                    # Plan 01: BigQuery MCP bridge, validators & SQL views
-│   │   └── sql/                       # Plan 01: MARTA GTFS, enrichments & demographic audit SQL
+│   ├── contracts/                     # Strict Pydantic schemas & state keys
+│   ├── security/                      # Race-blind guard, Model Armor, OWASP callbacks
+│   ├── telemetry/                     # OpenTelemetry spans & ADK telemetry plugin
+│   ├── mocks/                         # Fulton County (13121) 12-tract fixtures
+│   ├── data_plane/                    # BigQuery MCP bridge, validators & SQL views
+│   │   └── sql/                       # MARTA GTFS, enrichments & demographic audit SQL
 │   ├── tools/                         # Deterministic ADK tools package
-│   │   └── optimizer/                 # Plan 05: 4-stop spatial coverage optimizer & sensitivity
-│   └── agents/                        # ADK multi-agent definitions (Plans 02, 03, 04, 06, 07, 08)
-│       ├── health_agent/              # Plan 02: Evidence Agent A (Health & Access)
-│       ├── mobility_agent/            # Plan 03: Evidence Agent B (Transit & Community)
-│       ├── validator_agent/           # Plan 04: Sequential Data-Quality Gate
-│       ├── planner_agent/             # Plan 06: Track 1 Race-Blind Siting Planner
-│       ├── auditor_agent/             # Plan 07: Track 2 Independent Equity & Rigor Auditor
-│       └── communicator_agent/        # Plan 08: Track 3 Bilingual Community Communicator
-└── tests/                             # Certification test suite (test_00 through test_08)
+│   │   └── optimizer/                 # 4-stop spatial coverage optimizer & sensitivity
+│   └── agents/                        # ADK multi-agent definitions
+│       ├── health_agent/              # Evidence Agent A (Health & Access)
+│       ├── mobility_agent/            # Evidence Agent B (Transit & Community)
+│       ├── validator_agent/           # Sequential Data-Quality Gate
+│       ├── planner_agent/             # Track 1 Race-Blind Siting Planner
+│       ├── auditor_agent/             # Track 2 Independent Equity & Rigor Auditor
+│       └── communicator_agent/        # Track 3 Bilingual Community Communicator
+└── tests/                             # Certification & unit test suite
     └── README.md
 ```
 
@@ -115,24 +116,10 @@ A4I/
 
 ## Quickstart & Running Tests
 
-Run the full certification test suite for Plans `00` through `08`:
+Run the full test suite via `unittest` or `pytest`:
 
 ```bash
-pytest -v
-```
-
-Or run individual plan certification suites with `unittest` or `pytest`:
-
-```bash
-pytest tests/test_00_contracts_and_security.py \
-       tests/test_01_bigquery_mcp.py \
-       tests/test_02_health_agent.py \
-       tests/test_03_mobility_agent.py \
-       tests/test_04_validator_agent.py \
-       tests/test_05_optimizer_tool.py \
-       tests/test_06_planner_agent.py \
-       tests/test_07_auditor_agent.py \
-       tests/test_08_communicator_agent.py -v
+python3 -m unittest discover -s tests -p "test_*.py" -v
 ```
 
 See [`tests/README.md`](file:///Users/dvt112/Downloads/A4I/tests/README.md) for detailed test coverage documentation.

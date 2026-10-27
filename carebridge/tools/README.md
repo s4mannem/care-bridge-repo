@@ -6,9 +6,9 @@ The [`carebridge/tools/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/__
 
 ## Subpackages
 
-| Subpackage | Plan | Primary ADK Tool | Used By | Documentation |
-| :--- | :--- | :--- | :--- | :--- |
-| **[`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md)** | **Plan 05** | [`optimize_four_clinic_stops()`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/tool.py#L41-L162) | [`siting_planner_agent`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md) (Track 1) | [`optimizer/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md) |
+| Subpackage | Primary ADK Tool | Used By | Documentation |
+| :--- | :--- | :--- | :--- |
+| **[`carebridge/tools/optimizer/`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md)** | [`optimize_four_clinic_stops()`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/tool.py#L41-L162) | [`siting_planner_agent`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/README.md) (Track 1) | [`optimizer/README.md`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/README.md) |
 
 ---
 

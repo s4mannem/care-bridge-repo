@@ -1,4 +1,4 @@
-# `carebridge.telemetry` — OpenTelemetry Tracing & Structured Cloud Logging (Plan 00)
+# `carebridge.telemetry` — OpenTelemetry Tracing & Structured Cloud Logging
 
 The [`carebridge/telemetry/`](file:///Users/dvt112/Downloads/A4I/carebridge/telemetry/__init__.py) package provides OpenTelemetry span instrumentation, request correlation IDs, structured JSON Cloud Logging, and an ADK telemetry plugin for CareBridge Fulton.
 
@@ -34,18 +34,18 @@ Provides [`CareBridgeTelemetryPlugin`](file:///Users/dvt112/Downloads/A4I/carebr
 
 ---
 
-## Standard Span Naming Conventions Across Plans
+## Standard Span Naming Conventions
 
 | Span Name | Emitted By | Key Attributes |
 | :--- | :--- | :--- |
-| `bq.mcp.<query_name>` | [`BigQueryMCPBridge`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/bq_mcp_client.py) (Plan 01) | `county_fips`, `maximum_bytes_billed`, `rows_returned` |
-| `agent.health_access.fetch_evidence` | [`fetch_county_health_evidence`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/agent.py) (Plan 02) | `county_fips`, `tract_count`, `shortage_facilities_count`, `disease_data_unavailable` |
-| `agent.mobility.fetch_county_mobility_evidence` | [`fetch_county_mobility_evidence`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/agent.py) (Plan 03) | `county_fips`, `marta_gtfs_available`, `candidate_venue_count` |
-| `agent.validator.evaluate_evidence_quality` | [`evaluate_evidence_quality`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/agent.py) (Plan 04) | `county_fips`, `core_tables_ready`, `blocking_failure_count`, `check_count` |
-| `tool.optimizer.optimize_four_clinic_stops` | [`optimize_four_clinic_stops`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/tool.py) (Plan 05) | `county_fips`, `strategy`, `revision_number`, `mean_jaccard_similarity` |
-| `agent.siting_planner.run` | [`SitingPlannerAgent`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/agent.py) (Plan 06) | `county_fips`, `revision_number`, `status`, `stop_count` |
-| `agent.auditor.execute_independent_plan_audit` | [`execute_independent_plan_audit`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/agent.py) (Plan 07) | `county_fips`, `revision_audited`, `verdict`, `defect_count` |
-| `agent.communicator.draft_bilingual_outreach_messages` | [`draft_bilingual_outreach_messages`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/agent.py) (Plan 08) | `county_fips`, `stop_notices_count`, `unpicked_explanations_count` |
+| `bq.mcp.<query_name>` | [`BigQueryMCPBridge`](file:///Users/dvt112/Downloads/A4I/carebridge/data_plane/bq_mcp_client.py) | `county_fips`, `maximum_bytes_billed`, `rows_returned` |
+| `agent.health_access.fetch_evidence` | [`fetch_county_health_evidence`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/agent.py) | `county_fips`, `tract_count`, `shortage_facilities_count`, `disease_data_unavailable` |
+| `agent.mobility.fetch_county_mobility_evidence` | [`fetch_county_mobility_evidence`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/mobility_agent/agent.py) | `county_fips`, `marta_gtfs_available`, `candidate_venue_count` |
+| `agent.validator.evaluate_evidence_quality` | [`evaluate_evidence_quality`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/validator_agent/agent.py) | `county_fips`, `core_tables_ready`, `blocking_failure_count`, `check_count` |
+| `tool.optimizer.optimize_four_clinic_stops` | [`optimize_four_clinic_stops`](file:///Users/dvt112/Downloads/A4I/carebridge/tools/optimizer/tool.py) | `county_fips`, `strategy`, `revision_number`, `mean_jaccard_similarity` |
+| `agent.siting_planner.run` | [`SitingPlannerAgent`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/planner_agent/agent.py) | `county_fips`, `revision_number`, `status`, `stop_count` |
+| `agent.auditor.execute_independent_plan_audit` | [`execute_independent_plan_audit`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/auditor_agent/agent.py) | `county_fips`, `revision_audited`, `verdict`, `defect_count` |
+| `agent.communicator.draft_bilingual_outreach_messages` | [`draft_bilingual_outreach_messages`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/agent.py) | `county_fips`, `stop_notices_count`, `unpicked_explanations_count` |
 
 ---
 
@@ -53,5 +53,5 @@ Provides [`CareBridgeTelemetryPlugin`](file:///Users/dvt112/Downloads/A4I/carebr
 
 Tested in [`tests/test_00_contracts_and_security.py`](file:///Users/dvt112/Downloads/A4I/tests/test_00_contracts_and_security.py):
 ```bash
-pytest tests/test_00_contracts_and_security.py -k "telemetry" -v
+python3 -m unittest tests/test_00_contracts_and_security.py -v
 ```

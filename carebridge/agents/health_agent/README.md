@@ -1,4 +1,4 @@
-# `carebridge.agents.health_agent` — Health & Access Evidence Agent (Plan 02)
+# `carebridge.agents.health_agent` — Health & Access Evidence Agent
 
 The [`carebridge/agents/health_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/health_agent/__init__.py) package implements **Evidence Agent A (`health_access_agent`)**, which runs as Branch A of the parallel evidence-gathering phase to retrieve race-blind tract burden, care access distances, HRSA facility/area shortages, 4-county HSA respiratory surveillance, and EPA 12 km grid PM2.5 exposure tail data.
 
@@ -49,5 +49,5 @@ Defines [`HEALTH_AGENT_INSTRUCTION`](file:///Users/dvt112/Downloads/A4I/carebrid
 
 Tested in [`tests/test_02_health_agent.py`](file:///Users/dvt112/Downloads/A4I/tests/test_02_health_agent.py):
 ```bash
-pytest tests/test_02_health_agent.py -v
+python3 -m unittest tests/test_02_health_agent.py -v
 ```

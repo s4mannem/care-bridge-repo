@@ -1,4 +1,4 @@
-# `carebridge.contracts` — Typed Data Contracts & ADK State Boundaries (Plan 00)
+# `carebridge.contracts` — Typed Data Contracts & ADK State Boundaries
 
 The [`carebridge/contracts/`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/__init__.py) package defines all inter-agent Pydantic schemas and ADK `session.state` keys for CareBridge Fulton. No agent or tool passes untyped dictionaries across boundaries without validating against these contracts.
 
@@ -52,7 +52,7 @@ Models multi-resolution public health and mobility evidence:
 ### 2. [`plan_models.py`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py)
 Models the race-blind siting plan and counterfactual explanations:
 - **[`ScoreBreakdown`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L14-L39)**: Transparent component breakdown (`uninsured_gap_norm`, `safety_net_distance_norm`, `zero_vehicle_norm`, `chronic_respiratory_norm`, `checkup_preventive_gap_norm`, `saturday_transit_access_bonus`, `composite_need_score`, and `estimate_kind="heuristic_composite_score"`).
-- **[`ProposedClinicStop`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L42-L90)**: One of the 4 Saturday clinic stops (`stop_rank` 1..4), including `covered_tract_geoids`, `marginal_ newly_covered_tracts`, `recommended_services`, `evidence_citations`, and `host_verified=False`.
+- **[`ProposedClinicStop`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L42-L90)**: One of the 4 Saturday clinic stops (`stop_rank` 1..4), including `covered_tract_geoids`, `marginal_newly_covered_tracts`, `recommended_services`, `evidence_citations`, and `host_verified=False`.
 - **[`RunnerUpTractExplanation`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L93-L124)**: Answers Question 7 for high-need runner-up tracts (`need_rank >= 5`) not selected as primary anchors, recording `deferral_reason_code`, `nearest_selected_stop_rank`, and `distance_to_nearest_stop_km`.
 - **[`SensitivitySummary`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L127-L147)**: Summarizes top-4 stability across $\pm 15\%$ weight perturbations (`perturbation_pct=15.0`, `mean_jaccard_similarity`, `core_stable_tract_geoids`, `borderline_swapped_tract_geoids`).
 - **[`DraftPlan`](file:///Users/dvt112/Downloads/A4I/carebridge/contracts/plan_models.py#L150-L185)**: Output schema of the Siting Planner Agent (`state["draft_plan"]` / `state["final_plan"]`).
@@ -82,5 +82,5 @@ Models top-level API requests and responses:
 
 Tested in [`tests/test_00_contracts_and_security.py`](file:///Users/dvt112/Downloads/A4I/tests/test_00_contracts_and_security.py):
 ```bash
-pytest tests/test_00_contracts_and_security.py -v
+python3 -m unittest tests/test_00_contracts_and_security.py -v
 ```

@@ -9,7 +9,7 @@ from carebridge._compat import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    google_cloud_project: str = "a4i-fulton-2026"
+    google_cloud_project: str = "qwiklabs-gcp-04-e4394201f6b9"
     google_cloud_location: str = "us-central1"
     bigquery_location: str = "US"
     bigquery_dataset: str = "a4i_health"

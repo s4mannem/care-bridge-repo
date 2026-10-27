@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from carebridge.agents.coordinator.agent import root_agent
 from carebridge.agents.coordinator.exit_gate import (
     AuditLoopExitChecker,
     AuditLoopExitGate,
@@ -38,4 +39,5 @@ __all__ = [
     "compute_needs_human_review",
     "execute_carebridge_plan",
     "execute_carebridge_plan_sync",
+    "root_agent",
 ]

@@ -38,7 +38,7 @@ tools:
         b.pct_high_bp AS pct_bphigh,
         b.pct_checkup,
         ROUND(100.0 - b.pct_checkup, 2) AS pct_checkup_gap,
-        CAST(NULL AS FLOAT64) AS pct_uninsured_18_64_ci_width,  -- CI columns not loaded
+        CAST(NULL AS FLOAT64) AS pct_uninsured_18_64_ci_width,
         b.pct_no_vehicle,
         b.pct_age_65_plus,
         b.pct_mobility_difficulty,
@@ -46,7 +46,7 @@ tools:
         a.km_to_any_care,
         a.km_to_safety_net,
         ROUND(a.km_to_safety_net - a.km_to_any_care, 2) AS extra_km_if_uninsured,
-        CAST(NULL AS FLOAT64) AS cross_border_state_care_km  -- not in v_tract_access
+        CAST(NULL AS FLOAT64) AS cross_border_state_care_km
       FROM `a4i_health.v_burden_tracts` b
       INNER JOIN `a4i_health.v_tract_access` a USING (geo_id)
       WHERE STARTS_WITH(b.geo_id, @county_fips)
@@ -66,11 +66,12 @@ tools:
     statement: |
       SELECT
         @county_fips AS county_fips,
+        COALESCE((SELECT MAX(county_name) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips), 'Fulton') AS county_name,
         (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips) AS care_sites_count,
-        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips AND site_kind != 'Hospital') AS safety_net_sites_count,
+        (SELECT COUNT(*) FROM `a4i_health.v_care_sites` WHERE county_geo_id = @county_fips AND site_kind IN ('FQHC', 'Health Center site')) AS safety_net_sites_count,
         (SELECT COUNT(*) FROM `a4i_health.v_shortage_areas` WHERE STATE_COUNTY_FIPS_CD = @county_fips AND HPSA_STATUS_DESC = 'Designated') AS shortage_areas_count,
         (SELECT COUNT(*) FROM `a4i_health.v_shortage_facilities` WHERE CMN_STATE_COUNTY_FIPS_CD = @county_fips) AS shortage_facilities_count,
-        (SELECT MAX(HPSA_SCORE) FROM `a4i_health.v_shortage_facilities` WHERE CMN_STATE_COUNTY_FIPS_CD = @county_fips) AS max_hpsa_score
+        (SELECT CAST(MAX(HPSA_SCORE) AS FLOAT64) FROM `a4i_health.v_shortage_facilities` WHERE CMN_STATE_COUNTY_FIPS_CD = @county_fips) AS max_hpsa_score
 
   mcp_query_regional_disease_weekly:
     kind: bigquery-sql
@@ -95,8 +96,7 @@ tools:
         ed_trends_influenza,
         ed_trends_rsv
       FROM `a4i_health.v_disease_weekly`
-      -- Latest week that has data: recent weeks are reported as blanks.
-      WHERE fips = @county_fips AND percent_visits_combined IS NOT NULL
+      WHERE fips = @county_fips
       ORDER BY week_end DESC
       LIMIT 1
 

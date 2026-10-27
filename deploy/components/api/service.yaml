@@ -28,12 +28,14 @@ spec:
           resources:
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 2Gi
           env:
             - name: CAREBRIDGE_ENV
               value: ${ENV}
             - name: CAREBRIDGE_AGENT_ENGINE
-              value: stub
+              value: adk
+            - name: GOOGLE_GENAI_USE_VERTEXAI
+              value: "TRUE"
             - name: CAREBRIDGE_REVIEW_STORE
               value: firestore
             - name: BQ_PROJECT
@@ -42,8 +44,9 @@ spec:
               value: a4i_health
             - name: GOOGLE_CLOUD_PROJECT
               value: ${PROJECT_ID}
+            # Gemini 3.x is served from the global endpoint.
             - name: GOOGLE_CLOUD_LOCATION
-              value: ${REGION}
+              value: global
           startupProbe:
             httpGet:
               path: /healthz

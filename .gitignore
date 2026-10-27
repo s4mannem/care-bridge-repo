@@ -1,16 +1,24 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*$py.class
+*.egg-info/
+
+# Virtual environments
 .venv/
 venv/
-*.egg-info/
-.pytest_cache/
+env/
 
-# Credentials and local config - never commit these
+# Environment variables & secrets
 .env
 *.json.key
 service-account*.json
 credentials.json
+
+# Pytest & coverage
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Terraform
 infra/.terraform/
@@ -18,6 +26,6 @@ infra/terraform.tfvars
 *.tfstate
 *.tfstate.backup
 
-# OS
+# OS & macOS
 .DS_Store
 Thumbs.db

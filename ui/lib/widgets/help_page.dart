@@ -328,9 +328,21 @@ class _AskHelp extends StatelessWidget {
         icon: Icons.forum_outlined,
         title: 'Ask',
         children: [
-          _P('After a plan is made, ask questions about it in the Ask tab. Tap a suggested question to start, '
-              'such as "Who does this plan reach?" or "Why didn\'t we pick the tract with the highest need?", or '
-              'type your own. Each answer names the agent that answered and the scale of the data behind it.'),
+          _P('Before a plan exists, the Ask tab plans with you. Say what you want, such as "plan four stops for '
+              'households without a car" or "show the auditor catching an overlap". It shows the request it '
+              'understood: strategy, demo defect and optional datasets. Nothing runs until you press Generate plan, '
+              'and the request form changes to match.'),
+          _P('It only sets what the form can set. The county and the four Saturdays stay as shown, and it says so '
+              'if you ask for something else. If you ask a question before there is a plan, it offers the plan '
+              'first and answers your question once the plan is ready.'),
+          _P('After a plan is made, ask questions about it. Tap a suggested question to start, such as "Who does '
+              'this plan reach?" or "Why didn\'t we pick the tract with the highest need?", or type your own. Each '
+              'answer names the agent that answered and the scale of the data behind it. Start a message with '
+              '"re-plan" to set up a new plan instead.'),
+          _P('Questions in your own words work too, such as "Which neighborhoods have the most people who are sick '
+              'and not being seen?". Nothing here counts people or doctor visits, so the answer uses the closest '
+              'neighborhood-level signals: modeled illness, low checkup rates and distance to a safety-net clinic. '
+              'In the offline recorded version, it answers with the closest suggested question and says which.'),
           _Row(badge: VerdictChip('CANNOT SAY'), text: 'The agents won\'t claim more than the data supports. '
               'Ask about one street, one person, or a trend the data doesn\'t measure and you\'ll get CANNOT SAY '
               'with what it can tell you instead, for example about the wider region.'),

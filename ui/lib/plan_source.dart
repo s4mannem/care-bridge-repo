@@ -54,6 +54,25 @@ class PlanSourceException implements Exception {
   String toString() => message;
 }
 
+final _aboutIndividuals =
+    RegExp(r"\b(which|what) (people|patients|residents|person)\b|\bnames?\b|\bpatients?\b", caseSensitive: false);
+
+/// Routes a free-text question to the recorded question that answers it best, by
+/// topic, in the same order the API's rule-based Ask checks them. Null when the
+/// question is on no topic the recordings cover.
+String? closestRecordedQuestion(String q, Iterable<String> recorded) {
+  bool has(String p) => RegExp(p, caseSensitive: false).hasMatch(q);
+  String? pick(String part) => recorded.where((k) => k.toLowerCase().contains(part)).firstOrNull;
+  if (has(r'covid|flu|influenza|\brsv\b|respirator|rising|surge|outbreak')) return pick('respiratory');
+  if (has(r"why (not|didn.?t)|not (picked|chosen)|left out|skip|didn.?t (we )?(pick|choose)")) return pick('why didn');
+  if (has(r'\brace\b|black|hispanic|latin|asian|white|equity|fair|parity|reach|serve')) return pick('reach');
+  if (has(r'how far|distance|\bkm\b|clinic|safety.?net|doctor')) return pick('how far');
+  if (has(r'need|sick|\bill|seen|unmet|without|checkup|most|where|which|neighbou?rhood|stop|saturday|plan')) {
+    return pick('need the van');
+  }
+  return null;
+}
+
 /// Recorded runs generated from the real data by scripts/build_mock.py: the
 /// plan, the events the API would stream, and answers to the suggested
 /// questions. Review state is kept in memory.
@@ -84,12 +103,25 @@ class RecordedPlanSource implements PlanSource {
   @override
   Future<AskResponse> ask(AskRequest request) async {
     final asks = (await _run(request.plan))['asks'] as Map<String, dynamic>;
-    final hit = asks[request.question.trim()];
-    if (hit == null) {
-      throw PlanSourceException(0, 'needs_api',
-          'This recorded build can only answer the suggested questions. Free-text questions need the live API.');
+    final q = request.question.trim();
+    if (asks[q] case final Map<String, dynamic> hit) return AskResponse.fromJson(hit);
+    if (_aboutIndividuals.hasMatch(q)) {
+      return AskResponse.fromJson({
+        'request_id': 'recorded',
+        'answer': 'I can\'t answer that, and nothing in this system can. I can tell you about places (census '
+            'tracts of about 4,000 people), never about specific people.',
+        'answered_by': 'coordinator',
+        'refused': true,
+      });
     }
-    return AskResponse.fromJson(hit);
+    final key = closestRecordedQuestion(q, asks.keys);
+    if (key == null) {
+      throw PlanSourceException(0, 'needs_api',
+          'This recorded build answers questions about need, why a tract wasn\'t picked, who the plan reaches, '
+          'distance to clinics and respiratory trends. Other questions need the live API.');
+    }
+    final hit = Map<String, dynamic>.from(asks[key] as Map);
+    return AskResponse.fromJson({...hit, 'answer': 'Closest question I can answer offline: "$key"\n\n${hit['answer']}'});
   }
 
   Map<String, dynamic> _state(String id) => _reviews[id] ??= {

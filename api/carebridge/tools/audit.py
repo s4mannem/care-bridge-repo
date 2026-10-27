@@ -1,7 +1,8 @@
 """Equity & rigor audit (plan 07) and outreach drafting (plan 08), deterministic core.
 
-The graph's auditor and communications stand-ins call these until the LLM
-agents exist. The demographic query is auditor-only: its output goes into
+`audit_draft` and `demographic_impact` are the Gemini equity auditor's tools, so
+its verdicts and parity numbers reproduce; the communications stand-in calls
+`draft_outreach`. The demographic query is auditor-only: its output goes into
 `audit_report.demographic_impact` and never back to the planner.
 """
 from datetime import date

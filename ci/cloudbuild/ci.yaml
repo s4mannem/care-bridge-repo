@@ -1,16 +1,26 @@
 # PR check for one component: builds the `test` stage of its Dockerfile, which
-# runs that component's tests. Language-agnostic by construction.
+# runs that component's tests. Language-agnostic by construction. Skipped
+# unless _RUN_TESTS=true.
 #
 # Substitutions come from the trigger (infra/triggers.tf) or ci/submit.sh.
 steps:
+  # Tests are off by default to keep PR checks and releases fast. Set
+  # _RUN_TESTS=true on the trigger (or RUN_TESTS=true for ci/submit.sh) to
+  # build the `test` stage again.
   - id: test
     name: gcr.io/cloud-builders/docker
     env: ["DOCKER_BUILDKIT=1"]
-    args: ["build", "--target", "test", "--progress", "plain", "${_DIR}"]
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        if [[ "${_RUN_TESTS}" != true ]]; then echo "Tests skipped (_RUN_TESTS=${_RUN_TESTS})"; exit 0; fi
+        docker build --target test --progress plain "${_DIR}"
 
 substitutions:
   _COMPONENT: ""
   _DIR: ""
+  _RUN_TESTS: "false"
 
 options:
   # No machineType: Qwiklabs event projects reject custom Cloud Build machine types.

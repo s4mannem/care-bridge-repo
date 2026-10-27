@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars (gitignored) or let bootstrap.sh write it.
+project_id = "your-gcp-project"
+region     = "us-central1"
+prefix     = "carebridge"
+
+# Leave empty until the GitHub connection exists; everything but triggers still applies.
+github_connection = ""
+github_repo_uri   = "https://github.com/s4mannem/care-bridge-repo.git"
+main_branch       = "main"

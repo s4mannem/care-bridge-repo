@@ -44,3 +44,9 @@ variable "main_branch" {
   type        = string
   default     = "main"
 }
+
+variable "maps_extra_referrers" {
+  description = "More web addresses allowed to use the UI's Google Maps key, e.g. the hashed Cloud Run URL (https://carebridge-ui-dev-<hash>-uc.a.run.app/*)."
+  type        = list(string)
+  default     = []
+}

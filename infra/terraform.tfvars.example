@@ -7,3 +7,6 @@ prefix     = "carebridge"
 github_connection = ""
 github_repo_uri   = "https://github.com/s4mannem/care-bridge-repo.git"
 main_branch       = "main"
+
+# Hashed Cloud Run URLs of the UI that may use the Google Maps key (infra/maps.tf).
+# maps_extra_referrers = ["https://carebridge-ui-dev-<hash>-uc.a.run.app/*"]

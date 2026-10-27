@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Credentials and local config - never commit these
+.env
+*.json.key
+service-account*.json
+credentials.json
+
+# Terraform
+infra/.terraform/
+infra/terraform.tfvars
+*.tfstate
+*.tfstate.backup
+
+# OS
+.DS_Store
+Thumbs.db

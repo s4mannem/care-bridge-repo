@@ -4,6 +4,7 @@ from fastapi import Request
 from ..agents.runner import AgentRunner, build_runner
 from ..config import Settings
 from ..data.bigquery import BigQueryRepo
+from ..data.plans import PlanStore, build_plan_store
 from ..data.reviews import ReviewStore, build_review_store
 
 
@@ -23,6 +24,13 @@ def get_runner(request: Request) -> AgentRunner:
     if not hasattr(app.state, "runner"):
         app.state.runner = build_runner(app.state.settings)
     return app.state.runner
+
+
+def get_plan_store(request: Request) -> PlanStore:
+    app = request.app
+    if not hasattr(app.state, "plans"):
+        app.state.plans = build_plan_store(app.state.settings)
+    return app.state.plans
 
 
 def get_review_store(request: Request) -> ReviewStore:

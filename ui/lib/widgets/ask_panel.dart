@@ -15,15 +15,21 @@ const suggestedQuestions = [
 
 sealed class _Turn {}
 
-/// A question for `POST /v1/ask` and its answer or error.
+/// A message for `POST /v1/ask` and its reply or error. A reply can carry a
+/// proposed plan; the card under it runs that plan when the lead confirms.
 class _Question extends _Turn {
   _Question(this.text);
   final String text;
   AskResponse? answer;
   String? error;
+  bool started = false;
+
+  /// Asked before any plan existed: asked again once the plan it proposed is ready.
+  bool answerWhenReady = false;
 }
 
-/// A planning message and the request it became, waiting for the lead to confirm.
+/// A planning message parsed on the device (recorded mode, or the API out of
+/// reach) and the request it became, waiting for the lead to confirm.
 class _Proposal extends _Turn {
   _Proposal(this.text, this.intent, {this.question});
   final String text;
@@ -39,12 +45,12 @@ class _Note extends _Turn {
   final String text;
 }
 
-/// The chat beside the plan. Before a plan exists it plans: the lead describes
-/// what they want, the panel shows the request it understood, and nothing runs
-/// until they press Generate plan. Once a plan is on screen it answers
-/// follow-up questions (`POST /v1/ask`); answers say which agent answered and
-/// which grain they rest on, and refusals are marked. A message that starts
-/// with "plan", "re-plan" and the like proposes a new plan instead.
+/// The conversation beside the plan. Against the live API every message goes
+/// to `POST /v1/ask` with the recent turns, so follow-ups work, and a reply can
+/// propose a plan: the card shows the request and nothing runs until the lead
+/// presses Generate plan. Answers say which agent answered and which grain they
+/// rest on, and refusals are marked. Offline (recorded) the panel parses
+/// planning messages itself (`plan_intent.dart`) and answers from recordings.
 class AskPanel extends StatefulWidget {
   const AskPanel({
     super.key,
@@ -86,8 +92,14 @@ class _AskPanelState extends State<AskPanel> {
           ? 'It needs your review in tab 1 before anything is announced.'
           : 'The auditor approved it; venues are still unconfirmed.';
       _turns.add(_Note('Plan ready: $stops stops. $status Ask about it, or say "re-plan for …" to change it.'));
+      final asked = _turns.whereType<_Question>().where((t) => t.started && t.answerWhenReady).lastOrNull;
       final waiting = _turns.whereType<_Proposal>().where((p) => p.started && p.question != null).lastOrNull;
-      if (waiting != null) {
+      if (asked != null) {
+        asked.answerWhenReady = false;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _ask(asked.text, sendAs: 'The plan is ready now. ${asked.text}');
+        });
+      } else if (waiting != null) {
         final q = waiting.question!;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted && _turns.whereType<_Question>().every((t) => t.text != q)) _ask(q);
@@ -115,48 +127,93 @@ class _AskPanelState extends State<AskPanel> {
     text = text.trim();
     if (text.length < 2 || _busy || widget.planning) return;
     _input.clear();
-    if (widget.plan == null || looksLikePlanCommand(text)) {
-      final question = widget.plan == null && looksLikeQuestion(text) ? text : null;
-      setState(() => _turns.add(_Proposal(text, parsePlanIntent(text, widget.formRequest), question: question)));
-      _scrollToEnd();
+    if (!widget.source.recorded) {
+      _ask(text);
+    } else if (widget.plan == null || looksLikePlanCommand(text)) {
+      _propose(text);
     } else {
       _ask(text);
     }
   }
 
-  void _start(_Proposal p) {
-    if (widget.planning) return;
-    setState(() {
-      p.started = true;
-      _turns.add(_Note('Planning now. Follow the agents in the Run tab; the request form shows the same settings.'));
-    });
-    widget.onPlan(p.intent.request);
+  void _propose(String text) {
+    final question = widget.plan == null && looksLikeQuestion(text) ? text : null;
+    setState(() => _turns.add(_Proposal(text, parsePlanIntent(text, widget.formRequest), question: question)));
     _scrollToEnd();
   }
 
-  Future<void> _ask(String q) async {
+  void _start(PlanRequest request, void Function() markStarted) {
+    if (widget.planning) return;
+    setState(() {
+      markStarted();
+      _turns.add(_Note('Planning now. Follow the agents in the Run tab; the request form shows the same settings.'));
+    });
+    widget.onPlan(request);
+    _scrollToEnd();
+  }
+
+  /// The conversation so far, oldest first, for the API (it keeps the last 12).
+  List<ChatTurn> _history() {
+    final out = <ChatTurn>[];
+    String clip(String t) => t.length <= 2000 ? t : t.substring(0, 2000);
+    for (final t in _turns) {
+      switch (t) {
+        case _Question(:final text, :final answer):
+          out.add(ChatTurn('user', clip(text)));
+          if (answer != null) out.add(ChatTurn('assistant', clip(answer.answer)));
+        case _Proposal(:final text, :final intent):
+          out.add(ChatTurn('user', clip(text)));
+          out.add(ChatTurn('assistant', 'Proposed a plan: ${intent.request.strategy.label} strategy.'));
+        case _Note():
+          break;
+      }
+    }
+    return out.length <= 12 ? out : out.sublist(out.length - 12);
+  }
+
+  /// Sends [q] (or [sendAs], when the model needs more context than the lead typed).
+  Future<void> _ask(String q, {String? sendAs}) async {
+    final history = _history();
     final turn = _Question(q);
     setState(() {
       _busy = true;
       _turns.add(turn);
     });
     try {
-      final a = await widget.source.ask(
-          AskRequest(question: q, plan: widget.request, planRequestId: widget.plan!.requestId));
-      setState(() => turn.answer = a);
+      final plan = widget.plan;
+      final a = await widget.source.ask(AskRequest(
+          question: sendAs ?? q,
+          plan: plan == null ? widget.formRequest : widget.request,
+          planRequestId: plan?.requestId,
+          history: history));
+      setState(() {
+        turn.answer = a;
+        turn.answerWhenReady = plan == null && a.proposedPlan != null && looksLikeQuestion(q);
+      });
     } on PlanSourceException catch (e) {
-      setState(() => turn.error = e.message);
+      _fallback(turn, e.message);
     } catch (e) {
-      setState(() => turn.error = '$e');
+      _fallback(turn, '$e');
     } finally {
       setState(() => _busy = false);
       _scrollToEnd();
     }
   }
 
+  /// The API couldn't answer: plan on the device if that's what was asked, else show the error.
+  void _fallback(_Question turn, String message) {
+    if (widget.plan == null || looksLikePlanCommand(turn.text)) {
+      setState(() => _turns.remove(turn));
+      _propose(turn.text);
+    } else {
+      setState(() => turn.error = message);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final planMode = widget.plan == null;
+    final live = !widget.source.recorded;
     final lastAnswer = _turns.whereType<_Question>().lastOrNull?.answer;
     final chips = planMode
         ? planSuggestions
@@ -170,16 +227,25 @@ class _AskPanelState extends State<AskPanel> {
               padding: const EdgeInsets.only(bottom: 12),
               child: Text(
                   planMode
-                      ? 'Tell me what to plan, for example "focus on households without a car". I\'ll fill in the '
-                          'request and nothing runs until you press Generate plan.'
-                      : 'Ask about this plan. Answers say which data they rest on, and the agents refuse claims '
-                          'the data can\'t support. To change the plan, start with "re-plan".',
+                      ? 'Tell me what you want to plan, for example "focus on households without a car", or ask '
+                          'anything. I\'ll set up the request, and nothing runs until you press Generate plan.'
+                      : live
+                          ? 'Ask about this plan in your own words, follow up, or ask me to change it. Answers say '
+                              'which data they rest on, and the agents refuse claims the data can\'t support.'
+                          : 'Ask about this plan. Answers say which data they rest on, and the agents refuse claims '
+                              'the data can\'t support. To change the plan, start with "re-plan".',
                   style: const TextStyle(fontSize: 12.5, color: Palette.muted, height: 1.4)),
             ),
           for (final t in _turns) ...switch (t) {
             _Question(:final text, :final answer, :final error) => [
                 _Bubble(text),
                 if (answer != null) _Answer(answer),
+                if (answer?.proposedPlan case final proposed?)
+                  _ProposalCard(
+                    request: proposed,
+                    started: t.started,
+                    onStart: t.started || widget.planning ? null : () => _start(proposed, () => t.started = true),
+                  ),
                 if (error != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12, right: 40),
@@ -189,7 +255,17 @@ class _AskPanelState extends State<AskPanel> {
               ],
             _Proposal() => [
                 _Bubble(t.text),
-                _ProposalCard(t, onStart: t.started || widget.planning ? null : () => _start(t)),
+                _ProposalCard(
+                  request: t.intent.request,
+                  intro: t.question != null
+                      ? 'I need a plan to answer that. I\'ll answer as soon as this plan is ready:'
+                      : t.intent.understood.isEmpty
+                          ? 'I didn\'t catch a change, so this uses the form\'s settings:'
+                          : 'I picked up ${t.intent.understood.join('; ')}. The request:',
+                  notes: t.intent.notes,
+                  started: t.started,
+                  onStart: t.started || widget.planning ? null : () => _start(t.intent.request, () => t.started = true),
+                ),
               ],
             _Note(:final text) => [
                 Padding(
@@ -232,10 +308,10 @@ class _AskPanelState extends State<AskPanel> {
                 hintText: widget.planning
                     ? 'Planning…'
                     : planMode
-                        ? 'Describe the plan you want…'
-                        : widget.source.recorded
-                            ? 'Suggested questions work offline'
-                            : 'Ask about this plan…',
+                        ? (live ? 'Ask anything, or describe the plan you want…' : 'Describe the plan you want…')
+                        : live
+                            ? 'Ask about this plan, or ask me to change it…'
+                            : 'Suggested questions work offline',
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -280,15 +356,21 @@ class _Spinner extends StatelessWidget {
       );
 }
 
-/// The request a planning message became, with a button that runs it.
+/// A proposed plan request, with a button that runs it.
 class _ProposalCard extends StatelessWidget {
-  const _ProposalCard(this.p, {required this.onStart});
-  final _Proposal p;
+  const _ProposalCard(
+      {required this.request, this.intro, this.notes = const [], required this.started, required this.onStart});
+  final PlanRequest request;
+
+  /// The line above the settings; the conversation's own reply stands in for it when null.
+  final String? intro;
+  final List<String> notes;
+  final bool started;
   final VoidCallback? onStart;
 
   @override
   Widget build(BuildContext context) {
-    final r = p.intent.request;
+    final r = request;
     final info = agentInfo('coordinator');
     Widget row(String k, String v) => Padding(
           padding: const EdgeInsets.only(bottom: 2),
@@ -311,21 +393,17 @@ class _ProposalCard extends StatelessWidget {
           const SizedBox(width: 6),
           Text(info.name, style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: info.color)),
         ]),
-        const SizedBox(height: 6),
-        Text(
-            p.question != null
-                ? 'I need a plan to answer that. I\'ll answer as soon as this plan is ready:'
-                : p.intent.understood.isEmpty
-                    ? 'I didn\'t catch a change, so this uses the form\'s settings:'
-                    : 'I picked up ${p.intent.understood.join('; ')}. The request:',
-            style: const TextStyle(fontSize: 13.5, height: 1.45)),
+        if (intro case final text?) ...[
+          const SizedBox(height: 6),
+          Text(text, style: const TextStyle(fontSize: 13.5, height: 1.45)),
+        ],
         const SizedBox(height: 6),
         row('County', '${r.countyName}, ${r.stateAbbr} (${r.countyFips})'),
         row('Saturdays', r.saturdays.map((s) => saturdayLabel(DateTime.parse(s))).join(', ')),
         row('Strategy', '${r.strategy.label}: ${r.strategy.description}'),
-        row('Demo defect', r.simulateFirstDraftDefect ? 'on, so the auditor rejects draft 0' : 'off'),
+        row('Overlap demo', r.simulateFirstDraftDefect ? 'on, so the auditor rejects draft 0' : 'off'),
         row('Optional datasets', r.includeOptionalDatasets ? 'on' : 'off'),
-        for (final n in p.intent.notes)
+        for (final n in notes)
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(n, style: const TextStyle(fontSize: 12.5, color: Palette.warn)),
@@ -334,7 +412,7 @@ class _ProposalCard extends StatelessWidget {
         FilledButton.icon(
           onPressed: onStart,
           icon: const Icon(Icons.play_arrow, size: 18),
-          label: Text(p.started ? 'Plan started' : 'Generate plan'),
+          label: Text(started ? 'Plan started' : 'Generate plan'),
         ),
       ]),
     );

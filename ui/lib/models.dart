@@ -68,6 +68,16 @@ class PlanRequest {
         'include_optional_datasets': includeOptionalDatasets,
         'simulate_first_draft_defect': simulateFirstDraftDefect,
       };
+
+  factory PlanRequest.fromJson(Map<String, dynamic> j) => PlanRequest(
+        countyFips: j['county_fips'] ?? '13121',
+        countyName: j['county_name'] ?? 'Fulton',
+        stateAbbr: j['state_abbr'] ?? 'GA',
+        saturdays: List<String>.from(j['saturdays'] ?? const ['2026-11-07', '2026-11-14', '2026-11-21', '2026-11-28']),
+        strategy: Strategy.parse(j['strategy'] ?? Strategy.balanced.wire),
+        includeOptionalDatasets: j['include_optional_datasets'] ?? true,
+        simulateFirstDraftDefect: j['simulate_first_draft_defect'] ?? false,
+      );
 }
 
 class PlanResponse {
@@ -463,16 +473,29 @@ class AgentEvent {
   final DraftPlan? draft;
 }
 
+/// One earlier message in the Ask conversation: role is "user" or "assistant".
+class ChatTurn {
+  const ChatTurn(this.role, this.text);
+  final String role;
+  final String text;
+
+  Map<String, dynamic> toJson() => {'role': role, 'text': text};
+}
+
 class AskRequest {
-  const AskRequest({required this.question, required this.plan, this.planRequestId});
+  const AskRequest({required this.question, required this.plan, this.planRequestId, this.history = const []});
   final String question;
   final PlanRequest plan;
   final String? planRequestId;
+
+  /// Earlier turns, oldest first, so follow-ups make sense (the API keeps the last 12).
+  final List<ChatTurn> history;
 
   Map<String, dynamic> toJson() => {
         'question': question,
         'plan': plan.toJson(),
         if (planRequestId != null) 'plan_request_id': planRequestId,
+        if (history.isNotEmpty) 'history': [for (final t in history) t.toJson()],
       };
 }
 
@@ -484,7 +507,9 @@ class AskResponse {
         grain = j['grain'],
         refused = j['refused'] ?? false,
         citations = List<String>.from(j['citations'] ?? const []),
-        followUps = List<String>.from(j['follow_ups'] ?? const []);
+        followUps = List<String>.from(j['follow_ups'] ?? const []),
+        intent = j['intent'] ?? 'answer',
+        proposedPlan = j['proposed_plan'] == null ? null : PlanRequest.fromJson(j['proposed_plan']);
 
   final String requestId;
   final String answer;
@@ -495,6 +520,12 @@ class AskResponse {
   final bool refused;
   final List<String> citations;
   final List<String> followUps;
+
+  /// answer | propose_plan | clarify
+  final String intent;
+
+  /// With propose_plan: the request to confirm. Nothing runs until the lead presses Generate plan.
+  final PlanRequest? proposedPlan;
 }
 
 /// approve_plan | request_changes | confirm_venue | reject_stop | reopen

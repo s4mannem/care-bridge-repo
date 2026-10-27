@@ -39,12 +39,22 @@ class AgentEvent(BaseModel):
     draft: Optional[DraftPlan] = None
 
 
+class ChatTurn(BaseModel):
+    """One earlier message in the Ask conversation, oldest first."""
+
+    role: Literal["user", "assistant"]
+    text: str = Field(..., min_length=1, max_length=2000)
+
+
 class AskRequest(BaseModel):
     question: str = Field(..., min_length=2, max_length=500)
-    # Identifies the plan the question is about; the stub answers from the
-    # recorded plan for these settings, the ADK runner from the run's state.
+    # The request form's settings (or the plan's, once one exists): the
+    # starting point for any plan the conversation proposes.
     plan: PlanRequest = Field(default_factory=PlanRequest)
+    # The finished plan the conversation is about; None before the first plan.
     plan_request_id: Optional[str] = Field(None, max_length=64)
+    # Earlier turns, so follow-ups ("and the second stop?") make sense.
+    history: list[ChatTurn] = Field(default_factory=list, max_length=12)
 
 
 class AskResponse(BaseModel):
@@ -56,6 +66,10 @@ class AskResponse(BaseModel):
     refused: bool = False
     citations: list[str] = Field(default_factory=list)
     follow_ups: list[str] = Field(default_factory=list)
+    # "propose_plan" carries `proposed_plan` for the lead to confirm; nothing
+    # runs until they press Generate plan. "clarify" asks them a question back.
+    intent: Literal["answer", "propose_plan", "clarify"] = "answer"
+    proposed_plan: Optional[PlanRequest] = None
 
 
 ReviewActionKind = Literal["approve_plan", "request_changes", "confirm_venue", "reject_stop", "reopen"]

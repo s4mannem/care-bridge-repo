@@ -10,6 +10,7 @@ after the stream has opened.
 """
 import asyncio
 import json
+import logging
 from collections.abc import AsyncIterator
 from typing import Annotated
 
@@ -20,11 +21,13 @@ from ...agents.runner import AgentRunner
 from ...config import Settings
 from ...contracts.api_models import PlanRequest, PlanResponse
 from ...contracts.interaction_models import AgentEvent
+from ...data.plans import PlanStore
 from ...security import ModelArmorScreener, PolicyViolationError, assert_no_pii_in_payload
-from ..deps import get_app_settings, get_runner
+from ..deps import get_app_settings, get_plan_store, get_runner
 from ..errors import GatewayError
 
 router = APIRouter(tags=["plan"])
+log = logging.getLogger(__name__)
 
 
 def _screen(body: PlanRequest) -> None:
@@ -41,12 +44,21 @@ def _check_pii(response: PlanResponse) -> None:
         raise GatewayError(502, "pii_in_response", f"Response withheld: {exc}")
 
 
+def _keep(store: PlanStore, response: PlanResponse) -> None:
+    # Ask answers from the stored plan; a store outage must not cost the lead their plan.
+    try:
+        store.put(response)
+    except Exception:  # noqa: BLE001
+        log.exception("could not store plan %s for Ask", response.request_id)
+
+
 @router.post("/plan", response_model=PlanResponse)
 async def create_plan(
     body: PlanRequest,
     request: Request,
     runner: Annotated[AgentRunner, Depends(get_runner)],
     settings: Annotated[Settings, Depends(get_app_settings)],
+    plans: Annotated[PlanStore, Depends(get_plan_store)],
 ) -> PlanResponse:
     _screen(body)
     try:
@@ -55,6 +67,7 @@ async def create_plan(
     except TimeoutError:
         raise GatewayError(504, "plan_timeout", f"Agents did not finish within {settings.plan_timeout_s:.0f} s.")
     _check_pii(response)
+    _keep(plans, response)
     return response
 
 
@@ -69,6 +82,7 @@ async def stream_plan(
     request: Request,
     runner: Annotated[AgentRunner, Depends(get_runner)],
     settings: Annotated[Settings, Depends(get_app_settings)],
+    plans: Annotated[PlanStore, Depends(get_plan_store)],
 ) -> StreamingResponse:
     _screen(body)
     rid = request.state.request_id
@@ -87,6 +101,7 @@ async def stream_plan(
                     yield _sse("agent", item.model_dump_json())
                 else:
                     _check_pii(item)
+                    _keep(plans, item)
                     yield _sse("plan", item.model_dump_json())
                     return
                 item = await asyncio.wait_for(anext(items), timeout=max(0.0, deadline - loop.time()))

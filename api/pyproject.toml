@@ -10,6 +10,7 @@ dependencies = [
     "pydantic-settings>=2.3",
     "google-cloud-bigquery>=3.25",
     "google-cloud-firestore>=2.16",
+    "pyyaml>=6",  # the team's data_plane reads its named queries from mcp_tools.yaml
 ]
 
 [project.optional-dependencies]

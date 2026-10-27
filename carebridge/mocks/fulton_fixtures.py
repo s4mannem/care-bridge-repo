@@ -630,12 +630,12 @@ def build_mock_health_evidence(county_fips: str = "13121") -> HealthEvidence:
         max_hpsa_score=19.0,
         regional_disease=FULTON_REGIONAL_DISEASE,
         source_lineage=[
-            "a4i_health.burden_tracts (CDC PLACES 2025 + CDC/ATSDR SVI 2022, race-blind columns only)",
-            "a4i_health.tract_access (straight-line upper-bound distances to federal sites)",
-            "a4i_health.care_sites & care_sites_state (HRSA Health Centers + CMS POS, TOT_OPER_HR_PER_WEEK)",
-            "a4i_health.shortage_areas (0 active in Fulton; 99 Proposed For Withdrawal) & shortage_facilities (6)",
-            "a4i_health.exposure_tracts (EPA 12km grid tail days > 20 ug/m3)",
-            "a4i_health.disease_weekly (CDC NSSP 4-county HSA respiratory ED trends)",
+            "a4i_health.v_burden_tracts (CDC PLACES 2025 + CDC/ATSDR SVI 2022, race-blind columns only)",
+            "a4i_health.v_tract_access (straight-line upper-bound distances to federal sites)",
+            "a4i_health.v_care_sites & v_care_sites_state (HRSA Health Centers + CMS POS, TOT_OPER_HR_PER_WEEK)",
+            "a4i_health.v_shortage_areas (0 active in Fulton; 99 Proposed For Withdrawal) & v_shortage_facilities (6)",
+            "a4i_health.v_exposure_tracts (EPA 12km grid tail days > 20 ug/m3)",
+            "a4i_health.v_disease_weekly (CDC NSSP 4-county HSA respiratory ED trends)",
         ],
         missingness_flags=[
             "shortage_areas_count=0 active in Fulton County (all 99 rows are Proposed For Withdrawal) despite 135 tracts having extra_km_if_uninsured > 0.",
@@ -751,8 +751,8 @@ def build_mock_draft_plan(county_fips: str = "13121") -> DraftPlan:
                 "8.1 km straight-line upper-bound distance to the nearest federal safety-net clinic (7.3 km penalty vs any care)."
             ),
             evidence_citations=[
-                "a4i_health.burden_tracts:geo_id=13121010214",
-                "a4i_health.tract_access:geo_id=13121010214",
+                "a4i_health.v_burden_tracts:geo_id=13121010214",
+                "a4i_health.v_tract_access:geo_id=13121010214",
             ],
             spatial_grain_disclosures=[
                 "Tract prevalence values are CDC PLACES small-area modeled estimates (11-char tract grain).",
@@ -787,8 +787,8 @@ def build_mock_draft_plan(county_fips: str = "13121") -> DraftPlan:
                 "federal safety-net clinic (13.7 km uninsured penalty)."
             ),
             evidence_citations=[
-                "a4i_health.burden_tracts:geo_id=13121010514",
-                "a4i_health.tract_access:geo_id=13121010514",
+                "a4i_health.v_burden_tracts:geo_id=13121010514",
+                "a4i_health.v_tract_access:geo_id=13121010514",
             ],
             spatial_grain_disclosures=[
                 "Tract prevalence values are CDC PLACES small-area modeled estimates.",
@@ -821,8 +821,8 @@ def build_mock_draft_plan(county_fips: str = "13121") -> DraftPlan:
                 "gap, 28.4% zero-vehicle households (SVI ACS), and 9.4 km straight-line distance to a safety-net clinic."
             ),
             evidence_citations=[
-                "a4i_health.burden_tracts:geo_id=13121007602",
-                "a4i_health.tract_access:geo_id=13121007602",
+                "a4i_health.v_burden_tracts:geo_id=13121007602",
+                "a4i_health.v_tract_access:geo_id=13121007602",
             ],
             spatial_grain_disclosures=[
                 "Tract prevalence values are CDC PLACES modeled estimates.",
@@ -855,8 +855,8 @@ def build_mock_draft_plan(county_fips: str = "13121") -> DraftPlan:
                 "gap, 24.8% zero-vehicle households, and 11.2 km straight-line distance to the nearest federal safety-net clinic."
             ),
             evidence_citations=[
-                "a4i_health.burden_tracts:geo_id=13121011305",
-                "a4i_health.tract_access:geo_id=13121011305",
+                "a4i_health.v_burden_tracts:geo_id=13121011305",
+                "a4i_health.v_tract_access:geo_id=13121011305",
             ],
             spatial_grain_disclosures=[
                 "Tract prevalence values are CDC PLACES modeled estimates.",
@@ -1015,26 +1015,26 @@ def build_mock_plan_response() -> PlanResponse:
         evidence_report=build_mock_evidence_report(),
         outreach=build_mock_outreach_messages(),
         provenance=[
-            "a4i_health.burden_tracts",
-            "a4i_health.tract_access",
-            "a4i_health.care_sites",
-            "a4i_health.shortage_areas",
-            "a4i_health.shortage_facilities",
-            "a4i_health.exposure_tracts",
-            "a4i_health.disease_weekly",
+            "a4i_health.v_burden_tracts",
+            "a4i_health.v_tract_access",
+            "a4i_health.v_care_sites",
+            "a4i_health.v_shortage_areas",
+            "a4i_health.v_shortage_facilities",
+            "a4i_health.v_exposure_tracts",
+            "a4i_health.v_disease_weekly",
         ],
         limitations=[
             "All 4 proposed stops are PROVISIONAL until host site agreements and parking permits are confirmed.",
             "km_to_any_care and km_to_safety_net are straight-line upper-bound distances to federal facilities.",
         ],
         data_availability={
-            "burden_tracts": True,
-            "tract_access": True,
-            "care_sites": True,
-            "shortage_areas": True,
-            "shortage_facilities": True,
-            "exposure_tracts": True,
-            "disease_weekly": True,
+            "v_burden_tracts": True,
+            "v_tract_access": True,
+            "v_care_sites": True,
+            "v_shortage_areas": True,
+            "v_shortage_facilities": True,
+            "v_exposure_tracts": True,
+            "v_disease_weekly": True,
             "marta_gtfs": True,
             "usda_food_access": True,
             "imls_candidate_venues": True,

@@ -63,6 +63,19 @@ class Settings(BaseSettings):
     model_armor_template_id: str = ""
     max_audit_revisions: int = 1
 
+    # Names the team's agents read (data_plane, mobility, auditor).
+    bigquery_location: str = "US"
+    use_mock_data: bool = False  # never on in a deployment: the data_plane would serve fixtures
+    carebridge_api_key: str = ""
+
+    @property
+    def google_cloud_project(self) -> str | None:
+        return self.gcp_project or self.bq_project
+
+    @property
+    def bigquery_dataset(self) -> str:
+        return self.bq_dataset
+
 
 @lru_cache
 def get_settings() -> Settings:

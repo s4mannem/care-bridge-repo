@@ -188,10 +188,10 @@ class TestPlan00ContractsAndSecurity(unittest.TestCase):
                 sanitize_user_prompt(malicious)
 
         # Read-only SQL check
-        assert_readonly_sql("SELECT geo_id, total_pop FROM a4i_health.burden_tracts WHERE county_fips = @fips")
+        assert_readonly_sql("SELECT geo_id, total_pop FROM a4i_health.v_burden_tracts WHERE county_fips = @fips")
         assert_readonly_sql("WITH cte AS (SELECT 1) SELECT * FROM cte")
         with self.assertRaises(PolicyViolationError):
-            assert_readonly_sql("DELETE FROM a4i_health.burden_tracts")
+            assert_readonly_sql("DELETE FROM a4i_health.v_burden_tracts")
 
         # Permission boundary on protected demographic audit tool
         audit_tool = _DummyTool("mcp_query_posthoc_demographic_audit")

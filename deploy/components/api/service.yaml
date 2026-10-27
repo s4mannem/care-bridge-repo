@@ -34,6 +34,8 @@ spec:
               value: ${ENV}
             - name: CAREBRIDGE_AGENT_ENGINE
               value: stub
+            - name: CAREBRIDGE_REVIEW_STORE
+              value: firestore
             - name: BQ_PROJECT
               value: ${PROJECT_ID}
             - name: BQ_DATASET

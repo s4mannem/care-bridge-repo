@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'models.dart';
 import 'plan_source.dart';
 import 'replay.dart';
+import 'widgets/agent_graph.dart';
+import 'widgets/ask_panel.dart';
 import 'widgets/common.dart';
 import 'widgets/plan_tabs.dart';
 import 'widgets/planner_map.dart';
@@ -21,37 +25,50 @@ class _PlannerScreenState extends State<PlannerScreen> {
   final _replay = ReplayController();
   late final Future<(List<Tract>, List<CareSite>)> _layers = _loadLayers();
   PlanRequest _request = const PlanRequest(simulateFirstDraftDefect: true);
+  PlanRequest? _planned; // the request behind _response, for Ask
   PlanResponse? _response;
   Object? _error;
   bool _loading = false;
   int? _selectedStop;
   int _mobileTab = 0;
+  StreamSubscription<RunUpdate>? _run;
 
   Future<(List<Tract>, List<CareSite>)> _loadLayers() async =>
       (await widget.source.tracts(_request.countyFips), await loadSites());
 
-  Future<void> _submit() async {
+  void _submit() {
+    _run?.cancel();
+    final request = _request;
+    _replay.startLive();
     setState(() {
       _loading = true;
       _error = null;
+      _response = null;
+      _selectedStop = null;
     });
-    try {
-      final r = await widget.source.plan(_request);
-      _replay.load(buildTrace(r, _request));
-      setState(() {
-        _response = r;
-        _selectedStop = null;
-      });
-      _replay.play();
-    } catch (e) {
-      setState(() => _error = e);
-    } finally {
-      setState(() => _loading = false);
-    }
+    _run = widget.source.run(request).listen(
+      (u) => switch (u) {
+        RunEvent(:final event) => _replay.add(event),
+        RunDone(:final plan) => setState(() {
+            _response = plan;
+            _planned = request;
+          }),
+      },
+      onError: (Object e) => setState(() {
+        _error = e;
+        _loading = false;
+        _replay.finish();
+      }),
+      onDone: () => setState(() {
+        _loading = false;
+        _replay.finish();
+      }),
+    );
   }
 
   @override
   void dispose() {
+    _run?.cancel();
     _replay.dispose();
     super.dispose();
   }
@@ -78,7 +95,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
       tracts: tracts,
       sites: sites,
       response: _response,
-      strategy: _response?.finalPlan?.strategy ?? _request.strategy,
+      strategy: _replay.currentDraft?.strategy ?? _request.strategy,
       replay: _replay,
       selectedStop: _selectedStop,
       onSelectStop: select,
@@ -96,10 +113,47 @@ class _PlannerScreenState extends State<PlannerScreen> {
           actions: [SizedBox.shrink()],
         ),
       Expanded(
-        child: PlanTabs(response: _response, replay: _replay, selectedStop: _selectedStop, onSelectStop: select),
+        child: PlanTabs(
+            source: widget.source,
+            response: _response,
+            replay: _replay,
+            selectedStop: _selectedStop,
+            onSelectStop: select),
       ),
     ]);
-    final timeline = AgentTimeline(replay: _replay);
+    final agents = DefaultTabController(
+      length: 3,
+      child: Column(children: [
+        Material(
+          color: Colors.white,
+          child: TabBar(
+            labelColor: Palette.ink,
+            unselectedLabelColor: Palette.muted,
+            indicatorColor: Palette.accent,
+            tabs: [
+              const Tab(icon: Icon(Icons.account_tree_outlined, size: 18), text: 'Agents'),
+              Tab(
+                icon: Badge(
+                  isLabelVisible: _replay.rejectedOnScreen,
+                  backgroundColor: Palette.reject,
+                  child: const Icon(Icons.timeline, size: 18),
+                ),
+                text: 'Run',
+              ),
+              const Tab(icon: Icon(Icons.forum_outlined, size: 18), text: 'Ask'),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        Expanded(
+          child: TabBarView(children: [
+            AgentGraph(replay: _replay),
+            AgentTimeline(replay: _replay),
+            AskPanel(source: widget.source, plan: _response, request: _planned ?? _request),
+          ]),
+        ),
+      ]),
+    );
     final form = RequestPanel(
       request: _request,
       onChanged: (r) => setState(() => _request = r),
@@ -124,11 +178,11 @@ class _PlannerScreenState extends State<PlannerScreen> {
             const SizedBox(width: 8),
             const Text('CareBridge', style: TextStyle(fontWeight: FontWeight.w800)),
             if (wide) const Text('  ·  Saturday Planner', style: TextStyle(color: Palette.muted)),
-            if (_response?.isRecorded ?? widget.source is RecordedPlanSource) ...[
+            if (_response?.isRecorded ?? widget.source.recorded) ...[
               const SizedBox(width: 12),
               Tooltip(
-                message: 'Responses recorded from the real a4i_health tables by scripts/build_mock.py, '
-                    'in the plan 00 PlanResponse shape. Agent prose is templated until the agents are live.',
+                message: 'Plans recorded from the real a4i_health tables by scripts/build_mock.py, in the '
+                    'plan 00 PlanResponse shape. Agent wording is templated until the ADK agents run.',
                 child: box.maxWidth >= 600
                     ? const _Tag('RECORDED')
                     : const Icon(Icons.fiber_manual_record, size: 12, color: Palette.warn),
@@ -160,7 +214,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                   ]),
                 ),
                 const VerticalDivider(width: 1),
-                SizedBox(width: 380, child: timeline),
+                SizedBox(width: 400, child: agents),
               ])
             : IndexedStack(index: _mobileTab, children: [
                 Column(children: [
@@ -169,7 +223,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                   const Divider(height: 1),
                   Expanded(child: tabs),
                 ]),
-                timeline,
+                agents,
                 form,
               ]),
         bottomNavigationBar: wide
@@ -183,7 +237,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
                     icon: Badge(
                       isLabelVisible: _replay.rejectedOnScreen,
                       backgroundColor: Palette.reject,
-                      child: const Icon(Icons.forum_outlined),
+                      child: const Icon(Icons.account_tree_outlined),
                     ),
                     label: 'Agents',
                   ),

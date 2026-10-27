@@ -8,7 +8,7 @@ from carebridge.main import create_app
 @pytest.fixture
 def settings() -> Settings:
     # _env_file=None: tests must not pick up .env or api/.env.
-    return Settings(_env_file=None, env="test", bq_project="test-project")
+    return Settings(_env_file=None, env="test", bq_project="test-project", stub_stream_pace=0)
 
 
 @pytest.fixture

@@ -36,13 +36,14 @@ class PlannerMap extends StatelessWidget {
     final quantile = _needQuantiles();
     final r = response;
     final idx = replay.draftIndex;
-    final draft = r == null || idx == null ? null : r.revisionHistory[idx];
+    final drafts = replay.drafts;
+    final draft = replay.currentDraft;
     final stops = draft?.stops ?? const <ProposedClinicStop>[];
     final rejected = replay.rejectedOnScreen;
-    final approved = replay.audited && idx == (r?.revisionHistory.length ?? 0) - 1;
+    final approved = replay.audited && idx == drafts.length - 1;
     final conflict = rejected ? replay.conflictRanks : const <int>[];
 
-    final first = idx != null && idx > 0 ? r!.revisionHistory.first.stops : const <ProposedClinicStop>[];
+    final first = idx != null && idx > 0 ? drafts.first.stops : const <ProposedClinicStop>[];
     bool same(ProposedClinicStop a, ProposedClinicStop b) => a.tractGeoid == b.tractGeoid;
     final ghosts = first.where((o) => !stops.any((n) => same(o, n))).toList();
     final added = idx != null && idx > 0 ? stops.where((n) => !first.any((o) => same(o, n))).toList() : const [];
@@ -193,7 +194,8 @@ class PlannerMap extends StatelessWidget {
         Positioned(
           top: 12,
           left: 12,
-          child: _DraftTag(revision: draft.revision, rejected: rejected, approved: approved, status: r!.status),
+          child: _DraftTag(revision: draft.revision, rejected: rejected, approved: approved,
+              status: r?.status ?? 'running'),
         ),
     ]);
   }
@@ -241,7 +243,9 @@ class _DraftTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final (text, color, icon) = rejected
         ? ('Draft $revision · REJECTED by auditor', Palette.reject, Icons.block)
-        : approved
+        : approved && status == 'running'
+            ? ('Draft $revision · audited', Palette.pass, Icons.verified_outlined)
+            : approved
             ? status == 'provisional_approved'
                 ? ('Draft $revision · approved, provisional', Palette.pass, Icons.verified_outlined)
                 : ('Draft $revision · needs human review', Palette.warn, Icons.how_to_reg_outlined)

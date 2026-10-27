@@ -4,6 +4,7 @@
 #
 #   bash ci/submit.sh ci api          # PR-style check: build the test stage
 #   bash ci/submit.sh release ui      # test, build, push, Cloud Deploy release to dev
+#   RUN_TESTS=true bash ci/submit.sh ci api   # tests are skipped unless RUN_TESTS=true
 #
 # Uploads the repo (minus .gcloudignore) to Cloud Build.
 set -euo pipefail
@@ -27,7 +28,7 @@ dir=$(awk -v c="  $component:" '
 [[ -n $dir ]] || { echo "submit: no component '$component' in deploy/components.yaml" >&2; exit 1; }
 
 # ';'-separated (see `^;^` below) so _ENVS can keep its commas.
-subs="_COMPONENT=$component;_DIR=$dir"
+subs="_COMPONENT=$component;_DIR=$dir;_RUN_TESTS=${RUN_TESTS:-false}"
 if [[ $kind == release ]]; then
   number=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
   subs+=";_ENVS=$ENVS;_PREFIX=$PREFIX;_REGION=$REGION;_REPO=$PREFIX"

@@ -81,6 +81,12 @@ def test_ask_where_the_van_goes(client: TestClient):
     assert "Tract 55.03" in a.answer
 
 
+def test_ask_sick_and_not_being_seen_uses_the_care_gap_proxy(client: TestClient):
+    a = _ask(client, "Which neighborhoods have the most people who are sick and not being seen?")
+    assert a.answered_by == "health_access" and a.grain == "census_tract_11char" and not a.refused
+    assert "checkup gap" in a.answer and "can't name people" in a.answer
+
+
 def test_ask_why_not_a_runner_up(client: TestClient):
     a = _ask(client, "Why didn't we pick tract 120?", strategy="chronic_respiratory_focus")
     assert a.answered_by == "siting_planner"

@@ -29,6 +29,13 @@ final _planVerb = RegExp(r'^\s*(please\s+)?(re-?plan|plan|generate|run|start|mak
 /// go to `POST /v1/ask` as a question.
 bool looksLikePlanCommand(String text) => _planVerb.hasMatch(text);
 
+final _questionLead =
+    RegExp(r'\?\s*$|^\s*(who|what|which|why|how|is|are|where|when|does|do|can|could)\b', caseSensitive: false);
+
+/// True for a question about a plan ("Which neighborhoods …?"), as opposed to a
+/// request to make one.
+bool looksLikeQuestion(String text) => !looksLikePlanCommand(text) && _questionLead.hasMatch(text);
+
 bool _any(String text, List<String> patterns) => patterns.any((p) => RegExp(p, caseSensitive: false).hasMatch(text));
 
 PlanIntent parsePlanIntent(String text, PlanRequest current) {

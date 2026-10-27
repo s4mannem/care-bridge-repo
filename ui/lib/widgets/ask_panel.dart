@@ -25,9 +25,12 @@ class _Question extends _Turn {
 
 /// A planning message and the request it became, waiting for the lead to confirm.
 class _Proposal extends _Turn {
-  _Proposal(this.text, this.intent);
+  _Proposal(this.text, this.intent, {this.question});
   final String text;
   final PlanIntent intent;
+
+  /// A question asked before any plan existed, answered once this plan is ready.
+  final String? question;
   bool started = false;
 }
 
@@ -83,6 +86,13 @@ class _AskPanelState extends State<AskPanel> {
           ? 'It needs your review in tab 1 before anything is announced.'
           : 'The auditor approved it; venues are still unconfirmed.';
       _turns.add(_Note('Plan ready: $stops stops. $status Ask about it, or say "re-plan for …" to change it.'));
+      final waiting = _turns.whereType<_Proposal>().where((p) => p.started && p.question != null).lastOrNull;
+      if (waiting != null) {
+        final q = waiting.question!;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _turns.whereType<_Question>().every((t) => t.text != q)) _ask(q);
+        });
+      }
       _scrollToEnd();
     }
   }
@@ -106,7 +116,8 @@ class _AskPanelState extends State<AskPanel> {
     if (text.length < 2 || _busy || widget.planning) return;
     _input.clear();
     if (widget.plan == null || looksLikePlanCommand(text)) {
-      setState(() => _turns.add(_Proposal(text, parsePlanIntent(text, widget.formRequest))));
+      final question = widget.plan == null && looksLikeQuestion(text) ? text : null;
+      setState(() => _turns.add(_Proposal(text, parsePlanIntent(text, widget.formRequest), question: question)));
       _scrollToEnd();
     } else {
       _ask(text);
@@ -302,9 +313,11 @@ class _ProposalCard extends StatelessWidget {
         ]),
         const SizedBox(height: 6),
         Text(
-            p.intent.understood.isEmpty
-                ? 'I didn\'t catch a change, so this uses the form\'s settings:'
-                : 'I picked up ${p.intent.understood.join('; ')}. The request:',
+            p.question != null
+                ? 'I need a plan to answer that. I\'ll answer as soon as this plan is ready:'
+                : p.intent.understood.isEmpty
+                    ? 'I didn\'t catch a change, so this uses the form\'s settings:'
+                    : 'I picked up ${p.intent.understood.join('; ')}. The request:',
             style: const TextStyle(fontSize: 13.5, height: 1.45)),
         const SizedBox(height: 6),
         row('County', '${r.countyName}, ${r.stateAbbr} (${r.countyFips})'),

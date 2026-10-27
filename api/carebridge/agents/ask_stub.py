@@ -117,6 +117,25 @@ def answer(question: str, r: PlanResponse, request_id: str) -> AskResponse:
                      "race or ethnicity.", "equity_auditor", TRACT,
                      cites=["bigquery-public-data.census_bureau_acs.censustract_2020_5yr (auditor only)"])
 
+    if _has(r"not (being )?(seen|treated|getting care)|unseen|untreated|unmet|go(ing|es)? without|"
+            r"without (a )?(doctor|care|checkups?)|no (doctor|regular care|checkups?)|miss(ing|ed)? (care|checkups?)|"
+            r"can.?t (get|see) (care|a doctor|seen)|checkups?|preventive", q):
+        parts = [f"{tract_label(s.primary_tract_geoid)} (stop {s.stop_rank}): chronic illness "
+                 f"{s.score_breakdown.chronic_respiratory_norm:.2f}, checkup gap "
+                 f"{s.score_breakdown.checkup_preventive_gap_norm:.2f}, distance to a safety-net clinic "
+                 f"{s.score_breakdown.safety_net_distance_norm:.2f}" for s in stops]
+        runners = plan.runner_up_tracts[:3] if plan else []
+        missed = [f"{tract_label(u.tract_geoid)} (need rank {u.need_rank}, "
+                  f"{u.distance_to_nearest_selected_stop_km:.1f} km from stop {u.covered_by_stop_rank or 1})"
+                  for u in runners]
+        tail = (" High-need areas no stop reaches yet: " + "; ".join(missed) + ".") if missed else ""
+        return reply("Nothing here counts sick people or who sees a doctor, so I can't name people or count "
+                     "missed visits. The closest tract-level signal combines modeled chronic illness (CDC PLACES), "
+                     "a low routine-checkup rate and distance to a safety-net clinic, each 0–1 within the county "
+                     "(1 = worst). The plan's stops: " + "; ".join(parts) + "." + tail
+                     + " These are model estimates, not counts.", "health_access", TRACT,
+                     cites=["a4i_health.burden_tracts", "a4i_health.tract_access"])
+
     if _has(r"shortage|hpsa|underserved|federal(ly)? (designat|said)", q):
         check = next((c for c in (r.evidence_report.checks if r.evidence_report else [])
                       if c.check_name == "shortage_areas_present"), None)

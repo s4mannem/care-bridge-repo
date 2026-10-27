@@ -48,6 +48,60 @@ void main() {
     });
   });
 
+  group('free-text questions', () {
+    const recorded = [
+      'Which neighborhoods need the van most?',
+      'Why didn\'t we pick the tract with the highest need?',
+      'Is respiratory illness rising in this neighborhood?',
+      'Who does this plan reach?',
+      'How far is each stop from a clinic that takes the uninsured?',
+    ];
+
+    test('route to the closest recorded question by topic', () {
+      expect(closestRecordedQuestion('Which neighborhoods have the most people who are sick and not being seen?',
+          recorded), recorded[0]);
+      expect(closestRecordedQuestion('is the flu going up?', recorded), recorded[2]);
+      expect(closestRecordedQuestion('why was tract 120 left out', recorded), recorded[1]);
+      expect(closestRecordedQuestion('is this plan fair to Black residents?', recorded), recorded[3]);
+      expect(closestRecordedQuestion('how far is the nearest safety-net clinic', recorded), recorded[4]);
+      expect(closestRecordedQuestion('tell me a joke', recorded), isNull);
+    });
+
+    test('questions are told apart from plan requests', () {
+      expect(looksLikeQuestion('Which neighborhoods have the most people who are sick and not being seen?'), isTrue);
+      expect(looksLikeQuestion('Plan for asthma'), isFalse);
+      expect(looksLikeQuestion('focus on households without a car'), isFalse);
+    });
+
+    testWidgets('recorded source answers free text with the closest recorded answer', (tester) async {
+      final a = await tester.runAsync(() => RecordedPlanSource().ask(const AskRequest(
+          question: 'Which neighborhoods have the most people who are sick and not being seen?', plan: form)));
+      expect(a!.answer, startsWith('Closest question I can answer offline: "Which neighborhoods need the van most?"'));
+      final refused = await tester.runAsync(
+          () => RecordedPlanSource().ask(const AskRequest(question: 'Which patients have diabetes?', plan: form)));
+      expect(refused!.refused, isTrue);
+    });
+  });
+
+  testWidgets('a question before any plan offers the plan first', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: AskPanel(
+            source: RecordedPlanSource(),
+            plan: null,
+            request: form,
+            formRequest: form,
+            planning: false,
+            onPlan: (_) {}),
+      ),
+    ));
+    await tester.enterText(find.byType(TextField), 'Which neighborhoods have the most people who are sick?');
+    await tester.testTextInput.receiveAction(TextInputAction.send);
+    await tester.pump();
+    expect(find.textContaining('I need a plan to answer that'), findsOneWidget);
+    expect(find.text('Generate plan'), findsOneWidget);
+  });
+
   testWidgets('before a plan, a chat message becomes a request the lead confirms', (tester) async {
     PlanRequest? started;
     await tester.pumpWidget(MaterialApp(

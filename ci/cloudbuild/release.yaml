@@ -54,7 +54,8 @@ steps:
       - -c
       - |
         set -euo pipefail
-        rel="$$(echo "${_COMPONENT}-${BUILD_ID}" | cut -c1-63)"
+        # Cloud Deploy names the rollout <release>-to-<target>-0001, which must fit in 63 characters.
+        rel="$$(echo "${_COMPONENT}-${BUILD_ID}" | cut -c1-36)"
         gcloud deploy releases create "$$rel" \
           --project="${PROJECT_ID}" --region="${_REGION}" \
           --delivery-pipeline="${_PREFIX}-${_COMPONENT}" \

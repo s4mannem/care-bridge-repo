@@ -150,7 +150,17 @@ class _PlannerScreenState extends State<PlannerScreen> {
           child: TabBarView(children: [
             AgentGraph(replay: _replay),
             AgentTimeline(replay: _replay),
-            AskPanel(source: widget.source, plan: _response, request: _planned ?? _request),
+            AskPanel(
+              source: widget.source,
+              plan: _response,
+              request: _planned ?? _request,
+              formRequest: _request,
+              planning: _loading,
+              onPlan: (r) {
+                setState(() => _request = r);
+                _submit();
+              },
+            ),
           ]),
         ),
       ]),

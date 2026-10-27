@@ -13,6 +13,7 @@ class BigQueryRepo:
     def __init__(self, settings: Settings):
         self.project = settings.bq_project
         self.dataset = settings.bq_dataset
+        self.views = settings.bq_use_sanitized_views
         self._client = None
 
     @property
@@ -27,7 +28,9 @@ class BigQueryRepo:
         return self._client
 
     def table(self, name: str) -> str:
-        """Fully-qualified table id, e.g. `proj.a4i_health.burden_tracts`."""
+        """Fully-qualified id, e.g. `proj.a4i_health.v_burden_tracts` (the sanitized view)."""
+        if self.views and not name.startswith("v_"):
+            name = f"v_{name}"
         return f"`{self.project}.{self.dataset}.{name}`"
 
     def query(self, sql: str, params: dict[str, Any] | None = None) -> list[dict]:

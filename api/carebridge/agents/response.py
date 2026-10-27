@@ -51,8 +51,8 @@ def build_plan_response(request_id: str, req: PlanRequest, state: dict[str, Any]
         county_fips=req.county_fips, county_name=req.county_name,
         final_plan=final, audit_report=audit, revision_history=history, evidence_report=evidence,
         outreach=get(STATE_OUTREACH_MESSAGES, OutreachMessages),
-        provenance=["a4i_health.burden_tracts", "a4i_health.tract_access", "a4i_health.care_sites",
-                    "a4i_health.disease_weekly", "a4i_health.shortage_areas",
+        provenance=["a4i_health.v_burden_tracts", "a4i_health.v_tract_access", "a4i_health.v_care_sites",
+                    "a4i_health.v_disease_weekly", "a4i_health.v_shortage_areas",
                     "bigquery-public-data.census_bureau_acs.censustract_2020_5yr (auditor only)"],
         limitations=LIMITATIONS,
         data_availability={

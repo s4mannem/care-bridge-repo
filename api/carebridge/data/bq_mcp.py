@@ -31,11 +31,15 @@ class BigQueryMcp:
     def __init__(self, settings: Settings):
         self.project = settings.bq_project
         self.dataset = settings.bq_dataset
+        self.views = settings.bq_use_sanitized_views
         self.url = settings.mcp_bigquery_url
         self._toolset = None
         self._creds = None
 
     def table(self, name: str) -> str:
+        """Fully-qualified id, e.g. `proj.a4i_health.v_burden_tracts` (the sanitized view)."""
+        if self.views and not name.startswith("v_"):
+            name = f"v_{name}"
         return f"`{self.project}.{self.dataset}.{name}`"
 
     async def _headers(self, _ctx: Any = None) -> dict[str, str]:

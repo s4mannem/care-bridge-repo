@@ -94,8 +94,8 @@ def build_health_evidence(county_fips: str, county_name: str, rows: list[dict], 
             percent_visits_covid=_f(latest.get("covid")), percent_visits_influenza=_f(latest.get("flu")),
             percent_visits_rsv=_f(latest.get("rsv")), data_unavailable=not d["last_week"],
         ),
-        source_lineage=["a4i_health.burden_tracts", "a4i_health.tract_access", "a4i_health.exposure_tracts",
-                        "a4i_health.care_sites", "a4i_health.shortage_areas", "a4i_health.disease_weekly"],
+        source_lineage=["a4i_health.v_burden_tracts", "a4i_health.v_tract_access", "a4i_health.v_exposure_tracts",
+                        "a4i_health.v_care_sites", "a4i_health.v_shortage_areas", "a4i_health.v_disease_weekly"],
         missingness_flags=[f"{sum(t.pct_lack_transport is None for t in tracts)} tracts lack PLACES LACKTRPT"],
     )
     assert_race_blind_planner_input(evidence.model_dump())

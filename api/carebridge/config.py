@@ -31,6 +31,9 @@ class Settings(BaseSettings):
 
     bq_project: str | None = Field(None, validation_alias=AliasChoices("CAREBRIDGE_BQ_PROJECT", "BQ_PROJECT"))
     bq_dataset: str = Field("a4i_health", validation_alias=AliasChoices("CAREBRIDGE_BQ_DATASET", "BQ_DATASET"))
+    # Read the team's sanitized views (`v_<table>`: same columns, control and
+    # zero-width characters stripped from text and id columns), not the raw tables.
+    bq_use_sanitized_views: bool = True
     gcp_project: str | None = Field(None, validation_alias=AliasChoices("CAREBRIDGE_GCP_PROJECT", "GOOGLE_CLOUD_PROJECT"))
     gcp_location: str | None = Field(None, validation_alias=AliasChoices("CAREBRIDGE_GCP_LOCATION", "GOOGLE_CLOUD_LOCATION"))
 

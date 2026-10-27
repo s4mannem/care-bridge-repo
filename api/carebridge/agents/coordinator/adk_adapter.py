@@ -40,6 +40,7 @@ from google.genai import types
 from carebridge.agents.auditor_agent.agent import build_equity_rigor_auditor_agent
 from carebridge.agents.communicator_agent.agent import build_community_communications_agent
 from carebridge.agents.coordinator.exit_gate import AuditLoopExitGate
+from carebridge.agents.coordinator.pacing import pace_model_call
 from carebridge.agents.health_agent.agent import build_health_access_agent
 from carebridge.agents.mobility_agent.agent import build_transit_community_agent
 from carebridge.agents.planner_agent.agent import build_siting_planner_agent
@@ -202,6 +203,8 @@ def _adapt(agent: LlmAgent, state_key: str, tool: Callable, **overrides: Any) ->
         before_model_callback=agent.before_model_callback,
     )
     fields.update(overrides)
+    own = fields["before_model_callback"]
+    fields["before_model_callback"] = [pace_model_call, *(own if isinstance(own, list) else [own] if own else [])]
     return LlmAgent(**fields)
 
 

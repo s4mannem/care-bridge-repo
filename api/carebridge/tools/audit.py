@@ -119,10 +119,14 @@ def audit_draft(draft: DraftPlan, impact: DemographicImpactComparison,
     return report, feedback
 
 
+_MONTHS_ES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre",
+              "noviembre", "diciembre"]
+
+
 def draft_outreach(plan: DraftPlan, health: HealthEvidence, county_name: str) -> OutreachMessages:
     def day(iso: str, es: bool = False) -> str:
         d = date.fromisoformat(iso)
-        return f"sábado {d.day} de noviembre" if es else f"Saturday, {d.strftime('%B')} {d.day}"
+        return f"sábado {d.day} de {_MONTHS_ES[d.month - 1]}" if es else f"Saturday, {d.strftime('%B')} {d.day}"
 
     notices = [StopOutreachDraft(
         stop_rank=s.stop_rank, assigned_saturday=s.assigned_saturday, candidate_venue_name=s.candidate_venue_name,

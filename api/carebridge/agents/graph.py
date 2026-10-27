@@ -7,12 +7,14 @@
      └─ communications
 
 The siting planner is the team's Gemini LlmAgent (plan 06) with the coverage
-optimizer as its tool. The other agents are deterministic stand-ins over
+optimizer as its tool; communications is a Gemini writer (plan 08) with the
+template as its fallback. The other agents are deterministic stand-ins over
 `carebridge/tools` until their LLM versions land; each emits the same state
 keys the real agent will, so swapping one in changes nothing downstream.
 Every node attaches a UI-facing `AgentEvent` to its ADK event so the API can
 stream the run as it happens.
 """
+import asyncio
 from collections.abc import AsyncGenerator
 from typing import Any
 
@@ -50,6 +52,7 @@ from ..security.race_blind_guard import assert_race_blind_planner_input
 from ..tools.audit import audit_draft, demographic_impact, draft_outreach
 from ..tools.evidence import fetch_health_evidence, unavailable_mobility_evidence, validate_evidence
 from ..tools.optimizer.tool import optimize_four_clinic_stops
+from .communicator_agent import STATE_COMMUNICATIONS_BRIEF, build_brief, build_communicator_agent, merge_outreach
 from .trace import overlap_pair, tract_label
 
 UI_EVENT = "carebridge_event"  # Event.custom_metadata key the API streams to the UI
@@ -240,13 +243,36 @@ class AuditGate(BaseAgent):
 
 # ── 03 · Outreach (plan 08) ────────────────────────────────────────────────
 
-class CommunicationsStandIn(_StandIn):
+class CommunicationsAgent(BaseAgent):
+    """Runs the plan 08 writer on a brief from `final_plan` and lays its prose over the template.
+
+    The writer never sees `audit_report` or any demographic data; if it fails or
+    its text doesn't pass the checks, `draft_outreach` fills in.
+    """
+    timeout_s: float = 60.0
+
     async def _run_async_impl(self, ctx: InvocationContext) -> AsyncGenerator[Event, None]:
         s = ctx.session.state
         final = DraftPlan.model_validate(s.get(STATE_FINAL_PLAN) or s[STATE_DRAFT_PLAN])
         req = PlanRequest.model_validate(s[STATE_PLAN_REQUEST])
+        health = HealthEvidence.model_validate(s[STATE_HEALTH_EVIDENCE])
         yield _event(self, ctx, ui_event("communications", "start", "Drafting EN/ES notices from final_plan only"))
-        outreach = draft_outreach(final, HealthEvidence.model_validate(s[STATE_HEALTH_EVIDENCE]), req.county_name)
+        template = draft_outreach(final, health, req.county_name)
+        yield _event(self, ctx, state={STATE_COMMUNICATIONS_BRIEF: build_brief(final, health.regional_disease, req.county_name)})
+        writer, raw = self.sub_agents[0], None
+        try:
+            async with asyncio.timeout(self.timeout_s):
+                async for e in writer.run_async(ctx):
+                    if e.author == writer.name and e.is_final_response() and e.content and e.content.parts:
+                        raw = "".join(p.text for p in e.content.parts if p.text and not p.thought) or raw
+                    yield e
+        except Exception as exc:  # the template covers any model failure
+            raw = None
+            yield _event(self, ctx, ui_event("communications", "finding",
+                                             f"Writer failed ({type(exc).__name__}); using the template"))
+        outreach, fallbacks = merge_outreach(raw, template)
+        if fallbacks and raw is not None:
+            yield _event(self, ctx, ui_event("communications", "finding", "Template used for " + ", ".join(fallbacks)))
         yield _event(self, ctx, ui_event("communications", "state_write",
                                          f"{len(outreach.stop_notices)} stop notices · "
                                          f"{len(outreach.unpicked_neighborhood_explanations)} \"why not here\" notes",
@@ -267,5 +293,5 @@ def build_graph(settings: Settings, repo: BigQueryRepo) -> SequentialAgent:
             EquityAuditorStandIn(name="equity_auditor", repo=repo, max_revisions=settings.max_audit_revisions),
             AuditGate(name="gate"),
         ]),
-        CommunicationsStandIn(name="communications", repo=repo),
+        CommunicationsAgent(name="communications", sub_agents=[build_communicator_agent(settings)]),
     ])

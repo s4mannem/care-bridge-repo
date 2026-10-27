@@ -34,6 +34,9 @@ spec:
               value: ${ENV}
             - name: CAREBRIDGE_AGENT_ENGINE
               value: adk
+            # Four Gemini agents take ~95 s; the UI only times out on gaps between streamed events.
+            - name: CAREBRIDGE_PLAN_TIMEOUT_S
+              value: "240"
             - name: GOOGLE_GENAI_USE_VERTEXAI
               value: "TRUE"
             - name: CAREBRIDGE_REVIEW_STORE

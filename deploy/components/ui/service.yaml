@@ -1,0 +1,33 @@
+# Cloud Run service for the Flutter web UI (nginx). Rendered per env by ci/scripts/render.py.
+#
+# The image is built once for every env: the app calls its own origin and nginx
+# forwards /v1/ to API_URL, which is the same env's API service.
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ${SERVICE}
+  labels:
+    app: ${PREFIX}
+    component: ${COMPONENT}
+    env: ${ENV}
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/invoker-iam-disabled: "true"
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: "3"
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT}
+      containers:
+        - image: app
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          env:
+            - name: API_URL
+              value: https://${PREFIX}-api-${ENV}-${PROJECT_NUMBER}.${REGION}.run.app

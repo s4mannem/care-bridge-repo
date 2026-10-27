@@ -1,0 +1,12 @@
+# What `gcloud builds submit` (ci/submit.sh) leaves out of the upload.
+.git/
+.gitignore
+#!include:.gitignore
+**/.venv/
+**/.pytest_cache/
+**/.terraform/
+ui/build/
+ui/.dart_tool/
+ui/android/
+ui/ios/
+notebooks/

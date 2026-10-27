@@ -1,0 +1,40 @@
+# Every deployable in the repo, in one place.
+#
+# Terraform (infra/) reads this to create, per enabled component: a runtime
+# service account with `roles`, a Cloud Deploy pipeline (dev -> prod), a PR
+# check trigger and a release trigger. ci/submit.sh reads `dir`.
+#
+# A component is a folder with a Dockerfile that has two stages:
+#   test     runs the component's tests (CI builds only this stage)
+#   runtime  the image Cloud Run serves on $PORT
+# plus a Cloud Run manifest template at deploy/components/<name>/service.yaml.
+#
+# Keep this format flat (two-space indents, one key per line): ci/submit.sh
+# parses it without a YAML library.
+components:
+  api:
+    dir: api
+    enabled: true
+    roles:
+      - roles/bigquery.jobUser
+      - roles/bigquery.dataViewer
+  ui:
+    dir: ui
+    enabled: true
+    roles: []
+  # Turn on once agents/ has a Dockerfile (ADK api_server or a custom app).
+  agents:
+    dir: agents
+    enabled: false
+    roles:
+      - roles/aiplatform.user
+      - roles/bigquery.jobUser
+      - roles/bigquery.dataViewer
+  # Only needed if you self-host MCP Toolbox for Databases. BigQuery's managed
+  # MCP server needs no deployment.
+  mcp:
+    dir: mcp
+    enabled: false
+    roles:
+      - roles/bigquery.jobUser
+      - roles/bigquery.dataViewer

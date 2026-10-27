@@ -1,0 +1,19 @@
+# PR check for one component: builds the `test` stage of its Dockerfile, which
+# runs that component's tests. Language-agnostic by construction.
+#
+# Substitutions come from the trigger (infra/triggers.tf) or ci/submit.sh.
+steps:
+  - id: test
+    name: gcr.io/cloud-builders/docker
+    env: ["DOCKER_BUILDKIT=1"]
+    args: ["build", "--target", "test", "--progress", "plain", "${_DIR}"]
+
+substitutions:
+  _COMPONENT: ""
+  _DIR: ""
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1800s

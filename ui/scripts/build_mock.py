@@ -1,8 +1,10 @@
 """Build recorded PlanResponse fixtures for the UI from the real Fulton data.
 
 Emits one `PlanResponse` (plan 00 `carebridge/contracts/api_models.py`) per
-strategy x `simulate_first_draft_defect`, plus the tract layer the UI will get
-from `GET /v1/tracts/{county_fips}`. Scoring and stop selection follow plan 05
+strategy x `simulate_first_draft_defect`, plus the tract layer served by
+`GET /v1/tracts/{county_fips}`. Each response is validated against the contract
+before it is written. Output goes to both ui/assets/ (offline UI build) and
+api/carebridge/mocks/recorded/ (the API's stub runner); a test keeps them equal. Scoring and stop selection follow plan 05
 (within-county min-max, five weights, 4 km catchments, 5 km separation, 0.85
 overlap discount); the audit follows plan 07, including the post-hoc ACS
 demographic comparison. Only the agents' prose is templated here.
@@ -20,6 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "api"))
 from carebridge.config import Settings  # noqa: E402
+from carebridge.contracts.api_models import PlanResponse  # noqa: E402
 from carebridge.data.bigquery import BigQueryRepo  # noqa: E402
 
 _repo = BigQueryRepo(Settings())
@@ -27,6 +30,7 @@ query, table = _repo.query, _repo.table
 
 DATA = ROOT / "ui" / "assets" / "data"
 MOCK = ROOT / "ui" / "assets" / "mock"
+API_RECORDED = ROOT / "api" / "carebridge" / "mocks" / "recorded"
 
 COUNTY_FIPS = "13121"
 COUNTY_NAME = "Fulton"
@@ -570,18 +574,22 @@ def main():
     add_components(rows)
     demo, counts, disease = load_demographics(), load_counts(), load_disease()
 
-    DATA.mkdir(parents=True, exist_ok=True)
-    MOCK.mkdir(parents=True, exist_ok=True)
-    for old in MOCK.glob("*.json"):
+    for d in (DATA, MOCK, API_RECORDED):
+        d.mkdir(parents=True, exist_ok=True)
+    for old in [*MOCK.glob("plan_*.json"), *API_RECORDED.glob("plan_*.json")]:
         old.unlink()
     for strategy in STRATEGIES:
         for defect in (False, True):
             resp = plan_response(strategy, defect, rows, demo, counts, disease)
+            PlanResponse.model_validate(resp)
             name = f"plan_{strategy}_{'defect' if defect else 'standard'}.json"
-            (MOCK / name).write_text(json.dumps(resp, indent=2, ensure_ascii=False))
+            for d in (MOCK, API_RECORDED):
+                (d / name).write_text(json.dumps(resp, indent=2, ensure_ascii=False))
             print(f"{name}: {[label(s['primary_tract_geoid']) for s in resp['final_plan']['stops']]} "
                   f"status={resp['status']} jaccard={resp['final_plan']['sensitivity']['top_4_stability_jaccard']}")
-    (DATA / "fulton_tracts.geojson").write_text(json.dumps(tract_layer(rows), separators=(",", ":")))
+    layer = json.dumps(tract_layer(rows), separators=(",", ":"))
+    for d in (DATA, API_RECORDED):
+        (d / "fulton_tracts.geojson").write_text(layer)
     (DATA / "care_sites.json").write_text(json.dumps(load_sites(), indent=1))
 
 

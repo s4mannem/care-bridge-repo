@@ -1,10 +1,14 @@
-"""`GET /v1/tracts/{county_fips}`: the tract layer (GeoJSON with need per strategy) for the map."""
+"""`GET /v1/tracts/{county_fips}`: the tract layer (GeoJSON with need per strategy) for the map.
+
+Served from the recorded Fulton layer for now. Computing it live means porting
+the scoring in `ui/scripts/build_mock.py` to `carebridge/tools` and joining
+TIGER tract shapes, which the planner tools will need anyway.
+"""
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Path
 
-from ...data.bigquery import BigQueryRepo
-from ..deps import get_repo
+from ...mocks.recorded import RECORDED_COUNTY_FIPS, recorded_tract_layer
 from ..errors import GatewayError
 
 router = APIRouter(tags=["tracts"])
@@ -13,7 +17,8 @@ CountyFips = Annotated[str, Path(pattern=r"^\d{5}$", description="5-digit state+
 
 
 @router.get("/tracts/{county_fips}")
-def get_tracts(county_fips: CountyFips, repo: Annotated[BigQueryRepo, Depends(get_repo)]) -> dict[str, Any]:
-    # Scoring lives in carebridge/tools once the planner tools are ported from
-    # ui/scripts/build_mock.py; until then this route is wired but empty.
-    raise GatewayError(501, "not_implemented", f"Tract layer for {county_fips} is not built yet.")
+def get_tracts(county_fips: CountyFips) -> dict[str, Any]:
+    layer = recorded_tract_layer(county_fips)
+    if layer is None:
+        raise GatewayError(404, "county_not_available", f"Only {RECORDED_COUNTY_FIPS} has a tract layer so far.")
+    return layer

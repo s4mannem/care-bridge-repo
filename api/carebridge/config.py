@@ -57,6 +57,9 @@ class Settings(BaseSettings):
     # Gemini 3.x is required by the challenge (plan 00 had 2.5).
     gemini_model_fast: str = "gemini-3.6-flash"
     gemini_model_reasoning: str = "gemini-3.6-flash"
+    # Minimum seconds between Gemini calls across the whole graph, so parallel
+    # agents don't burst through the per-minute token quota (429s). 0 = off.
+    gemini_min_gap_s: float = 3.0
     # Google-managed BigQuery MCP server (Streamable HTTP); the Health & Access agent queries through it.
     mcp_bigquery_url: str = "https://bigquery.googleapis.com/mcp"
     model_armor_enabled: bool = False

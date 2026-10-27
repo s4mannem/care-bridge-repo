@@ -8,12 +8,12 @@ COPY pyproject.toml ./
 COPY carebridge ./carebridge
 
 FROM base AS test
-RUN pip install --no-cache-dir '.[dev]'
+RUN pip install --no-cache-dir '.[dev,agents]'
 COPY tests ./tests
 RUN pytest -q
 
 FROM base AS runtime
-RUN pip install --no-cache-dir . && useradd --uid 10001 --no-create-home app
+RUN pip install --no-cache-dir '.[agents]' && useradd --uid 10001 --no-create-home app
 USER app
 # Cloud Run sets $PORT; credentials come from the service account (ADC), never the image.
 ENV PORT=8080 CAREBRIDGE_ENV=prod

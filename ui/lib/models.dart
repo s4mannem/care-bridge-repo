@@ -429,3 +429,135 @@ String tractLabel(String geoId) {
   final suffix = code.substring(4);
   return suffix == '00' ? 'Tract $whole' : 'Tract $whole.$suffix';
 }
+
+// ── interaction_models: run events, Ask, human review ──────────────────────
+
+/// One step of an agent run. Streamed live by `POST /v1/plan/stream`; draft
+/// writes carry the draft so the map can show it before the run finishes.
+class AgentEvent {
+  AgentEvent.fromJson(Map<String, dynamic> j)
+      : tMs = j['t_ms'],
+        agent = j['agent'],
+        kind = j['kind'],
+        message = j['message'],
+        parallel = j['parallel'] ?? false,
+        stateKey = j['state_key'],
+        draftIndex = j['draft_index'],
+        verdict = j['verdict'],
+        conflictRanks = j['conflict_ranks'] == null ? null : List<int>.from(j['conflict_ranks']),
+        draft = j['draft'] == null ? null : DraftPlan.fromJson(j['draft']);
+
+  final int tMs;
+  final String agent;
+
+  /// start | skip | tool | finding | state_write | verdict | done
+  final String kind;
+  final String message;
+  final bool parallel;
+  final String? stateKey;
+  final int? draftIndex;
+
+  /// reject | approved | needs_human_review
+  final String? verdict;
+  final List<int>? conflictRanks;
+  final DraftPlan? draft;
+}
+
+class AskRequest {
+  const AskRequest({required this.question, required this.plan, this.planRequestId});
+  final String question;
+  final PlanRequest plan;
+  final String? planRequestId;
+
+  Map<String, dynamic> toJson() => {
+        'question': question,
+        'plan': plan.toJson(),
+        if (planRequestId != null) 'plan_request_id': planRequestId,
+      };
+}
+
+class AskResponse {
+  AskResponse.fromJson(Map<String, dynamic> j)
+      : requestId = j['request_id'],
+        answer = j['answer'],
+        answeredBy = j['answered_by'],
+        grain = j['grain'],
+        refused = j['refused'] ?? false,
+        citations = List<String>.from(j['citations'] ?? const []),
+        followUps = List<String>.from(j['follow_ups'] ?? const []);
+
+  final String requestId;
+  final String answer;
+  final String answeredBy;
+
+  /// The SpatialGrain the answer rests on; null when nothing was claimed.
+  final String? grain;
+  final bool refused;
+  final List<String> citations;
+  final List<String> followUps;
+}
+
+/// approve_plan | request_changes | confirm_venue | reject_stop | reopen
+class ReviewAction {
+  const ReviewAction(this.action, {this.stopRank, this.venueName, this.note, this.reviewerRole = 'outreach_lead'});
+
+  ReviewAction.fromJson(Map<String, dynamic> j)
+      : action = j['action'],
+        stopRank = j['stop_rank'],
+        venueName = j['venue_name'],
+        note = j['note'],
+        reviewerRole = j['reviewer_role'] ?? 'outreach_lead';
+
+  final String action;
+  final int? stopRank;
+  final String? venueName;
+  final String? note;
+
+  /// A role, never a person's name.
+  final String reviewerRole;
+
+  Map<String, dynamic> toJson() => {
+        'action': action,
+        if (stopRank != null) 'stop_rank': stopRank,
+        if (venueName != null) 'venue_name': venueName,
+        if (note != null) 'note': note,
+        'reviewer_role': reviewerRole,
+      };
+}
+
+class StopReview {
+  StopReview({required this.stopRank, this.venueConfirmed = false, this.venueName, this.rejected = false});
+
+  StopReview.fromJson(Map<String, dynamic> j)
+      : stopRank = j['stop_rank'],
+        venueConfirmed = j['venue_confirmed'] ?? false,
+        venueName = j['venue_name'],
+        rejected = j['rejected'] ?? false;
+
+  final int stopRank;
+  final bool venueConfirmed;
+  final String? venueName;
+  final bool rejected;
+}
+
+class ReviewState {
+  ReviewState.fromJson(Map<String, dynamic> j)
+      : planRequestId = j['plan_request_id'],
+        status = j['status'],
+        stops = _list(j['stops'], StopReview.fromJson),
+        log = [
+          for (final e in (j['log'] as List?) ?? const [])
+            (DateTime.parse(e['at']), ReviewAction.fromJson(e['action']))
+        ],
+        readyToAnnounce = j['ready_to_announce'] ?? false;
+
+  final String planRequestId;
+
+  /// pending | approved | changes_requested
+  final String status;
+  final List<StopReview> stops;
+  final List<(DateTime, ReviewAction)> log;
+  final bool readyToAnnounce;
+
+  StopReview stop(int rank) => stops.firstWhere((s) => s.stopRank == rank);
+}

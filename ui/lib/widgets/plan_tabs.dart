@@ -2,20 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../models.dart';
+import '../plan_source.dart';
 import '../replay.dart';
 import 'common.dart';
+import 'review_panel.dart';
 
 /// The four parts of the Clinic Plan (plan 11). Each tab unlocks when the run
 /// reaches the agent that owns it.
 class PlanTabs extends StatelessWidget {
   const PlanTabs({
     super.key,
+    required this.source,
     required this.response,
     required this.replay,
     required this.selectedStop,
     required this.onSelectStop,
   });
 
+  final PlanSource source;
   final PlanResponse? response;
   final ReplayController replay;
   final int? selectedStop;
@@ -24,7 +28,7 @@ class PlanTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final r = response;
-    final idx = replay.draftIndex;
+    final draft = replay.currentDraft;
     return DefaultTabController(
       length: 4,
       child: Column(children: [
@@ -47,11 +51,12 @@ class PlanTabs extends StatelessWidget {
         const Divider(height: 1),
         Expanded(
           child: TabBarView(children: [
-            r == null || idx == null
+            draft == null
                 ? const _Locked('The planner hasn\'t written a draft yet.')
                 : _StopsTab(
+                    source: source,
                     response: r,
-                    draft: r.revisionHistory[idx],
+                    draft: draft,
                     replay: replay,
                     selectedStop: selectedStop,
                     onSelectStop: onSelectStop),
@@ -121,6 +126,7 @@ class _Banner extends StatelessWidget {
 
 class _StopsTab extends StatelessWidget {
   const _StopsTab({
+    required this.source,
     required this.response,
     required this.draft,
     required this.replay,
@@ -128,7 +134,8 @@ class _StopsTab extends StatelessWidget {
     required this.onSelectStop,
   });
 
-  final PlanResponse response;
+  final PlanSource source;
+  final PlanResponse? response;
   final DraftPlan draft;
   final ReplayController replay;
   final int? selectedStop;
@@ -138,8 +145,8 @@ class _StopsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final rejected = replay.rejectedOnScreen;
     final pair = rejected ? overlapPair(draft) : null;
-    final done = replay.finalWritten;
-    final equity = response.auditReport?.demographicImpact.requiresHumanReview ?? false;
+    final done = replay.finalWritten && response != null;
+    final equity = response?.auditReport?.demographicImpact.requiresHumanReview ?? false;
     return ListView(padding: const EdgeInsets.all(16), children: [
       if (pair != null)
         _Banner(
@@ -149,18 +156,13 @@ class _StopsTab extends StatelessWidget {
           lines: ['Stops ${pair.$1.rank} and ${pair.$2.rank} are ${pair.$3.toStringAsFixed(1)} km apart, so their '
               '${pair.$1.catchmentKm.round()} km catchments overlap and two Saturdays would serve the same people.'],
         ),
-      if (done && response.needsHumanReview)
-        _Banner(
-          icon: Icons.how_to_reg_outlined,
+      if (done && equity)
+        const _Banner(
+          icon: Icons.flag_outlined,
           color: Palette.warn,
-          title: response.status == 'needs_human_review'
-              ? 'Needs human review before anything is announced'
-              : 'Provisionally approved: confirm hosts before announcing',
-          lines: [
-            if (draft.stops.any((s) => !s.hostVerified)) '• No host venue is verified yet.',
-            if (equity) '• The equity audit flagged groups below parity (see tab 3).',
-          ],
+          title: 'The equity audit flagged groups below parity (see tab 3)',
         ),
+      if (done && response!.needsHumanReview) ReviewPanel(source: source, plan: response!),
       for (final n in draft.plannerNotes)
         _Banner(icon: Icons.edit_note, color: const Color(0xFF1565C0), title: 'Planner note', lines: [n]),
       Wrap(spacing: 12, runSpacing: 12, children: [

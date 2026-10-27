@@ -39,6 +39,12 @@ class Settings(BaseSettings):
     agent_engine: Literal["stub", "adk"] = "stub"
     # The UI gives up at 130 s; finish (or fail) before it does.
     plan_timeout_s: float = 120.0
+    # Pace of the stub runner's streamed events: 1.0 = recorded timing, 0 = instant.
+    stub_stream_pace: float = 1.0
+
+    # Where human review state lives: "memory" (tests, local) or "firestore" (Cloud Run).
+    review_store: Literal["memory", "firestore"] = "memory"
+    firestore_database: str = "(default)"
 
     # From the plan 00 foundation. Fulton is the county the demo is built on.
     default_county_fips: str = "13121"

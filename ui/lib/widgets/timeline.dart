@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models.dart';
 import '../replay.dart';
 import 'common.dart';
 
@@ -93,12 +94,12 @@ class ReplayBar extends StatelessWidget {
         ),
         IconButton(
           tooltip: 'Replay from start',
-          onPressed: r.events.isEmpty ? null : r.play,
+          onPressed: r.events.isEmpty || r.live ? null : r.play,
           icon: const Icon(Icons.replay),
         ),
         IconButton(
           tooltip: 'Skip to result',
-          onPressed: r.events.isEmpty || r.done ? null : r.skipToEnd,
+          onPressed: r.events.isEmpty || r.live || r.shown.length == r.events.length ? null : r.skipToEnd,
           icon: const Icon(Icons.skip_next),
         ),
       ]),

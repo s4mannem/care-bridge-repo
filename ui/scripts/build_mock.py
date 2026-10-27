@@ -22,7 +22,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "api"))
 from carebridge.config import Settings  # noqa: E402
-from carebridge.contracts.api_models import PlanResponse  # noqa: E402
+from carebridge.agents.ask_stub import SUGGESTIONS, answer  # noqa: E402
+from carebridge.agents.trace import build_trace  # noqa: E402
+from carebridge.contracts.api_models import PlanRequest, PlanResponse  # noqa: E402
 from carebridge.data.bigquery import BigQueryRepo  # noqa: E402
 
 _repo = BigQueryRepo(Settings())
@@ -555,6 +557,20 @@ def plan_response(strategy, defect, rows, demo, counts, disease):
     }
 
 
+def offline_run(resp: dict, strategy: str, defect: bool) -> dict:
+    """Events and suggested-question answers for the UI build that has no API.
+
+    Both come from the API's own code (the stub runner's trace and Ask), so the
+    offline build shows the same run the deployed one streams.
+    """
+    plan = PlanResponse.model_validate(resp)
+    req = PlanRequest(strategy=strategy, simulate_first_draft_defect=defect)
+    return {
+        "events": [e.model_dump(mode="json") for e in build_trace(plan, req)],
+        "asks": {q: answer(q, plan, plan.request_id).model_dump(mode="json") for q in SUGGESTIONS},
+    }
+
+
 def tract_layer(rows):
     """Mock of GET /v1/tracts/13121: shapes plus composite need per strategy."""
     geo = load_geometry()
@@ -576,7 +592,7 @@ def main():
 
     for d in (DATA, MOCK, API_RECORDED):
         d.mkdir(parents=True, exist_ok=True)
-    for old in [*MOCK.glob("plan_*.json"), *API_RECORDED.glob("plan_*.json")]:
+    for old in [*MOCK.glob("plan_*.json"), *MOCK.glob("run_*.json"), *API_RECORDED.glob("plan_*.json")]:
         old.unlink()
     for strategy in STRATEGIES:
         for defect in (False, True):
@@ -585,6 +601,8 @@ def main():
             name = f"plan_{strategy}_{'defect' if defect else 'standard'}.json"
             for d in (MOCK, API_RECORDED):
                 (d / name).write_text(json.dumps(resp, indent=2, ensure_ascii=False))
+            (MOCK / name.replace("plan_", "run_", 1)).write_text(
+                json.dumps(offline_run(resp, strategy, defect), separators=(",", ":"), ensure_ascii=False))
             print(f"{name}: {[label(s['primary_tract_geoid']) for s in resp['final_plan']['stops']]} "
                   f"status={resp['status']} jaccard={resp['final_plan']['sensitivity']['top_4_stability_jaccard']}")
     layer = json.dumps(tract_layer(rows), separators=(",", ":"))

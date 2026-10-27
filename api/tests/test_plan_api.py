@@ -71,3 +71,20 @@ def test_recorded_files_match_the_ui_copies():
     for f in RECORDED.iterdir():
         sub = "data" if f.suffix == ".geojson" else "mock"
         assert json.loads(f.read_text()) == json.loads((UI_MOCKS / sub / f.name).read_text()), f.name
+
+
+@pytest.mark.skipif(not UI_MOCKS.exists(), reason="ui/ is not in this build context (Docker test stage)")
+def test_ui_run_files_match_the_api_trace_and_answers():
+    """The offline UI replays these; they must be what the API itself would stream and answer."""
+    from carebridge.agents.ask_stub import answer
+    from carebridge.agents.trace import build_trace
+    from carebridge.contracts.api_models import PlanRequest
+
+    for f in RECORDED.glob("plan_*.json"):
+        strategy, mode = f.stem[len("plan_"):].rsplit("_", 1)
+        plan = PlanResponse.model_validate_json(f.read_text())
+        run = json.loads((UI_MOCKS / "mock" / f.name.replace("plan_", "run_", 1)).read_text())
+        events = build_trace(plan, PlanRequest(strategy=strategy, simulate_first_draft_defect=mode == "defect"))
+        assert run["events"] == [e.model_dump(mode="json") for e in events], f.name
+        for q, a in run["asks"].items():
+            assert a == answer(q, plan, plan.request_id).model_dump(mode="json"), (f.name, q)

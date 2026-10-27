@@ -24,9 +24,21 @@ resource "google_project_service" "apis" {
     "secretmanager.googleapis.com",
     "bigquery.googleapis.com",
     "aiplatform.googleapis.com",
+    "firestore.googleapis.com",
   ])
   service            = each.value
   disable_on_destroy = false
+}
+
+# Human review state for provisional plans (api: CAREBRIDGE_REVIEW_STORE=firestore).
+# Native mode, in the services' region. Deleting it is blocked on purpose.
+resource "google_firestore_database" "default" {
+  name                    = "(default)"
+  location_id             = var.region
+  type                    = "FIRESTORE_NATIVE"
+  delete_protection_state = "DELETE_PROTECTION_ENABLED"
+  deletion_policy         = "ABANDON"
+  depends_on              = [google_project_service.apis]
 }
 
 resource "google_artifact_registry_repository" "images" {

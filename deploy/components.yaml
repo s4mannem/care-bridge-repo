@@ -18,6 +18,8 @@ components:
     roles:
       - roles/bigquery.jobUser
       - roles/bigquery.dataViewer
+      - roles/datastore.user
+      - roles/aiplatform.user
   ui:
     dir: ui
     enabled: true

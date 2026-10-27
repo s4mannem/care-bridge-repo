@@ -1,3 +1,3 @@
-"""CareBridge gateway: the API the Saturday Planner UI talks to, in front of the agents."""
+"""CareBridge gateway: the API the Mobile Care Planner UI talks to, in front of the agents."""
 
 __version__ = "0.1.0"

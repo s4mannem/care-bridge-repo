@@ -1,4 +1,4 @@
-# Saturday Planner, web build served by nginx. Stages follow the repo
+# Mobile Care Planner, web build served by nginx. Stages follow the repo
 # convention (deploy/components.yaml):
 #   docker build --target test .      runs flutter test; CI builds only this
 #   docker build --target runtime .   the Cloud Run image

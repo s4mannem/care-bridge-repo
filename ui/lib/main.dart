@@ -11,7 +11,7 @@ class CareBridgeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'CareBridge · Saturday Planner',
+        title: 'CareBridge · Mobile Care Planner',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Palette.accent),

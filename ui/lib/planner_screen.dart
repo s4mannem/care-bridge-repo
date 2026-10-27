@@ -178,7 +178,7 @@ class _PlannerScreenState extends State<PlannerScreen> {
             const Icon(Icons.airport_shuttle_outlined, color: Palette.accent),
             const SizedBox(width: 8),
             const Text('CareBridge', style: TextStyle(fontWeight: FontWeight.w800)),
-            if (wide) const Text('  ·  Saturday Planner', style: TextStyle(color: Palette.muted)),
+            if (wide) const Text('  ·  Mobile Care Planner', style: TextStyle(color: Palette.muted)),
             if (_response?.isRecorded ?? widget.source.recorded) ...[
               const SizedBox(width: 12),
               Tooltip(

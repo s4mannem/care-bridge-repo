@@ -1,7 +1,7 @@
 [project]
 name = "carebridge"
 version = "0.1.0"
-description = "CareBridge gateway: the FastAPI service between the Saturday Planner UI and the agents"
+description = "CareBridge gateway: the FastAPI service between the Mobile Care Planner UI and the agents"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115",

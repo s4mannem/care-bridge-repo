@@ -1,4 +1,4 @@
-# Saturday Planner (Flutter)
+# Mobile Care Planner (Flutter)
 
 The CareBridge operations UI for the **Siting** track: an outreach lead plans four Saturday mobile-clinic
 stops in Fulton County and watches the planner and auditor disagree before a plan is approved.

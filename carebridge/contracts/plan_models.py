@@ -30,7 +30,7 @@ class ProposedClinicStop(BaseModel):
     candidate_venue_name: str
     latitude: float = Field(..., ge=17.0, le=72.0)
     longitude: float = Field(..., ge=-180.0, le=-60.0)
-    catchment_radius_km: float = Field(default=4.0, gt=0.0)
+    catchment_radius_km: float = Field(default=4.0, ge=0.0)
     estimated_population_in_catchment: int = Field(..., ge=0)
     score_breakdown: ScoreBreakdown
     plain_language_rationale: str = Field(

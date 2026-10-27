@@ -35,9 +35,35 @@ resource "google_artifact_registry_repository_iam_member" "ci_push" {
   member     = google_service_account.ci.member
 }
 
+# Cloud Run checks that whoever deploys a revision can read its image, and
+# Cloud Deploy deploys as the deployer account.
+resource "google_artifact_registry_repository_iam_member" "deployer_pull" {
+  repository = google_artifact_registry_repository.images.name
+  location   = var.region
+  role       = "roles/artifactregistry.reader"
+  member     = google_service_account.deployer.member
+}
+
 resource "google_storage_bucket_iam_member" "ci_deploy_bucket" {
   bucket = google_storage_bucket.deploy.name
   role   = "roles/storage.objectAdmin"
+  member = google_service_account.ci.member
+}
+
+# objectAdmin lacks storage.buckets.get, which `gcloud deploy releases create`
+# checks before staging the rendered manifests in the deploy bucket.
+resource "google_storage_bucket_iam_member" "ci_deploy_bucket_get" {
+  bucket = google_storage_bucket.deploy.name
+  role   = "roles/storage.legacyBucketReader"
+  member = google_service_account.ci.member
+}
+
+# `ci/submit.sh` (gcloud builds submit) uploads the source to <project>_cloudbuild,
+# and the build runs as the ci account, which must read it back. Triggers don't need
+# this; they fetch from GitHub. gcloud creates the bucket on the first submit.
+resource "google_storage_bucket_iam_member" "ci_submit_source" {
+  bucket = "${var.project_id}_cloudbuild"
+  role   = "roles/storage.objectViewer"
   member = google_service_account.ci.member
 }
 

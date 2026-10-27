@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from carebridge._compat import BaseModel
 from carebridge.contracts.evidence_models import (
     EvidenceReport,
@@ -632,8 +632,8 @@ def evaluate_evidence_quality(
 
 def validate_collected_evidence(
     tool_context: Any = None,
-    health_evidence: Optional[HealthEvidence | Dict[str, Any]] = None,
-    mobility_evidence: Optional[MobilityEvidence | Dict[str, Any]] = None,
+    health_evidence: Optional[Dict[str, Any]] = None,
+    mobility_evidence: Optional[Dict[str, Any]] = None,
     **kwargs: Any,
 ) -> Dict[str, Any]:
     """ADK FunctionTool entrypoint that validates `health_evidence` and `mobility_evidence` and writes `evidence_report`."""

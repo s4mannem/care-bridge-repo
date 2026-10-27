@@ -9,6 +9,7 @@ This directory ([`carebridge/docs/`](file:///Users/dvt112/Downloads/A4I/carebrid
 | Document | Purpose & Scope |
 | :--- | :--- |
 | **[`challenge_5_test_cases.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/challenge_5_test_cases.md)** | Full specification of all Challenge 5 test cases mapped to *"What you're building"*, *"Questions that need more than we gave you"*, *"Three Tracks, One Architecture"*, *"The four questions judges look for"*, and the 10 deliberate data exclusions. |
+| **[`test_execution_tracker.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/test_execution_tracker.md)** | Step-by-step E2E test execution tracker (`TC-01` through `TC-12`) recording execution status, timestamps, durations, and empirical test metrics. |
 | **[`e2e_verification_report.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/e2e_verification_report.md)** | Local end-to-end test execution report (**76 tests across 11 suites, 100% passing**), walkthrough of the 3 siting strategies, standard vs. adversarial revision trajectories (`Draft 0` $\rightarrow$ `Draft 1`), and graceful degradation results. |
 | **[`multi_agent_architecture_guarantees.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/multi_agent_architecture_guarantees.md)** | Reference on the 6-agent ADK topology (`ParallelAgent` $\rightarrow$ `Validator` $\rightarrow$ `LoopAgent(max_iterations=2)` $\rightarrow$ `Communicator`), the **One-Way Demographic Diode**, the 4 spatial resolutions, and formal answers to the 4 Judge Questions. |
 

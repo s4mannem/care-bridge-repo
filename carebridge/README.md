@@ -64,5 +64,6 @@ Provides a resilient compatibility layer so all CareBridge contracts, tools, and
   - [`communicator_agent/`](file:///Users/dvt112/Downloads/A4I/carebridge/agents/communicator_agent/README.md)
 - **[`carebridge/docs/`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/README.md)**: Challenge 5 Public Health specification traceability, multi-agent architecture guarantees, and E2E test verification reports:
   - [`challenge_5_test_cases.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/challenge_5_test_cases.md)
+  - [`test_execution_tracker.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/test_execution_tracker.md)
   - [`e2e_verification_report.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/e2e_verification_report.md)
   - [`multi_agent_architecture_guarantees.md`](file:///Users/dvt112/Downloads/A4I/carebridge/docs/multi_agent_architecture_guarantees.md)

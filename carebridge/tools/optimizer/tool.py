@@ -45,14 +45,14 @@ def optimize_four_clinic_stops(
     strategy: str = "balanced_uninsured_safety_net_gap",
     revision_number: int = 0,
     simulate_first_draft_defect: bool = False,
-    excluded_tract_geoids: Optional[Sequence[str]] = None,
+    excluded_tract_geoids: Optional[List[str]] = None,
     min_separation_km_override: Optional[float] = None,
     tool_context: Optional[Any] = None,
     health_evidence: Optional[Any] = None,
     mobility_evidence: Optional[Any] = None,
     evidence_report: Optional[Any] = None,
-    non_demographic_feedback: Optional[Sequence[str]] = None,
-    saturdays: Optional[Sequence[str]] = None,
+    non_demographic_feedback: Optional[List[str]] = None,
+    saturdays: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """Deterministic 4-stop mobile health clinic coverage optimizer tool.
 
